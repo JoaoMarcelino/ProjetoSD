@@ -2,6 +2,7 @@ import java.net.MulticastSocket;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Scanner;
 
 /**
@@ -20,49 +21,81 @@ import java.util.Scanner;
 public class MulticastClient extends Thread {
     private String MULTICAST_ADDRESS = "224.0.224.0";
     private int PORT = 4321;
-    private String id;
+    private String id = "-1";
     private long SLEEP_TIME = 5000;
 
+    private InetAddress group;
+    private DatagramPacket packet;
+    private MulticastSocket socket = null;
+
     public static void main(String[] args) {
-        String fixedId = "2";
-        MulticastClient client = new MulticastClient(fixedId);
+        MulticastClient client = new MulticastClient();
         client.start();
-        MulticastUser user = new MulticastUser(fixedId);
+        MulticastUser user = new MulticastUser();
         user.start();
     }
 
-    public MulticastClient(String id) {
+    public MulticastClient() {
         super("Server " + (long) (Math.random() * 1000));
+    }
+
+    private void setId(String id) {
         this.id = id;
     }
 
+    private void sendMessage(String message) throws IOException{
+        try{
+            byte[] buffer = message.getBytes();
+            packet = new DatagramPacket(buffer, buffer.length, group, PORT);
+            socket.send(packet);
+        }
+        catch(IOException e){
+            throw e;
+        }
+    }
+
+    private void votingSystem() throws IOException{
+        try{
+            System.out.println("Vote I Guess");
+            try { sleep((long) (SLEEP_TIME)); } catch (InterruptedException e) { }
+            String message= "User " + this.id + " Vote Ended";
+            System.out.println(message);
+            this.sendMessage(message);
+        }
+        catch(IOException e){
+            throw e;
+        }
+    }
+
     public void run() {
-        MulticastSocket socket = null;
         try {
             socket = new MulticastSocket(PORT);  // create socket and bind it
-            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+            group = InetAddress.getByName(MULTICAST_ADDRESS);
             socket.joinGroup(group);
             while (true) {
                 byte[] buffer = new byte[256];
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
 
                 String message = new String(packet.getData(), 0, packet.getLength());
+                message = message.toUpperCase();
                 String[]strArray = message.split(" ");
-                if (strArray[0].equals(this.id)){
-                    System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
-                    System.out.println(message);
 
-                    if (strArray[1].equals("Vote")){
-                        try { sleep((long) (SLEEP_TIME)); } catch (InterruptedException e) { }
-                        message= "User " + this.id + " Vote Ended";
-                        System.out.println(message);
-                        buffer = message.getBytes();
-                        packet = new DatagramPacket(buffer, buffer.length, group, PORT);
-                        socket.send(packet);
+                if (strArray[0].equals("SET") && id.equals("-1")){
+                    if (strArray.length >1)
+                        setId(strArray[1]);
+                    System.out.println(message);
+                }
+                else if (strArray[0].equals("VOTE")){
+                    message = "FREE "+ this.id;
+                    this.sendMessage(message);
+
+                }else if (strArray[0].equals(this.id)) {
+                    if (strArray[1].equals("WAKE")){
+                        this.votingSystem();
                     }
 
-                }else if (strArray[0].equals("Server")){
+                }else if (strArray[0].equals("SERVER")){
                     System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
                     System.out.println(message);
                 }
@@ -73,20 +106,18 @@ public class MulticastClient extends Thread {
             socket.close();
         }
     }
+
 }
 
 class MulticastUser extends Thread {
     private String MULTICAST_ADDRESS = "224.0.224.0";
     private int PORT = 4321;
-    private String id;
-    private byte[] buffer;
     private InetAddress group;
     private DatagramPacket packet;
     private MulticastSocket socket = null;
 
-    public MulticastUser(String id) {
+    public MulticastUser() {
         super("User " + (long) (Math.random() * 1000));
-        this.id = id;
     }
 
     private void sendMessage(String message) throws IOException {
@@ -100,18 +131,27 @@ class MulticastUser extends Thread {
         }
     }
 
+    private void startConnection() throws IOException{
+        try {
+            System.out.println(this.getName() + " running...");
+            String message = "START";
+            this.sendMessage(message);
+        }
+         catch(IOException e){
+                throw e;
+            }
+    }
+
     public void run() {
         try {
             socket = new MulticastSocket();  // create socket without binding it (only for sending)
             Scanner keyboardScanner = new Scanner(System.in);
 
-            System.out.println(this.getName() + " running...");
-            String message = this.getName() + " ready..." + this.id;
-            sendMessage(message);
+            this.startConnection();
 
             while (true) {
                 String readKeyboard = keyboardScanner.nextLine();
-                sendMessage(readKeyboard);
+                this.sendMessage(readKeyboard);
             }
         } catch (IOException e) {
             e.printStackTrace();
