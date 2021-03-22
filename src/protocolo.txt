@@ -17,3 +17,6 @@ type:joinGroup | terminalId:{id}
 type:unlock | terminalId:{id}
 type:unlockStatus | terminalId:{id} | success;{yes,no}
 
+type:free | terminalId:{id}
+type:freeStatus | terminalId:{id} | success;{yes,no}
+

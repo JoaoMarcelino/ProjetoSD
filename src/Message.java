@@ -2,6 +2,7 @@ import java.io.*;
 import java.util.*;
 import java.time.*;
 
+
 public class Message{
     public String tipo;
     public HashMap<String,String> pares;
