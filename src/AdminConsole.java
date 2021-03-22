@@ -1,15 +1,18 @@
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.rmi.*;
 import java.time.*;
 
 public class AdminConsole extends Thread {
     public static void main(String[] args) {
+        System.getProperties().put("java.security.policy", "policy.all");
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha="";
-        while(true){
-            System.out.println(printMenu());
-            try{
+        try{
+            //Universidade uni = (Universidade) Naming.lookup("uni");
+            while(true){
+                System.out.println(printMenu());
                 System.out.print("Opcao: ");
                 escolha=reader.readLine();
                 
@@ -53,19 +56,20 @@ public class AdminConsole extends Thread {
                     case "4.3":
                         editMesa(reader);
                         break;
+                    case "5":
+                        Exception e=new Exception("Consola encerrada.");
+                        throw e;
                     default:
                         System.out.println("Escolha invalida.Tente 1.1, por exemplo.");
                         break;
                 }
                 System.out.println("Pressione Enter para continuar.");
                 reader.readLine();
-
-            }catch (IOException e) {
-                e.printStackTrace();
-            }catch (Exception e){
-                System.out.println("Nao foi possivel terminar a acao desejada devido a um erro");
             }
-            
+        }catch (IOException e) {
+            System.out.println(e.getMessage());
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 
@@ -89,7 +93,8 @@ public class AdminConsole extends Thread {
                 "4.Gerir Mesas de Voto\n" +
                 "   4.1.Adicionar Mesa\n" +
                 "   4.2.Remover mesa\n" +
-                "   4.3.Alterar membros de mesa\n";
+                "   4.3.Alterar membros de mesa\n"+
+                "5.Sair.\n";
         return menu;
     }
 
@@ -157,6 +162,7 @@ public class AdminConsole extends Thread {
         System.out.println("Acao bem sucedida");
 
     }
+
     public static void editEleicao(BufferedReader reader) throws Exception{
         //list eleicoes
         String idEleicao;
@@ -164,26 +170,32 @@ public class AdminConsole extends Thread {
         idEleicao=reader.readLine();
         //uni.removeEleicao(idEleicao);
         //uni.addEleicao(idEleicao);
-        System.out.println("Acao bem sucedida");
     }
+
     public static void getResultados(BufferedReader reader) throws Exception{
         //list eleicoes
+        System.out.print("Nome da eleicao:");
         String idEleicao=reader.readLine();
         String resultados="";
         //resultados=uni.getResultados(idEleicao);
         System.out.println(resultados);
-        System.out.println("Acao bem sucedida");
     }
+
     public static void getVoto(BufferedReader reader) throws Exception{
         //list eleicoes
         //list pessoas
+        System.out.print("Nome da eleicao:");
         String idEleicao=reader.readLine();
+        System.out.print("Nome da pessoa:");
+        String idNome=reader.readLine();
         String resultados="";
         //resultados=uni.getResultados(idEleicao);
         System.out.println(resultados);
-        System.out.println("Acao bem sucedida");
     }
+
     public static void votar(BufferedReader reader) throws Exception{
+        //list eleicoes
+        //list listas
         String nome,password,idEleicao,idLista;
         System.out.print("Nome:");
         nome=reader.readLine();
@@ -193,11 +205,11 @@ public class AdminConsole extends Thread {
         idEleicao=reader.readLine();
         System.out.print("Lista a votar:");
         idLista=reader.readLine();
-        //list eleicoes
-        //list listas
+        
         //uni.vote(nome,password,eleicao,lista,"antecipado");
         System.out.println("Acao bem sucedida");
     }
+
     public static void addLista(BufferedReader reader) throws Exception{
         ArrayList<String> lista=new ArrayList<String>();
         String idEleicao,nome,aux;
@@ -208,10 +220,12 @@ public class AdminConsole extends Thread {
         nome=reader.readLine();
         int i=1;
         System.out.print("Nome Elemento #"+i+":");
-        while((aux=reader.readLine())!=null){
+        aux=reader.readLine();
+        while(aux!=""){
             lista.add(aux);
             i++;
             System.out.print("Nome Elemento #"+i+":");
+            aux=reader.readLine();
         }
         //uni.addLista(idEleicao,nome,lista);
         System.out.println("Acao bem sucedida");
