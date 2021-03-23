@@ -74,7 +74,7 @@ public class MulticastServer extends Thread {
         String nome = reader.readLine();
         // uni.searchPerson(nome);
         sendMessage("type:free | terminalId:all");
-        Message resposta = getMessage();//descartar mensagem dele proprio
+        Message resposta = getMessage();// descartar mensagem dele proprio
         resposta = getMessage();
         String freeTerminal = resposta.pares.get("terminalId");
         sendMessage("type:unlock | terminalId:" + freeTerminal);
@@ -153,6 +153,7 @@ class MulticastReader extends Thread {
         byte[] buffer = message.getBytes();
         packet = new DatagramPacket(buffer, buffer.length, group, port);
         socket.send(packet);
+        Message inutil = getMessage();// descartar a msg que le proprio enviou
     }
 
     private Message getMessage() throws Exception {

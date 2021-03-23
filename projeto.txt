@@ -1,8 +1,8 @@
 Pessoa -> {Estudante, Docente, Funcionário} : personal_info(telefone, morada, cc_num, cc_val), password, dep
 
 Eleição -> {Nucleo, ConselhoGeral} : data_inicial, data_final, titulto, descricao 
-Eleicao pode ser alteravel antes da data inicial
-Eleicao devera acabar no momento da data_final : apuramento de votos por lista 
+Lista pode ser alteravel antes da data inicial
+Lista devera acabar no momento da data_final : apuramento de votos por lista
 
 Candidatura : lista de participantes (nucleo = estudantes, conselho geral = estudantes, docentes, funcionarios)
 

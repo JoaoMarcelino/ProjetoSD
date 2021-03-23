@@ -1,0 +1,90 @@
+import java.util.*;
+
+public class Pessoa {
+
+    public String nome;
+    public String password;
+    public String departamento;
+    public String telefone;
+    public String morada;
+    public String numberCC;
+    public Date expireCCDate;
+    public Profissao profissao;
+
+    public Pessoa(String nome, String password, String departamento, String telefone, String morada, String numberCC, Date expireCCDate, Profissao profissao) {
+        this.nome = nome;
+        this.password = password;
+        this.departamento = departamento;
+        this.telefone = telefone;
+        this.morada = morada;
+        this.numberCC = numberCC;
+        this.expireCCDate = expireCCDate;
+        this.profissao = profissao;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setDepartamento(String departamento) {
+        this.departamento = departamento;
+    }
+
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
+
+    public void setMorada(String morada) {
+        this.morada = morada;
+    }
+
+    public void setNumberCC(String numberCC) {
+        this.numberCC = numberCC;
+    }
+
+    public void setExpireCCDate(Date expireCCDate) {
+        this.expireCCDate = expireCCDate;
+    }
+
+    public void setProfissao(Profissao profissao) {
+        this.profissao = profissao;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getDepartamento() {
+        return departamento;
+    }
+
+    public String getTelefone() {
+        return telefone;
+    }
+
+    public String getMorada() {
+        return morada;
+    }
+
+    public String getNumberCC() {
+        return numberCC;
+    }
+
+    public Date getExpireCCDate() {
+        return expireCCDate;
+    }
+
+    public Profissao getProfissao() {
+        return profissao;
+    }
+
+    // Inserir métodos aqui
+}
