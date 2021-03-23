@@ -50,24 +50,23 @@ public class MulticastClient extends Thread {
             group = InetAddress.getByName(address);
             socket.joinGroup(group);
 
-            joinGroup();// send joinGroup msg to server and get id
+            sendMessage("type:joinGroup | terminalId:-1");// send joinGroup msg to server
 
             while (true) {
                 // getMessage bloqueante e filtra mensagens que não se destinam a este terminal
                 Message msg = getMessage();
                 System.out.println(msg.pack());
                 switch (msg.tipo) {
+                case ("set"):
+                    joinGroup(msg);// answer to server as free or not to accpetn new user
+                    break;
                 case ("free"):
                     free(msg);// answer to server as free or not to accpetn new user
                     break;
                 case ("unlock"):
                     unlock(msg);
                     break;
-                default:
-                    System.out.println("Message outside established protocol.");
-                    break;
                 }
-
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -92,9 +91,7 @@ public class MulticastClient extends Thread {
         return msg;
     }
 
-    private void joinGroup() throws Exception {
-        sendMessage("type:joinGroup | terminalId:-1");
-        Message msg = getMessage();
+    private void joinGroup(Message msg) throws Exception {
         setId(msg);
         System.out.println("Joined multicast group successfully. Id:" + id);
     }
