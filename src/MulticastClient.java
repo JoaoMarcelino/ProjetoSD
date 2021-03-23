@@ -61,7 +61,7 @@ public class MulticastClient extends Thread {
                     joinGroup(msg);// answer to server as free or not to accpetn new user
                     break;
                 case ("free"):
-                    free(msg);// answer to server as free or not to accpetn new user
+                    free(msg);// answer to server as free to accpet new user
                     break;
                 case ("unlock"):
                     unlock(msg);

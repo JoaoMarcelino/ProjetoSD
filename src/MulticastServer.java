@@ -74,7 +74,8 @@ public class MulticastServer extends Thread {
         String nome = reader.readLine();
         // uni.searchPerson(nome);
         sendMessage("type:free | terminalId:all");
-        Message resposta = getMessage();
+        Message resposta = getMessage();//descartar mensagem dele proprio
+        resposta = getMessage();
         String freeTerminal = resposta.pares.get("terminalId");
         sendMessage("type:unlock | terminalId:" + freeTerminal);
         System.out.println("Dirija-se ao terminal " + freeTerminal + " para votar.");
@@ -84,11 +85,11 @@ public class MulticastServer extends Thread {
         byte[] buffer = message.getBytes();
         packet = new DatagramPacket(buffer, buffer.length, group, port);
         socket.send(packet);
-        Message inutil=getMessage();//descartar a msg que le proprio enviou
+        Message inutil = getMessage();// descartar a msg que le proprio enviou
     }
 
     private Message getMessage() throws Exception {
-        
+
         byte[] buffer = new byte[256];
         packet = new DatagramPacket(buffer, buffer.length);
         socket.receive(packet);
@@ -96,32 +97,6 @@ public class MulticastServer extends Thread {
         String message = new String(packet.getData(), 0, packet.getLength());
         Message msg = new Message(message);
         return msg;
-    }
-
-    private void votingSystem() throws Exception {
-        boolean receivedFree = false;
-        try {
-            while (!receivedFree) {
-                byte[] buffer = new byte[256];
-                packet = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet);
-
-                String message = new String(packet.getData(), 0, packet.getLength());
-
-                message = message.toUpperCase();
-                String[] strArray = message.split(" ");
-                if (strArray[0].equals("FREE")) {
-                    message = strArray[1] + " WAKE";
-                    receivedFree = true;
-                    System.out.println("User " + strArray[1] + " Vote Started");
-                    this.sendMessage(message);
-                }
-            }
-
-        } catch (IOException e) {
-            throw e;
-        }
-
     }
 
 }
@@ -162,9 +137,6 @@ class MulticastReader extends Thread {
                     break;
                 case "login":
                     break;
-                default:
-                    System.out.println("Message outside established protocol.");
-                    break;
                 }
             }
 
@@ -181,7 +153,6 @@ class MulticastReader extends Thread {
         byte[] buffer = message.getBytes();
         packet = new DatagramPacket(buffer, buffer.length, group, port);
         socket.send(packet);
-        Message inutil=getMessage();//descartar a msg que le proprio enviou
     }
 
     private Message getMessage() throws Exception {
@@ -196,7 +167,7 @@ class MulticastReader extends Thread {
 
     private void startConnection() throws Exception {
         counterID++;
-        String newId=Integer.toString(counterID);
-        sendMessage("type:set | terminalId:-1 | newId:"+newId);
+        String newId = Integer.toString(counterID);
+        sendMessage("type:set | terminalId:-1 | newId:" + newId);
     }
 }
