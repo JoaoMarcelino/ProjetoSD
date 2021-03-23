@@ -1,162 +1,246 @@
-import java.net.MulticastSocket;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.io.IOException;
-import java.util.Locale;
-import java.util.Scanner;
+import java.net.*;
+import java.io.*;
+import java.util.*;
 
-/**
- * The MulticastClient class joins a multicast group and loops receiving
- * messages from that group. The client also runs a MulticastUser thread that
- * loops reading a string from the keyboard and multicasting it to the group.
- * <p>
- * The example IPv4 address chosen may require you to use a VM option to
- * prefer IPv4 (if your operating system uses IPv6 sockets by default).
- * <p>
- * Usage: java -Djava.net.preferIPv4Stack=true MulticastClient
- *
- * @author Raul Barbosa
- * @version 1.0
- */
+/*
+1.Iniciar MulticastClient
+2.Juntar ao grupo multicast indicado por argumento
+3.Receber Id dado pelo MulticastServer
+4.Esperar por mensagem de desbloqueio
+    4.1.Marcar MulticastClient como ocupado
+    4.2.Esperar que MulticastUser feche
+    4.3.Iniciar MulticastUser
+    4.4.Esperar Pelo Voto
+    4.5.Fechar
+    4.6.Marcar MulticastClient como livre
+5.ou mensagem do servidor descoberta mesas livres
+*/
 public class MulticastClient extends Thread {
-    private String MULTICAST_ADDRESS = "224.0.224.0";
-    private int PORT = 4321;
     private String id = "-1";
-    private long SLEEP_TIME = 5000;
+    private long sleepTime = 5000;
+    private boolean free = true;
 
+    private String address = "224.0.224.0";
+    private int port = 4321;
     private InetAddress group;
     private DatagramPacket packet;
     private MulticastSocket socket = null;
 
     public static void main(String[] args) {
-        MulticastClient client = new MulticastClient();
+        if (args.length != 2) {
+            System.out.println("Bad Arguments.");
+            System.out.println("Run \"java MulticastClient {address} {port}");
+            System.exit(1);
+        }
+
+        MulticastClient client = new MulticastClient(args[0], args[1]);
         client.start();
-        MulticastUser user = new MulticastUser();
-        user.start();
+
     }
 
-    public MulticastClient() {
+    public MulticastClient(String address, String port) {
         super("Server " + (long) (Math.random() * 1000));
-    }
-
-    private void setId(String id) {
-        this.id = id;
-    }
-
-    private void sendMessage(String message) throws IOException{
-        try{
-            byte[] buffer = message.getBytes();
-            packet = new DatagramPacket(buffer, buffer.length, group, PORT);
-            socket.send(packet);
-        }
-        catch(IOException e){
-            throw e;
-        }
-    }
-
-    private void votingSystem() throws IOException{
-        try{
-            System.out.println("Vote I Guess");
-            try { sleep((long) (SLEEP_TIME)); } catch (InterruptedException e) { }
-            String message= "User " + this.id + " Vote Ended";
-            System.out.println(message);
-            this.sendMessage(message);
-        }
-        catch(IOException e){
-            throw e;
-        }
+        this.address = address;
+        this.port = Integer.parseInt(port);
     }
 
     public void run() {
         try {
-            socket = new MulticastSocket(PORT);  // create socket and bind it
-            group = InetAddress.getByName(MULTICAST_ADDRESS);
+            socket = new MulticastSocket(port); // create socket and bind it
+            group = InetAddress.getByName(address);
             socket.joinGroup(group);
+
+            joinGroup();// send joinGroup msg to server and get id
+
             while (true) {
-                byte[] buffer = new byte[256];
-                packet = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet);
-
-                String message = new String(packet.getData(), 0, packet.getLength());
-                message = message.toUpperCase();
-                String[]strArray = message.split(" ");
-
-                if (strArray[0].equals("SET") && id.equals("-1")){
-                    if (strArray.length >1)
-                        setId(strArray[1]);
-                    System.out.println(message);
+                // getMessage bloqueante e filtra mensagens que não se destinam a este terminal
+                Message msg = getMessage();
+                System.out.println(msg.pack());
+                switch (msg.tipo) {
+                case ("free"):
+                    free(msg);// answer to server as free or not to accpetn new user
+                    break;
+                case ("unlock"):
+                    unlock(msg);
+                    break;
+                default:
+                    System.out.println("Message outside established protocol.");
+                    break;
                 }
-                else if (strArray[0].equals("VOTE")){
-                    message = "FREE "+ this.id;
-                    this.sendMessage(message);
 
-                }else if (strArray[0].equals(this.id)) {
-                    if (strArray[1].equals("WAKE")){
-                        this.votingSystem();
-                    }
-
-                }else if (strArray[0].equals("SERVER")){
-                    System.out.println("Received packet from " + packet.getAddress().getHostAddress() + ":" + packet.getPort() + " with message:");
-                    System.out.println(message);
-                }
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             socket.close();
         }
     }
 
+    private Message getMessage() throws Exception {
+        Message msg = new Message("type:inutil");
+        do {
+            byte[] buffer = new byte[256];
+            packet = new DatagramPacket(buffer, buffer.length);
+            socket.receive(packet);
+
+            String message = new String(packet.getData(), 0, packet.getLength());
+            msg = new Message(message);
+        } while (!(msg.pares.get("terminalId").equals(this.id) || msg.pares.get("terminalId").equals("all")));
+
+        return msg;
+    }
+
+    private void joinGroup() throws Exception {
+        sendMessage("type:joinGroup | terminalId:-1");
+        Message msg = getMessage();
+        setId(msg);
+        System.out.println("Joined multicast group successfully. Id:" + id);
+    }
+
+    private void free(Message msg) throws Exception {
+        if (this.free) {
+            sendMessage("type:freeStatus | terminalId:" + id + " | success:yes");
+        }
+    }
+
+    private void unlock(Message msg) {
+        MulticastUser user = new MulticastUser(address, Integer.toString(port));
+        user.start();
+        free = false;
+        try {
+            user.join();
+            free = true;
+        } catch (InterruptedException e) {
+            System.out.println("Client Main Thread Interrupted");
+            user.interrupt();
+        }
+    }
+
+    private void setId(Message msg) {
+        this.id = msg.pares.get("newId");
+    }
+
+    private void votingSystem() throws IOException {
+        try {
+            System.out.println("Vote I Guess");
+            try {
+                sleep((long) (sleepTime));
+            } catch (InterruptedException e) {
+            }
+            String message = "User " + this.id + " Vote Ended";
+            System.out.println(message);
+            this.sendMessage(message);
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
+    private void printList(Message msg) {
+
+    }
+
+    private void sendMessage(String message) throws IOException {
+        byte[] buffer = message.getBytes();
+        InetAddress group = InetAddress.getByName(address);
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, port);
+        socket.send(packet);
+    }
 }
 
 class MulticastUser extends Thread {
-    private String MULTICAST_ADDRESS = "224.0.224.0";
-    private int PORT = 4321;
+    private String address = "224.0.224.0";
+    private int port = 4321;
+    private String id = "-1";
+    private long sleepTime = 5000;
+
     private InetAddress group;
     private DatagramPacket packet;
     private MulticastSocket socket = null;
 
-    public MulticastUser() {
+    private String nome = "";
+    private String password = "";
+
+    public MulticastUser(String address, String port) {
         super("User " + (long) (Math.random() * 1000));
-    }
-
-    private void sendMessage(String message) throws IOException {
-        try {
-        byte[] buffer = message.getBytes();
-        InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, PORT);
-        socket.send(packet);
-        } catch (IOException e) {
-            throw e;
-        }
-    }
-
-    private void startConnection() throws IOException{
-        try {
-            System.out.println(this.getName() + " running...");
-            String message = "START";
-            this.sendMessage(message);
-        }
-         catch(IOException e){
-                throw e;
-            }
     }
 
     public void run() {
         try {
-            socket = new MulticastSocket();  // create socket without binding it (only for sending)
-            Scanner keyboardScanner = new Scanner(System.in);
+            group = InetAddress.getByName(address);
+            socket = new MulticastSocket();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String escolha = "";
+            boolean voted = false;
 
-            this.startConnection();
+            while (!voted) {
+                System.out.println(printMenu());
+                System.out.print("Opcao: ");
+                escolha = reader.readLine();
 
-            while (true) {
-                String readKeyboard = keyboardScanner.nextLine();
-                this.sendMessage(readKeyboard);
+                switch (escolha) {
+                case "1":
+                    login();
+                    break;
+                case "2":
+                    listElections();
+                    break;
+                case "3":
+                    listCandidates();
+                    break;
+                case "4":
+                    voted = vote();
+                    break;
+                default:
+                    System.out.println("Escolha invalida.Tente 1, por exemplo.");
+                    break;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             socket.close();
+        }
+    }
+
+    private String printMenu() {
+        String menu = "" + "OPCOES DISPONIVEIS. Digite 1 por exemplo.\n"
+                + "___________________________________________\n" + "1.Login\n" + "2.Listar Eleicoes\n"
+                + "3.Listar Listas Candidatas\n" + "4.Votar\n";
+        return menu;
+    }
+
+    public void login() {
+
+    }
+
+    public void listElections() {
+
+    }
+
+    public void listCandidates() {
+
+    }
+
+    public boolean vote() {
+        // vote
+        return true;
+    }
+
+    private void sendMessage(String message) throws IOException {
+        byte[] buffer = message.getBytes();
+        packet = new DatagramPacket(buffer, buffer.length, group, port);
+        socket.send(packet);
+    }
+
+    private void startConnection() throws IOException {
+        try {
+            System.out.println(this.getName() + " running...");
+            String message = "START";
+            this.sendMessage(message);
+        } catch (IOException e) {
+            throw e;
         }
     }
 }
