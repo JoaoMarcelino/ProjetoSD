@@ -156,6 +156,7 @@ class MulticastUser extends Thread {
     private DatagramPacket packet;
     private MulticastSocket socket = null;
 
+    private boolean isLogged = false;
     private String nome = "";
     private String password = "";
 
@@ -187,7 +188,8 @@ class MulticastUser extends Thread {
                     listCandidates();
                     break;
                 case "4":
-                    voted = vote();
+                    if (isLogged)
+                        voted = vote();
                     break;
                 default:
                     System.out.println("Escolha invalida.Tente 1, por exemplo.");
@@ -203,13 +205,17 @@ class MulticastUser extends Thread {
 
     private String printMenu() {
         String menu = "" + "OPCOES DISPONIVEIS. Digite 1 por exemplo.\n"
-                + "___________________________________________\n" + "1.Login\n" + "2.Listar Eleicoes\n"
-                + "3.Listar Listas Candidatas\n" + "4.Votar\n";
+                + "___________________________________________\n"
+                + "1.Login\n"
+                + "2.Listar Eleicoes\n"
+                + "3.Listar Listas Candidatas\n";
+        if (this.isLogged)
+                menu += "4.Votar\n";
         return menu;
     }
 
     public void login() {
-
+        this.isLogged = true;
     }
 
     public void listElections() {

@@ -74,11 +74,16 @@ public class MulticastServer extends Thread {
         String nome = reader.readLine();
         // uni.searchPerson(nome);
         sendMessage("type:free | terminalId:all");
-        Message resposta = getMessage();// descartar mensagem dele proprio
-        resposta = getMessage();
+        
+        Message resposta = getMessage();
+        while (!resposta.tipo.equals("freeStatus")) {// descartar mensagens nao importantes
+            resposta = getMessage();
+        }
         String freeTerminal = resposta.pares.get("terminalId");
-        sendMessage("type:unlock | terminalId:" + freeTerminal);
+        sendMessage("type: unlock | terminalId:" + freeTerminal);
         System.out.println("Dirija-se ao terminal " + freeTerminal + " para votar.");
+        System.out.println("Carregue Enter para sair.");
+        reader.readLine();
     }
 
     private void sendMessage(String message) throws Exception {
