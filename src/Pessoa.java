@@ -2,14 +2,14 @@ import java.util.*;
 
 public class Pessoa {
 
-    public String nome;
-    public String password;
-    public String departamento;
-    public String telefone;
-    public String morada;
-    public String numberCC;
-    public Date expireCCDate;
-    public Profissao profissao;
+    private String nome;
+    private String password;
+    private String departamento;
+    private String telefone;
+    private String morada;
+    private String numberCC;
+    private Date expireCCDate;
+    private Profissao profissao;
 
     public Pessoa(String nome, String password, String departamento, String telefone, String morada, String numberCC, Date expireCCDate, Profissao profissao) {
         this.nome = nome;
@@ -85,6 +85,4 @@ public class Pessoa {
     public Profissao getProfissao() {
         return profissao;
     }
-
-    // Inserir métodos aqui
 }
