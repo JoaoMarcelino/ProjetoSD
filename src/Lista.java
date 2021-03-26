@@ -2,9 +2,10 @@ import java.util.*;
 
 public class Lista {
 
-	public ArrayList<Pessoa> listaPessoas;
-	public String nome;
-	public Profissao tipoLista;
+	protected ArrayList<Pessoa> listaPessoas;
+	private String nome;
+	private Profissao tipoLista;
+	private int votos = 0;
 
 	public Lista(ArrayList<Pessoa> listaPessoas, Profissao tipoLista, String nome) {
 		this.listaPessoas = listaPessoas;
@@ -24,8 +25,8 @@ public class Lista {
 		return nome;
 	}
 
-	public void setListaPessoas(ArrayList<Pessoa> listaPessoas) {
-		this.listaPessoas = listaPessoas;
+	public int getVotos() {
+		return votos;
 	}
 
 	public void setTipoLista(Profissao tipoLista) {
@@ -36,5 +37,13 @@ public class Lista {
 		this.nome = nome;
 	}
 
-	// Inserir métodos aqui
+	public void addPessoa(Pessoa pessoa) {
+		if (!this.listaPessoas.contains(pessoa)){
+			this.listaPessoas.add(pessoa);
+		}
+	}
+
+	public void aumentaVotos(){
+		this.votos++;
+	}
 }
