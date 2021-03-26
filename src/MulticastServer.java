@@ -4,25 +4,30 @@ import java.util.*;
 import java.rmi.registry.LocateRegistry;
 
 public class MulticastServer extends Thread {
-    private String address = "224.0.224.0";
-    private int port = 4321;
+    private String address;
+    private int port;
     private DatagramPacket packet;
     private MulticastSocket socket = null;
     private InetAddress group;
 
+    public MulticastServer(String address, String port) {
+        super("Server " + (long) (Math.random() * 1000));
+        this.address = address;
+        this.port = Integer.parseInt(port);
+    }
+
     public static void main(String[] args) {
         if (args.length != 2) {
-            System.out.println("Bad Arguments.");
-            System.out.println("Run \"java MulticastServer {address} {port}");
+            System.out.println("Bad Arguments.Run java MulticastServer {address} {port}");
             System.exit(1);
         }
 
         try {
-            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(7000).lookup("ServidorRMI");;
+            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(7000).lookup("ServidorRMI");
+            ;
             String message = servidor.sayHello();
             System.out.println("HelloClient: " + message);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println("Exception in main: " + e);
             e.printStackTrace();
         }
@@ -34,15 +39,7 @@ public class MulticastServer extends Thread {
         reader.start();
     }
 
-    public MulticastServer(String address, String port) {
-        super("Server " + (long) (Math.random() * 1000));
-        this.address = address;
-        this.port = Integer.parseInt(port);
-    }
-
     public void run() {
-        System.out.println(this.getName() + " running...");
-
         try {
             socket = new MulticastSocket(port); // create socket and bind it
             group = InetAddress.getByName(address);
@@ -52,7 +49,7 @@ public class MulticastServer extends Thread {
             String escolha = "";
 
             while (true) {
-                System.out.println(printMenu());
+                System.out.print(printMenu());
                 System.out.print("Opcao: ");
                 escolha = reader.readLine();
 
@@ -60,8 +57,8 @@ public class MulticastServer extends Thread {
                 case "1":
                     identify(reader);
                     break;
-                default:
-                    System.out.println("Escolha invalida.Tente 1, por exemplo.");
+                case "2":
+                    listMembers();
                     break;
                 }
             }
@@ -75,21 +72,21 @@ public class MulticastServer extends Thread {
     }
 
     private String printMenu() {
-        String menu = "" + "OPCOES DISPONIVEIS. Digite 1 por exemplo.\n"
-                + "___________________________________________\n" + "1.Identificar e Votar\n";
+        String menu = "OPCOES DISPONIVEIS. Digite 1 por exemplo.\n" + "___________________________________________\n"
+                + "1.Identificar e Votar\n" + "2.Membros da Mesa\n";
         return menu;
     }
 
     private void identify(BufferedReader reader) throws Exception {
         System.out.print("Nome:");
         String nome = reader.readLine();
-        // uni.searchPerson(nome);
+
         sendMessage("type:free | terminalId:all");
-        
         Message resposta = getMessage();
         while (!resposta.tipo.equals("freeStatus")) {// descartar mensagens nao importantes
             resposta = getMessage();
         }
+
         String freeTerminal = resposta.pares.get("terminalId");
         sendMessage("type: unlock | terminalId:" + freeTerminal);
         System.out.println("Dirija-se ao terminal " + freeTerminal + " para votar.");
@@ -97,11 +94,14 @@ public class MulticastServer extends Thread {
         reader.readLine();
     }
 
+    public void listMembers() {
+
+    }
+
     private void sendMessage(String message) throws Exception {
         byte[] buffer = message.getBytes();
         packet = new DatagramPacket(buffer, buffer.length, group, port);
         socket.send(packet);
-        Message inutil = getMessage();// descartar a msg que le proprio enviou
     }
 
     private Message getMessage() throws Exception {
@@ -118,8 +118,8 @@ public class MulticastServer extends Thread {
 }
 
 class MulticastReader extends Thread {
-    private String address = "224.0.224.0";
-    private int port = 4321;
+    private String address;
+    private int port;
     private int counterID = 0;
     private DatagramPacket packet;
     private MulticastSocket socket = null;
@@ -139,8 +139,6 @@ class MulticastReader extends Thread {
 
             while (true) {
                 Message msg = getMessage();
-                System.out.println(msg.pack());
-
                 switch (msg.tipo) {
                 case "joinGroup":
                     startConnection();
@@ -165,11 +163,16 @@ class MulticastReader extends Thread {
         }
     }
 
+    private void startConnection() throws Exception {
+        counterID++;
+        String newId = Integer.toString(counterID);
+        sendMessage("type:set | terminalId:-1 | newId:" + newId);
+    }
+
     private void sendMessage(String message) throws Exception {
         byte[] buffer = message.getBytes();
         packet = new DatagramPacket(buffer, buffer.length, group, port);
         socket.send(packet);
-        Message inutil = getMessage();// descartar a msg que le proprio enviou
     }
 
     private Message getMessage() throws Exception {
@@ -180,11 +183,5 @@ class MulticastReader extends Thread {
         String message = new String(packet.getData(), 0, packet.getLength());
         Message msg = new Message(message);
         return msg;
-    }
-
-    private void startConnection() throws Exception {
-        counterID++;
-        String newId = Integer.toString(counterID);
-        sendMessage("type:set | terminalId:-1 | newId:" + newId);
     }
 }

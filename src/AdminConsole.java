@@ -17,51 +17,51 @@ public class AdminConsole extends Thread {
                 escolha = reader.readLine();
 
                 switch (escolha) {
-                case "1.1":
-                    addPessoa(reader);
-                    break;
-                case "1.2":
-                    editPessoa(reader);
-                    break;
-                case "2.1":
-                    addEleicao(reader);
-                    break;
-                case "2.2":
-                    editEleicao(reader);
-                    break;
-                case "2.3":
-                    getResultados(reader);
-                    break;
-                case "2.4":
-                    getVoto(reader);
-                    break;
-                case "2.5":
-                    votar(reader);
-                    break;
-                case "3.1":
-                    addLista(reader);
-                    break;
-                case "3.2":
-                    removeLista(reader);
-                    break;
-                case "3.3":
-                    editLista(reader);
-                    break;
-                case "4.1":
-                    addMesa(reader);
-                    break;
-                case "4.2":
-                    removeMesa(reader);
-                    break;
-                case "4.3":
-                    editMesa(reader);
-                    break;
-                case "5":
-                    Exception e = new Exception("Consola encerrada.");
-                    throw e;
-                default:
-                    System.out.println("Escolha invalida.Tente 1.1, por exemplo.");
-                    break;
+                    case "1.1":
+                        addPessoa(reader);
+                        break;
+                    case "1.2":
+                        editPessoa(reader);
+                        break;
+                    case "2.1":
+                        addEleicao(reader);
+                        break;
+                    case "2.2":
+                        editEleicao(reader);
+                        break;
+                    case "2.3":
+                        getResultados(reader);
+                        break;
+                    case "2.4":
+                        getVoto(reader);
+                        break;
+                    case "2.5":
+                        votar(reader);
+                        break;
+                    case "3.1":
+                        addLista(reader);
+                        break;
+                    case "3.2":
+                        removeLista(reader);
+                        break;
+                    case "3.3":
+                        editLista(reader);
+                        break;
+                    case "4.1":
+                        addMesa(reader);
+                        break;
+                    case "4.2":
+                        removeMesa(reader);
+                        break;
+                    case "4.3":
+                        editMesa(reader);
+                        break;
+                    case "5":
+                        Exception e = new Exception("Consola encerrada.");
+                        throw e;
+                    default:
+                        System.out.println("Escolha invalida.Tente 1.1, por exemplo.");
+                        break;
                 }
                 System.out.println("Pressione Enter para continuar.");
                 reader.readLine();
