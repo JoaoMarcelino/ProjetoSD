@@ -1,6 +1,7 @@
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.rmi.registry.LocateRegistry;
 
 public class MulticastServer extends Thread {
     private String address = "224.0.224.0";
@@ -14,6 +15,16 @@ public class MulticastServer extends Thread {
             System.out.println("Bad Arguments.");
             System.out.println("Run \"java MulticastServer {address} {port}");
             System.exit(1);
+        }
+
+        try {
+            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(7000).lookup("ServidorRMI");;
+            String message = servidor.sayHello();
+            System.out.println("HelloClient: " + message);
+        }
+        catch (Exception e) {
+            System.out.println("Exception in main: " + e);
+            e.printStackTrace();
         }
 
         MulticastServer server = new MulticastServer(args[0], args[1]);
