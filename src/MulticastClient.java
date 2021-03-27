@@ -76,9 +76,8 @@ public class MulticastClient extends Thread {
         Watcher watcher=new Watcher(user);
         user.start();
         watcher.start();
-
-        user.join();
         watcher.join();
+        System.out.println("\nLocked");
     }
 
     private void setId(Message msg) {
@@ -221,7 +220,6 @@ class MulticastUser extends Thread {
                 }
                 long thisTime = (new Date()).getTime();
                 dif = (thisTime - lastTime) / 1000;
-                System.out.println("\nWoke now.Have passed: "+dif);
             }
         }
     }
@@ -258,7 +256,6 @@ class Watcher extends Thread{
 
     public void run() {
         watched.waitTimeout(0);
-        System.out.printf("\nPassaram-se "+watched.timeout+"s sem atividade.Fechando Terminal.");
         watched.stop();
     }
 }
