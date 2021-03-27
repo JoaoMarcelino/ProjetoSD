@@ -9,13 +9,13 @@ public class Eleicao {
 	private int brancos;
 	private int nulos;
 	protected ArrayList<Lista> listas;
-	protected ArrayList<Voto> votos;
+	protected ArrayList<Voto> votos = new ArrayList<>();
 	protected ArrayList<MesaVoto> mesas;
 	protected ArrayList<Profissao> profissoesPermitidas;
 	protected ArrayList<Departamento> departamentosPermitidos;
 
 	public Eleicao(Date dataInicio, Date dataFim, String titulo, String descricao, ArrayList<Lista> listas,
-				   ArrayList<Voto> votos, ArrayList<MesaVoto> mesas, ArrayList<Profissao> profissoesPermitidas,
+				   ArrayList<MesaVoto> mesas, ArrayList<Profissao> profissoesPermitidas,
 				   ArrayList<Departamento> departamentosPermitidos) {
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
@@ -24,7 +24,6 @@ public class Eleicao {
 		this.brancos = 0;
 		this.nulos = 0;
 		this.listas = listas;
-		this.votos = votos;
 		this.mesas = mesas;
 		this.profissoesPermitidas = profissoesPermitidas;
 		this.departamentosPermitidos = departamentosPermitidos;
@@ -48,9 +47,18 @@ public class Eleicao {
 		return false;
 	}
 
+	public boolean canVote(Pessoa pessoa){
+
+		for (Profissao profissao: profissoesPermitidas){
+			if (profissao.equals(pessoa.getProfissao()))
+				return true;
+		}
+		return false;
+	}
+
 	public void addVoto(Voto voto, String nomeLista, String tipo){
 
-		if (this.checkStart() && !hasVoted(voto.getPessoa())){
+		if (this.checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())){
 
 			switch (tipo){
 				case "Valido":
@@ -73,7 +81,7 @@ public class Eleicao {
 
 	public void addVoto(Voto voto, Lista lista, String tipo){
 
-		if (this.checkStart() && !hasVoted(voto.getPessoa())){
+		if (this.checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())){
 
 			switch (tipo){
 				case "Valido":
@@ -96,7 +104,7 @@ public class Eleicao {
 
 	public void addVotoAntecipado(Voto voto, String nomeLista, String tipo){
 
-		if (!this.checkStart() && !hasVoted(voto.getPessoa())){
+		if (!this.checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())){
 
 			switch (tipo){
 				case "Valido":
@@ -117,9 +125,9 @@ public class Eleicao {
 		}
 	}
 
-	public void addVotoAntecipado(Voto voto, Lista lista, String tipo){
+	public void addVotoAntecipado(Voto voto, Lista lista, String tipo ){
 
-		if (!this.checkStart() && !hasVoted(voto.getPessoa())){
+		if (!this.checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())){
 
 			switch (tipo){
 				case "Valido":
@@ -299,6 +307,37 @@ public class Eleicao {
 		}
 
 		return aux + this.brancos + this.nulos;
+	}
+
+	public String getTotalVotosString(){
+
+		String aux = "";
+
+		for (Lista lista : this.listas){
+			aux += lista.getNome() +": " +lista.getVotos() + "\n";
+
+		}
+		aux += "Brancos: " + this.brancos + "\n";
+		aux += "Nulos: " + this.nulos + "\n";
+
+		return aux;
+	}
+
+	public String getVencedor(){
+		String vencedor = "";
+		int max_value = 0;
+		int aux;
+		for (Lista lista : this.listas){
+			aux = lista.getVotos();
+			if (max_value == aux){
+				vencedor = "Empate";
+			}
+			else if (aux > max_value) {
+				vencedor = lista.getNome();
+			}
+		}
+
+		return vencedor;
 	}
 
 	public Resultado getResultados(){

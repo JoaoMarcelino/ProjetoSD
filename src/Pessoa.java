@@ -4,14 +4,14 @@ public class Pessoa {
 
     private String nome;
     private String password;
-    private String departamento;
+    private Departamento departamento;
     private String telefone;
     private String morada;
     private String numberCC;
     private Date expireCCDate;
     private Profissao profissao;
 
-    public Pessoa(String nome, String password, String departamento, String telefone, String morada, String numberCC, Date expireCCDate, Profissao profissao) {
+    public Pessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, Date expireCCDate, Profissao profissao) {
         this.nome = nome;
         this.password = password;
         this.departamento = departamento;
@@ -30,7 +30,7 @@ public class Pessoa {
         this.password = password;
     }
 
-    public void setDepartamento(String departamento) {
+    public void setDepartamento(Departamento departamento) {
         this.departamento = departamento;
     }
 
@@ -62,7 +62,7 @@ public class Pessoa {
         return password;
     }
 
-    public String getDepartamento() {
+    public Departamento getDepartamento() {
         return departamento;
     }
 
