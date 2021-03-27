@@ -3,7 +3,7 @@ import java.io.*;
 import java.util.*;
 import java.rmi.registry.LocateRegistry;
 
-public class MulticastServer extends Thread {
+public class MulticastServer extends Thread implements RMI_C_Interface{
     private String address;
     private int port;
     private DatagramPacket packet;

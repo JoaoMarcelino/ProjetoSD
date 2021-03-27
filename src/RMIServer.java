@@ -2,8 +2,13 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
+import java.util.ArrayList;
 
 public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
+
+	ArrayList<Eleicao> eleicoes = new ArrayList<>();
+	ArrayList<Pessoa>   pessoas = new ArrayList<>();
+	ArrayList<MesaVoto>   mesas = new ArrayList<>();
 
 	public RMIServer() throws RemoteException {
 		super();
