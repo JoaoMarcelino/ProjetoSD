@@ -202,12 +202,15 @@ class MulticastUser extends Thread {
         return true;
     }
     synchronized public void waitTimeout(int flag){
+        //MulticastUser executa isto depois de cada readline();
+        //Dá reset ao timer c/ o notifyAll()
         if(flag==1){
             lastTime=(new Date()).getTime();
             notifyAll();
             return;
         }
-
+        //Thread auxiliar criada ao mesmo tempo que MulticastUser executa isto
+        //Depois disto, faz Thread.stop() ao MulticastUser e termina também
         else {
             long dif=0;
             while (dif < timeout) {
