@@ -9,10 +9,10 @@ public class Pessoa implements Serializable {
     private String telefone;
     private String morada;
     private String numberCC;
-    private Date expireCCDate;
+    private Calendar expireCCDate;
     private Profissao profissao;
 
-    public Pessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, Date expireCCDate, Profissao profissao) {
+    public Pessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, Calendar expireCCDate, Profissao profissao) {
         this.nome = nome;
         this.password = password;
         this.departamento = departamento;
@@ -47,7 +47,7 @@ public class Pessoa implements Serializable {
         this.numberCC = numberCC;
     }
 
-    public void setExpireCCDate(Date expireCCDate) {
+    public void setExpireCCDate(Calendar expireCCDate) {
         this.expireCCDate = expireCCDate;
     }
 
@@ -79,7 +79,7 @@ public class Pessoa implements Serializable {
         return numberCC;
     }
 
-    public Date getExpireCCDate() {
+    public Calendar getExpireCCDate() {
         return expireCCDate;
     }
 

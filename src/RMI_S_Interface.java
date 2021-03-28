@@ -1,13 +1,14 @@
 import java.rmi.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 public interface RMI_S_Interface extends Remote {
 	public String sayHello() throws java.rmi.RemoteException;
 
-	public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, Date expireCCDate, Profissao profissao) throws java.rmi.RemoteException;
+	public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, Calendar expireCCDate, Profissao profissao) throws java.rmi.RemoteException;
 
-	public String addEleicao(String titulo, String descricao,Date dataInicio, Date dataFim, ArrayList<Profissao> profissoes, ArrayList<Departamento> departamentos) throws java.rmi.RemoteException;
+	public String addEleicao(String titulo, String descricao,Calendar dataInicio, Calendar dataFim, ArrayList<Profissao> profissoes, ArrayList<Departamento> departamentos) throws java.rmi.RemoteException;
 
 	public String editEleicao(String tituloAntigo,String tituloNovo, String descricaoNova) throws java.rmi.RemoteException;
 

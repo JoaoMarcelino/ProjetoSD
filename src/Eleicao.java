@@ -2,8 +2,8 @@ import java.util.*;
 
 public class Eleicao {
 
-	private Date dataInicio;
-	private Date dataFim;
+	private Calendar dataInicio;
+	private Calendar dataFim;
 	private String titulo;
 	private String descricao;
 	private int brancos;
@@ -14,7 +14,7 @@ public class Eleicao {
 	protected ArrayList<Profissao> profissoesPermitidas;
 	protected ArrayList<Departamento> departamentosPermitidos;
 
-	public Eleicao(Date dataInicio, Date dataFim, String titulo, String descricao, ArrayList<Lista> listas,
+	public Eleicao(Calendar dataInicio, Calendar dataFim, String titulo, String descricao, ArrayList<Lista> listas,
 			ArrayList<MesaVoto> mesas, ArrayList<Profissao> profissoesPermitidas,
 			ArrayList<Departamento> departamentosPermitidos) {
 		this.dataInicio = dataInicio;
@@ -30,7 +30,7 @@ public class Eleicao {
 		this.departamentosPermitidos = departamentosPermitidos;
 	}
 
-	public Eleicao(Date dataInicio, Date dataFim, String titulo, String descricao, ArrayList<Profissao> profissoesPermitidas,
+	public Eleicao(Calendar dataInicio, Calendar dataFim, String titulo, String descricao, ArrayList<Profissao> profissoesPermitidas,
 				   ArrayList<Departamento> departamentosPermitidos) {
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
@@ -47,12 +47,12 @@ public class Eleicao {
 	}
 
 	public boolean checkStart() {
-		Date dataAtual = new Date();
+		Calendar dataAtual = new GregorianCalendar();
 		return dataAtual.before(this.dataInicio);
 	}
 
 	public boolean checkEnd() {
-		Date dataAtual = new Date();
+		Calendar dataAtual = new GregorianCalendar();
 		return dataAtual.after(this.dataFim);
 	}
 
@@ -114,12 +114,12 @@ public class Eleicao {
 		}
 	}
 
-	public void setDataInicio(Date dataInicio) {
+	public void setDataInicio(Calendar dataInicio) {
 		if (!this.checkStart())
 			this.dataInicio = dataInicio;
 	}
 
-	public void setDataFim(Date dataFim) {
+	public void setDataFim(Calendar dataFim) {
 		if (!this.checkStart())
 			this.dataFim = dataFim;
 	}
@@ -186,11 +186,11 @@ public class Eleicao {
 			this.profissoesPermitidas.remove(departamento);
 	}
 
-	public Date getDataInicio() {
+	public Calendar getDataInicio() {
 		return dataInicio;
 	}
 
-	public Date getDataFim() {
+	public Calendar getDataFim() {
 		return dataFim;
 	}
 
