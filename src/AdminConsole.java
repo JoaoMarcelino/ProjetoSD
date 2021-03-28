@@ -8,11 +8,10 @@ import java.time.*;
 public class AdminConsole extends Thread {
     public static void main(String[] args) {
         System.getProperties().put("java.security.policy", "policy.all");
-        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha = "";
         try {
-            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(7000).lookup("ServidorRMI");
+            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[0],7000).lookup("ServidorRMI");
             while (true) {
                 System.out.println(printMenu());
                 System.out.print("Opcao: ");
