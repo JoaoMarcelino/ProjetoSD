@@ -30,6 +30,22 @@ public class Eleicao {
 		this.departamentosPermitidos = departamentosPermitidos;
 	}
 
+	public Eleicao(Date dataInicio, Date dataFim, String titulo, String descricao, ArrayList<Profissao> profissoesPermitidas,
+				   ArrayList<Departamento> departamentosPermitidos) {
+		this.dataInicio = dataInicio;
+		this.dataFim = dataFim;
+		this.titulo = titulo;
+		this.descricao = descricao;
+		this.brancos = 0;
+		this.nulos = 0;
+		this.votos = new ArrayList<Voto>();
+		this.listas = new ArrayList<Lista>();
+		this.mesas = new ArrayList<MesaVoto>();
+		this.votos = new ArrayList<Voto>();
+		this.profissoesPermitidas = profissoesPermitidas;
+		this.departamentosPermitidos = departamentosPermitidos;
+	}
+
 	public boolean checkStart() {
 		Date dataAtual = new Date();
 		return dataAtual.before(this.dataInicio);
