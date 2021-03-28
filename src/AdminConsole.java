@@ -11,7 +11,7 @@ public class AdminConsole extends Thread {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha = "";
         try {
-            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[0],7000).lookup("ServidorRMI");
+            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(7000).lookup("ServidorRMI");
             while (true) {
                 System.out.println(printMenu());
                 System.out.print("Opcao: ");

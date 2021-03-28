@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -19,11 +18,10 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
 	public static void main(String args[]) {
 		try {
-			System.setProperty("java.rmi.server.hostname", InetAddress.getLocalHost().getHostName());
+			System.getProperties().put("java.security.policy", "policy.all");
 			RMIServer servidor = new RMIServer();
 			Registry r = LocateRegistry.createRegistry(7000);
 			r.rebind("ServidorRMI", servidor);
-			System.out.println(r.toString());
 			System.out.println("¡El servidor RMI está listo!");
 		} catch (RemoteException re) {
 			System.out.println("Exception in HelloImpl.main: " + re);
