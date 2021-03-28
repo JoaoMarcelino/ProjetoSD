@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.*;
 
-public class Resultado {
+public class Resultado implements Serializable {
 
 	private String titulo;
 	private int totalVotos;

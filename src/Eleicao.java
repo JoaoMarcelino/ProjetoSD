@@ -15,20 +15,6 @@ public class Eleicao implements Serializable {
 	protected ArrayList<Profissao> profissoesPermitidas;
 	protected ArrayList<Departamento> departamentosPermitidos;
 
-	public Eleicao(GregorianCalendar dataInicio, GregorianCalendar dataFim, String titulo, String descricao, ArrayList<Lista> listas, ArrayList<MesaVoto> mesas, ArrayList<Profissao> profissoesPermitidas, ArrayList<Departamento> departamentosPermitidos) {
-		this.dataInicio = dataInicio;
-		this.dataFim = dataFim;
-		this.titulo = titulo;
-		this.descricao = descricao;
-		this.brancos = 0;
-		this.nulos = 0;
-		this.listas = listas;
-		this.votos = new ArrayList<Voto>();
-		this.mesas = mesas;
-		this.profissoesPermitidas = profissoesPermitidas;
-		this.departamentosPermitidos = departamentosPermitidos;
-	}
-
 	public Eleicao(GregorianCalendar dataInicio, GregorianCalendar dataFim, String titulo, String descricao, ArrayList<Profissao> profissoesPermitidas,ArrayList<Departamento> departamentosPermitidos) {
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
@@ -44,11 +30,54 @@ public class Eleicao implements Serializable {
 		this.departamentosPermitidos = departamentosPermitidos;
 	}
 
+	public void setDataInicio(GregorianCalendar dataInicio) {
+		if (!this.checkStart())
+			this.dataInicio = dataInicio;
+	}
+
+	public void setDataFim(GregorianCalendar dataFim) {
+
+		if (!this.checkStart())
+			this.dataFim = dataFim;
+	}
+
+	public void setTitulo(String titulo) {
+		if (!this.checkStart())
+			this.titulo = titulo;
+	}
+
+	public void setDescricao(String descricao) {
+		if (!this.checkStart())
+			this.descricao = descricao;
+	}
+
+	public GregorianCalendar getDataInicio() {
+		return dataInicio;
+	}
+
+	public GregorianCalendar getDataFim() {
+		return dataFim;
+	}
+
+	public String getTitulo() {
+		return titulo;
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public ArrayList<Lista> getListas() {
+		return listas;
+	}
+
+
+
 	public boolean checkStart() {
 		GregorianCalendar dataAtual = new GregorianCalendar();
-
-		return dataAtual.before(this.dataInicio);
+		return dataAtual.after(this.dataInicio);
 	}
+
 
 	public boolean checkEnd() {
 		GregorianCalendar dataAtual = new GregorianCalendar();
@@ -113,30 +142,20 @@ public class Eleicao implements Serializable {
 		}
 	}
 
-	public void setDataInicio(GregorianCalendar dataInicio) {
-		if (!this.checkStart())
-			this.dataInicio = dataInicio;
-	}
+	public String addLista(Lista lista) {
+		if(this.checkStart()){
+			return "Eleicao em progresso. Nao e possivel adicionar listas.";
+		}
+		String nome=lista.getNome();
+		if(this.getListaByName(nome)!=null){
+			return "Lista "+nome+" ja existe.";
+		}
+		if(!this.profissoesPermitidas.contains(lista.getTipoLista())){
+			return "Tipo de lista incompativel com eleicao";
+		}
+		this.listas.add(lista);
+		return "Lista "+nome+" adicionada.";
 
-	public void setDataFim(GregorianCalendar dataFim) {
-
-		if (!this.checkStart())
-			this.dataFim = dataFim;
-	}
-
-	public void setTitulo(String titulo) {
-		if (!this.checkStart())
-			this.titulo = titulo;
-	}
-
-	public void setDescricao(String descricao) {
-		if (!this.checkStart())
-			this.descricao = descricao;
-	}
-
-	public void addLista(Lista lista) {
-		if (!this.checkStart())
-			this.listas.add(lista);
 	}
 
 	public void addMesa(MesaVoto mesa) {
@@ -183,31 +202,10 @@ public class Eleicao implements Serializable {
 
 	public void removeDepartamento(Departamento departamento) {
 		if (!this.checkStart())
-			this.profissoesPermitidas.remove(departamento);
+			this.departamentosPermitidos.remove(departamento);
 	}
 
-
-	public GregorianCalendar getDataInicio() {
-		return dataInicio;
-	}
-
-	public GregorianCalendar getDataFim() {
-		return dataFim;
-	}
-
-	public String getTitulo() {
-		return titulo;
-	}
-
-	public String getDescricao() {
-		return descricao;
-	}
-
-	public ArrayList<Lista> getListas() {
-		return listas;
-	}
-
-	public ArrayList<Lista> getListas(Profissao profissao) {
+	public ArrayList<Lista> getListasByProfissao(Profissao profissao) {
 
 		ArrayList<Lista> aux = new ArrayList<>();
 

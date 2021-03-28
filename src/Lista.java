@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.*;
 
-public class Lista {
+public class Lista implements Serializable {
 
 	protected ArrayList<Pessoa> listaPessoas;
 	private String nome;

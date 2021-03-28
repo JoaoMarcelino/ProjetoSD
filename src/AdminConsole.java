@@ -1,6 +1,3 @@
-import jdk.swing.interop.SwingInterOpUtils;
-
-import javax.xml.stream.events.ProcessingInstruction;
 import java.net.*;
 import java.io.*;
 import java.rmi.registry.LocateRegistry;
@@ -11,6 +8,7 @@ import java.time.*;
 public class AdminConsole extends Thread {
     public static void main(String[] args) {
         System.getProperties().put("java.security.policy", "policy.all");
+        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha = "";
         try {
@@ -25,49 +23,31 @@ public class AdminConsole extends Thread {
                         addPessoa(reader,servidor);
                         break;
                     case "1.2":
-                        editPessoa(reader,servidor);
-                        break;
-                    case "1.3":
                         listPessoas(reader,servidor);
                         break;
                     case "2.1":
                         addEleicao(reader,servidor);
                         break;
                     case "2.2":
-                        editEleicao(reader,servidor);
-                        break;
-                    case "2.3":
                         getResultados(reader,servidor);
                         break;
-                    case "2.4":
+                    case "2.3":
                         getVoto(reader,servidor);
                         break;
-                    case "2.5":
+                    case "2.4":
                         votar(reader,servidor);
                         break;
-                    case "2.6":
+                    case "2.5":
                         listEleicoes(reader,servidor);
                         break;
                     case "3.1":
                         addLista(reader,servidor);
                         break;
                     case "3.2":
-                        removeLista(reader,servidor);
-                        break;
-                    case "3.3":
-                        editLista(reader,servidor);
-                        break;
-                    case "3.4":
                         listListas(reader,servidor);
                         break;
                     case "4.1":
                         addMesa(reader,servidor);
-                        break;
-                    case "4.2":
-                        removeMesa(reader,servidor);
-                        break;
-                    case "4.3":
-                        editMesa(reader,servidor);
                         break;
                     case "5":
                         Exception e = new Exception("Consola encerrada.");
@@ -91,24 +71,18 @@ public class AdminConsole extends Thread {
                 + "___________________________________________\n" +
                 "1.Gerir Pessoas\n" +
                 "   1.1.Registar Pessoa\n" +
-                "   1.2.Alterar dados pessoais\n" +
-                "   1.3.Listar Pessoas\n" +
+                "   1.2.Listar Pessoas\n" +
                 "2.Gerir Eleicao\n" +
                 "   2.1.Criar Eleicao\n" +
-                "   2.2.Alterar informacao de eleicao\n" +
-                "   2.3.Consultar Resultados\n" +
-                "   2.4.Consultar Informacao de Voto\n" +
-                "   2.5.Voto Antecipado\n" +
-                "   2.6.Listar Eleicoes\n"+
+                "   2.2.Consultar Resultados\n" +
+                "   2.3.Consultar Informacao de Voto\n" +
+                "   2.4.Voto Antecipado\n" +
+                "   2.5.Listar Eleicoes\n"+
                 "3.Gerir Candidatos\n" +
                 "   3.1.Adicionar Lista\n" +
-                "   3.2 Remover Lista\n" +
-                "   3.3 Alterar Lista\n" +
-                "   3.4.Listar Listas\n"+
+                "   3.2.Listar Listas\n"+
                 "4.Gerir Mesas de Voto\n" +
                 "   4.1.Adicionar Mesa\n" +
-                "   4.2.Remover mesa\n" +
-                "   4.3.Alterar membros de mesa\n" +
                 "5.Sair.\n";
         return menu;
     }
@@ -144,7 +118,7 @@ public class AdminConsole extends Thread {
                 prof=Profissao.Estudante;
         }
 
-        departamento = readInteger(reader, "\"Departamento: DA (1), DCT (2), DCV (3), DEC (4), DEEC (5), DEI (6), DEM (7), DEQ (8), DF(9), DM (10), DQ (11)?", 11);
+        departamento = readInteger(reader, "Departamento: DA (1), DCT (2), DCV (3), DEC (4), DEEC (5), DEI (6), DEM (7), DEQ (8), DF(9), DM (10), DQ (11)?", 11);
 
         dep = switch (departamento) {
             case "1" -> Departamento.DA;
@@ -176,14 +150,6 @@ public class AdminConsole extends Thread {
 
     }
 
-    public static void editPessoa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        // list pessoas
-        String idPessoa;
-        System.out.print("Pessoa a editar:");
-        idPessoa = reader.readLine();
-        // uni.removePessoa(idPessoa);
-        // uni.addPessoa();
-    }
 
     public static void listPessoas(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         ArrayList<Pessoa> pessoas=servidor.listPessoas();
@@ -233,15 +199,6 @@ public class AdminConsole extends Thread {
         System.out.println(status);
     }
 
-    public static void editEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        // list eleicoes
-        String idEleicao;
-        System.out.print("Eleicao a editar:");
-        idEleicao = reader.readLine();
-        // uni.removeEleicao(idEleicao);
-        // uni.addEleicao(idEleicao);
-    }
-
     public static void getResultados(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         // list eleicoes
         System.out.print("Nome da eleicao:");
@@ -289,53 +246,54 @@ public class AdminConsole extends Thread {
     }
 
     public static void addLista(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        ArrayList<String> lista = new ArrayList<String>();
-        String idEleicao, nome, aux;
-        // list Eleicoes
-        System.out.print("Eleicao:");
-        idEleicao = reader.readLine();
-        System.out.print("Nome:");
-        nome = reader.readLine();
+        ArrayList<Pessoa> membros=new ArrayList<Pessoa>();
+        String  eleicao,nome, aux,type;
+        Profissao prof=Profissao.Estudante;
         int i = 1;
-        System.out.print("Nome Elemento #" + i + ":");
-        aux = reader.readLine();
-        while (aux != "") {
-            lista.add(aux);
-            i++;
+
+        System.out.print("Nome da eleicao:");
+        eleicao = reader.readLine();
+        System.out.print("Nome da Lista:");
+        nome = reader.readLine();
+        type = readInteger(reader, "Lista de Estudantes(1), Docentes(2) ou Funcionarios(3)?:", 3);
+        switch (type) {
+            case "1" -> prof=Profissao.Estudante;
+            case "2" -> prof=Profissao.Docente;
+            case "3" -> prof=Profissao.Funcionario;
+        }
+
+        do{
             System.out.print("Nome Elemento #" + i + ":");
             aux = reader.readLine();
-        }
-        // uni.addLista(idEleicao,nome,lista);
-        System.out.println("Acao bem sucedida");
+            Pessoa p=new Pessoa(aux,"-1",Departamento.DA,"-1","-1","-1",new GregorianCalendar(),Profissao.Estudante);
+            membros.add(p);
+            i++;
+        }while (!aux.equals(""));
 
+        String status=servidor.addLista(eleicao,nome,membros,prof);
+        System.out.println(status);
     }
 
-    public static void removeLista(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        // list Eleicoes
-        String idEleicao, idLista;
-        System.out.print("Eleicao:");
-        idEleicao = reader.readLine();
-        // lista listas
-        System.out.print("Lista:");
-        idLista = reader.readLine();
-        // uni.removeLista(idEleicao,idLista);
-
-    }
-
-    public static void editLista(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        // list Eleicoes
-        String idEleicao, idLista;
-        System.out.print("Eleicao:");
-        idEleicao = reader.readLine();
-        // lista listas
-        System.out.print("Lista:");
-        idLista = reader.readLine();
-        // uni.removeLista(idEleicao,idLista);
-        addLista(reader, servidor);
-
-    }
 
     public static void listListas(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+        String eleicao;
+        System.out.print("Nome da eleicao:");
+        eleicao=reader.readLine();
+
+        ArrayList<Lista> listas=servidor.listListas(eleicao);
+
+        if(listas==null){
+            System.out.println("Eleicao nao existe.");
+        }
+
+        System.out.println("LISTAS REGISTADAS:");
+        for(Lista lis:listas){
+            System.out.print(lis.getNome()+" "+lis.getTipoLista()+" [ ");
+            for(Pessoa p:lis.getListaPessoas()){
+                System.out.print(p.getNome()+" ");
+            }
+            System.out.println("] ");
+        }
     }
 
     public static void addMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
@@ -383,23 +341,6 @@ public class AdminConsole extends Thread {
         System.out.println(status);
     }
 
-    public static void removeMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        // list mesas
-        String idMesa;
-        System.out.print("Mesa:");
-        idMesa = reader.readLine();
-        // uni.removeMesa(idmesa);
-    }
-
-    public static void editMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        // list mesas
-        String idMesa;
-        System.out.print("Mesa:");
-        idMesa = reader.readLine();
-        // uni.removeLista(idMesa);
-        addMesa(reader, servidor);
-    }
-
     public static String printGregorianCalendar(GregorianCalendar data){
         int hora=data.get(Calendar.HOUR);
         int dia=data.get(Calendar.DATE);
@@ -407,7 +348,6 @@ public class AdminConsole extends Thread {
         int ano=data.get(Calendar.YEAR);
 
         return hora+"h "+dia+" "+mes+" "+ano;
-
     }
 
     public static String readInteger(BufferedReader reader, String info) throws Exception{
@@ -463,11 +403,11 @@ public class AdminConsole extends Thread {
             ano = readInteger(reader, "Ano:");
             mes = readInteger(reader, "Mes:", 12);
 
-            if(mes == "4" || mes == "6" || mes == "9" || mes == "11" )
+            if(mes.equals("4") || mes.equals("6") || mes.equals("9") || mes.equals("11"))
                 dia = readInteger(reader, "Dia:", 30);
-            else if(mes == "2" && Integer.parseInt(ano) % 4 ==0)
+            else if(mes.equals("2") && Integer.parseInt(ano) % 4 ==0)
                 dia = readInteger(reader, "Dia:", 29);
-            else if (mes == "2")
+            else if (mes.equals("2"))
                 dia = readInteger(reader, "Dia:", 28);
             else
                 dia = readInteger(reader, "Dia:", 31);
@@ -483,7 +423,6 @@ public class AdminConsole extends Thread {
             isValid = true;
 
         }
-
         return calendar;
     }
 }
