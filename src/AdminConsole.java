@@ -85,32 +85,111 @@ public class AdminConsole extends Thread {
         return menu;
     }
 
+    public static String readInteger(BufferedReader reader, String info) throws Exception{
+        String input = "";
+        int intInputValue = 0;
+        boolean isValid = false;
+
+        while (!isValid){
+            System.out.print(info);
+            input = reader.readLine();
+            intInputValue = 0;
+            try {
+                intInputValue = Integer.parseInt(input);
+                if (intInputValue > 0){
+                    isValid = true;
+                }
+            } catch (NumberFormatException ne) {
+                System.out.println("Not a valid Input");
+            }
+        }
+        return input;
+    }
+
+    public static String readInteger(BufferedReader reader, String info, int max) throws Exception{
+        String input = "";
+        int intInputValue = 0;
+        boolean isValid = false;
+
+        while (!isValid){
+            System.out.print(info);
+            input = reader.readLine();
+            intInputValue = 0;
+            try {
+                intInputValue = Integer.parseInt(input);
+                if (intInputValue <= max && intInputValue > 0) isValid = true;
+                else System.out.println("Not a valid Input");
+            } catch (NumberFormatException ne) {
+                System.out.println("Not a valid Input");
+            }
+        }
+        return input;
+    }
+
+    public static Calendar readDate(BufferedReader reader, String info, boolean flagHora) throws Exception{
+        Date date = new Date();
+        Calendar calendar = new GregorianCalendar();
+        String ano, mes, dia, hora;
+        boolean isValid = false;
+
+        while(!isValid){
+
+            System.out.println(info);
+
+            ano = readInteger(reader, "Ano:");
+            mes = readInteger(reader, "Mes:", 12);
+
+            if(mes == "4" || mes == "6" || mes == "9" || mes == "11" )
+                dia = readInteger(reader, "Dia:", 30);
+            else if(mes == "2" && Integer.parseInt(ano) % 4 ==0)
+                dia = readInteger(reader, "Dia:", 29);
+            else if (mes == "2")
+                dia = readInteger(reader, "Dia:", 28);
+            else
+                dia = readInteger(reader, "Dia:", 31);
+
+            if (flagHora){
+                hora = readInteger(reader, "Hora:", 24);
+                calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia), Integer.parseInt(hora), 0);
+            }
+            else{
+                calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia));
+
+            }
+            isValid = true;
+
+        }
+
+        return calendar;
+    }
+
     public static void addPessoa(BufferedReader reader) throws Exception {
         String nome;
         String type;
         String password;
-        String departamento, telefone, morada, cc, validadeCC;
+        String departamento, telefone, morada, cc;
+        Calendar validadeCC;
 
         System.out.println("Preencha todos os campos.");
         System.out.print("Nome:");
         nome = reader.readLine();
-        System.out.print("Estudante(1), Docente(2) ou Funcionario(3)?:");
-        type = reader.readLine();
-        System.out.print("Departamento:");
-        departamento = reader.readLine();
-        System.out.print("Telefone:");
-        telefone = reader.readLine();
+
+        type = readInteger(reader, "Profissao: Estudante(1), Docente(2) ou Funcionario(3)?:", 3);
+
+        departamento = readInteger(reader, "\"Departamento: DA (1), DCT (2), DCV (3), DEC (4), DEEC (5), DEI (6), DEM (7), DEQ (8), DF(9), DM (10), DQ (11)?", 11);
+
+        telefone = readInteger(reader, "Telefone:");
         System.out.print("Morada:");
         morada = reader.readLine();
-        System.out.print("Numero Cartao Cidado:");
-        cc = reader.readLine();
-        System.out.print("Validade Cartao Cidado:");
-        validadeCC = reader.readLine();
+
+        cc = readInteger(reader, "Numero Cartao Cidado:");
+
+        validadeCC = readDate(reader, "Validade Cartao Cidado:", false);
         System.out.print("Password:");
         password = reader.readLine();
 
         System.out.println("Dados Introduzidos:\n" + nome + "\n" + type + "\n" + departamento + "\n" + telefone + "\n"
-                + morada + cc + "\n" + validadeCC + "\n" + password);
+                + morada + cc + "\n" + validadeCC.getTime().toString() + "\n" + password);
         // uni.addPesoa(...);
         System.out.println("Acao bem sucedida");
     }
@@ -127,29 +206,30 @@ public class AdminConsole extends Thread {
     public static void addEleicao(BufferedReader reader) throws Exception {
         String nome;
         String descricao;
-        String hora, dia, mes, ano;
         String type;
+        Calendar dataInicio = new GregorianCalendar(), dataTermino = new GregorianCalendar();
+        boolean notValid = true;
 
         System.out.println("Preencha todos os campos.");
         System.out.print("Nome:");
         nome = reader.readLine();
         System.out.print("Descricao:");
         descricao = reader.readLine();
-        System.out.print("Eleicao de Estudantes(1), Docentes(2), Funcionarios(3) ou Geral(4)?:");
-        type = reader.readLine();
-        System.out.print("Data de Termino:\nAno:");
-        ano = reader.readLine();
-        System.out.print("Mes:");
-        mes = reader.readLine();
-        System.out.print("Dia:");
-        dia = reader.readLine();
-        System.out.print("Hora:");
-        hora = reader.readLine();
+        //
+        type = readInteger(reader, "Eleicao de Estudantes(1), Docentes(2), Funcionarios(3) ou Geral(4)?:", 4);
 
-        LocalDateTime dataFim = LocalDateTime.of(Integer.parseInt(ano), Integer.parseInt(mes), Integer.parseInt(dia),
-                Integer.parseInt(hora), 0, 0);
+        while(notValid){
+            dataInicio = readDate(reader, "Data de Inicio", true);
+            dataTermino = readDate(reader, "Data de Termino", true);
+
+            if (dataInicio.before(dataTermino) == true)
+                notValid = false;
+            else
+                System.out.printf("Data Final deve ser depois da data Inical");
+        }
+
         System.out.println(
-                "Dados Introduzidos:\n" + nome + "\n" + descricao + "\n" + type + "\n" + dataFim.toString() + "\n");
+                "Dados Introduzidos:\n" + nome + "\n" + descricao + "\n" + type + "\n" + dataInicio.getTime().toString() + "\n" + dataTermino.getTime().toString() + "\n");
         // uni.addEleicao(...);
         System.out.println("Acao bem sucedida");
 
@@ -254,8 +334,9 @@ public class AdminConsole extends Thread {
         String membro1, membro2, membro3;
 
         System.out.println("Preencha todos os campos.");
-        System.out.print("Departamento:");
-        departamento = reader.readLine();
+
+        departamento = readInteger(reader, "\"Departamento: DA (1), DCT (2), DCV (3), DEC (4), DEEC (5), DEI (6), DEM (7), DEQ (8), DF(9), DM (10), DQ (11)?", 11);
+
         System.out.print("Membro de mesa #1:");
         membro1 = reader.readLine();
         System.out.print("Membro de mesa #2:");
