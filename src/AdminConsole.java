@@ -113,82 +113,7 @@ public class AdminConsole extends Thread {
         return menu;
     }
 
-    public static String readInteger(BufferedReader reader, String info) throws Exception{
-        String input = "";
-        int intInputValue = 0;
-        boolean isValid = false;
 
-        while (!isValid){
-            System.out.print(info);
-            input = reader.readLine();
-            intInputValue = 0;
-            try {
-                intInputValue = Integer.parseInt(input);
-                if (intInputValue > 0){
-                    isValid = true;
-                }
-            } catch (NumberFormatException ne) {
-                System.out.println("Not a valid Input");
-            }
-        }
-        return input;
-    }
-
-    public static String readInteger(BufferedReader reader, String info, int max) throws Exception{
-        String input = "";
-        int intInputValue = 0;
-        boolean isValid = false;
-
-        while (!isValid){
-            System.out.print(info);
-            input = reader.readLine();
-            intInputValue = 0;
-            try {
-                intInputValue = Integer.parseInt(input);
-                if (intInputValue <= max && intInputValue > 0) isValid = true;
-                else System.out.println("Not a valid Input");
-            } catch (NumberFormatException ne) {
-                System.out.println("Not a valid Input");
-            }
-        }
-        return input;
-    }
-
-    public static GregorianCalendar readDate(BufferedReader reader, String info, boolean flagHora) throws Exception{
-        GregorianCalendar calendar = new GregorianCalendar();
-        String ano, mes, dia, hora;
-        boolean isValid = false;
-
-        while(!isValid){
-
-            System.out.println(info);
-
-            ano = readInteger(reader, "Ano:");
-            mes = readInteger(reader, "Mes:", 12);
-
-            if(mes == "4" || mes == "6" || mes == "9" || mes == "11" )
-                dia = readInteger(reader, "Dia:", 30);
-            else if(mes == "2" && Integer.parseInt(ano) % 4 ==0)
-                dia = readInteger(reader, "Dia:", 29);
-            else if (mes == "2")
-                dia = readInteger(reader, "Dia:", 28);
-            else
-                dia = readInteger(reader, "Dia:", 31);
-
-            if (flagHora){
-                hora = readInteger(reader, "Hora:", 24);
-                calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia), Integer.parseInt(hora), 0);
-            }
-            else{
-                calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia));
-
-            }
-            isValid = true;
-
-        }
-
-        return calendar;
-    }
 
     public static void addPessoa(BufferedReader reader, RMI_S_Interface servidor) throws Exception {
 
@@ -478,10 +403,87 @@ public class AdminConsole extends Thread {
     public static String printGregorianCalendar(GregorianCalendar data){
         int hora=data.get(Calendar.HOUR);
         int dia=data.get(Calendar.DATE);
-        int mes=data.get(Calendar.MONTH);
+        int mes=data.get(Calendar.MONTH)+1;
         int ano=data.get(Calendar.YEAR);
 
         return hora+"h "+dia+" "+mes+" "+ano;
 
+    }
+
+    public static String readInteger(BufferedReader reader, String info) throws Exception{
+        String input = "";
+        int intInputValue = 0;
+        boolean isValid = false;
+
+        while (!isValid){
+            System.out.print(info);
+            input = reader.readLine();
+            intInputValue = 0;
+            try {
+                intInputValue = Integer.parseInt(input);
+                if (intInputValue > 0){
+                    isValid = true;
+                }
+            } catch (NumberFormatException ne) {
+                System.out.println("Not a valid Input");
+            }
+        }
+        return input;
+    }
+
+    public static String readInteger(BufferedReader reader, String info, int max) throws Exception{
+        String input = "";
+        int intInputValue = 0;
+        boolean isValid = false;
+
+        while (!isValid){
+            System.out.print(info);
+            input = reader.readLine();
+            intInputValue = 0;
+            try {
+                intInputValue = Integer.parseInt(input);
+                if (intInputValue <= max && intInputValue > 0) isValid = true;
+                else System.out.println("Not a valid Input");
+            } catch (NumberFormatException ne) {
+                System.out.println("Not a valid Input");
+            }
+        }
+        return input;
+    }
+
+    public static GregorianCalendar readDate(BufferedReader reader, String info, boolean flagHora) throws Exception{
+        GregorianCalendar calendar = new GregorianCalendar();
+        String ano, mes, dia, hora;
+        boolean isValid = false;
+
+        while(!isValid){
+
+            System.out.println(info);
+
+            ano = readInteger(reader, "Ano:");
+            mes = readInteger(reader, "Mes:", 12);
+
+            if(mes == "4" || mes == "6" || mes == "9" || mes == "11" )
+                dia = readInteger(reader, "Dia:", 30);
+            else if(mes == "2" && Integer.parseInt(ano) % 4 ==0)
+                dia = readInteger(reader, "Dia:", 29);
+            else if (mes == "2")
+                dia = readInteger(reader, "Dia:", 28);
+            else
+                dia = readInteger(reader, "Dia:", 31);
+
+            if (flagHora){
+                hora = readInteger(reader, "Hora:", 24);
+                calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia), Integer.parseInt(hora), 0);
+            }
+            else{
+                calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia));
+
+            }
+            isValid = true;
+
+        }
+
+        return calendar;
     }
 }
