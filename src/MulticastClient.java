@@ -71,16 +71,13 @@ public class MulticastClient extends Thread {
         }
     }
 
-    private void unlock(Message msg) {
-        MulticastUser user = new MulticastUser(address, port, id);
+    private void unlock(Message msg) throws Exception{
+        MulticastUser user = new MulticastUser(address, port, id,5);
+        Watcher watcher=new Watcher(user);
         user.start();
-        free = false;
-        try {
-            user.join();
-            free = true;
-        } catch (InterruptedException e) {
-            System.out.println("Client Main Thread Interrupted");
-        }
+        watcher.start();
+        watcher.join();
+        System.out.println("\nLocked");
     }
 
     private void setId(Message msg) {
@@ -120,19 +117,27 @@ class MulticastUser extends Thread {
     private DatagramPacket packet;
     private MulticastSocket socket = null;
     private boolean isLogged = false;
+    BufferedReader reader;
+
+    public long lastTime;
+    public long timeout;
 
 
-    public MulticastUser(String address, int port,String id) {
+    public MulticastUser(String address, int port,String id,long timeout) {
         super("User " + (long) (Math.random() * 1000));
-
+        this.address=address;
+        this.port=port;
+        this.reader = new BufferedReader(new InputStreamReader(System.in));
+        this.timeout=timeout;
+        this.lastTime=(new Date()).getTime();
     }
 
-    public void run() {
+     public void run() {
         try {
             group = InetAddress.getByName(address);
             socket = new MulticastSocket();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            //BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String escolha = "";
             boolean voted = false;
 
@@ -140,6 +145,7 @@ class MulticastUser extends Thread {
                 System.out.print(printMenu());
                 System.out.print("Opcao: ");
                 escolha = reader.readLine();
+                waitTimeout(1);
 
                 switch (escolha) {
                     case "1":
@@ -180,6 +186,7 @@ class MulticastUser extends Thread {
         return menu;
     }
 
+
     public void login() {
         this.isLogged = true;
     }
@@ -193,6 +200,30 @@ class MulticastUser extends Thread {
     public boolean vote(){
         return true;
     }
+    synchronized public void waitTimeout(int flag){
+        //MulticastUser executa isto depois de cada readline();
+        //Dá reset ao timer c/ o notifyAll()
+        if(flag==1){
+            lastTime=(new Date()).getTime();
+            notifyAll();
+            return;
+        }
+        //Thread auxiliar criada ao mesmo tempo que MulticastUser executa isto
+        //Depois disto, faz Thread.stop() ao MulticastUser e termina também
+        else {
+            long dif=0;
+            while (dif < timeout) {
+                try {
+                    wait(timeout * 1000);
+                } catch (InterruptedException e) {
+                    System.out.println("interruptedException caught");
+                }
+                long thisTime = (new Date()).getTime();
+                dif = (thisTime - lastTime) / 1000;
+            }
+        }
+    }
+
 
     private void sendMessage(String message) throws IOException {
         byte[] buffer = message.getBytes();
@@ -212,5 +243,19 @@ class MulticastUser extends Thread {
         } while (!(msg.pares.get("terminalId").equals(this.id) || msg.pares.get("terminalId").equals("all")));
 
         return msg;
+    }
+}
+
+class Watcher extends Thread{
+    public MulticastUser watched;
+
+    public Watcher(MulticastUser watched){
+        super("Watcher " + (long) (Math.random() * 1000));
+        this.watched=watched;
+    }
+
+    public void run() {
+        watched.waitTimeout(0);
+        watched.stop();
     }
 }
