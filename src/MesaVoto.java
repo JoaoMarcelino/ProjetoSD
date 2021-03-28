@@ -36,6 +36,10 @@ public class MesaVoto {
 		return port;
 	}
 
+	public boolean isStatus() {
+		return status;
+	}
+
 	public void turnOn(){
 		this.status = true;
 	}
@@ -43,4 +47,5 @@ public class MesaVoto {
 	public void turnOff(){
 		this.status = false;
 	}
+
 }

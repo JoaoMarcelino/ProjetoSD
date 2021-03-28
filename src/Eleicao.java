@@ -49,44 +49,16 @@ public class Eleicao {
 	}
 
 	public boolean canVote(Pessoa pessoa) {
-
-		for (Profissao profissao : profissoesPermitidas) {
-			if (profissao.equals(pessoa.getProfissao()))
-				return true;
-		}
-		return false;
+		return (isDepartamentoPermitida(pessoa.getDepartamento()) && isProfissaoPermitida(pessoa.getProfissao()));
 	}
 
 	public void addVoto(Voto voto, String nomeLista, String tipo) {
 
-		if (this.checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())) {
+		if (checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())) {
 
 			switch (tipo) {
 			case "Valido":
 				this.getListaByName(nomeLista).aumentaVotos();
-				this.votos.add(voto);
-				break;
-
-			case "Branco":
-				this.brancos++;
-				this.votos.add(voto);
-				break;
-
-			case "Nulo":
-				this.nulos++;
-				this.votos.add(voto);
-				break;
-			}
-		}
-	}
-
-	public void addVoto(Voto voto, Lista lista, String tipo) {
-
-		if (this.checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())) {
-
-			switch (tipo) {
-			case "Valido":
-				lista.aumentaVotos();
 				this.votos.add(voto);
 				break;
 
@@ -110,29 +82,6 @@ public class Eleicao {
 			switch (tipo) {
 			case "Valido":
 				this.getListaByName(nomeLista).aumentaVotos();
-				this.votos.add(voto);
-				break;
-
-			case "Branco":
-				this.brancos++;
-				this.votos.add(voto);
-				break;
-
-			case "Nulo":
-				this.nulos++;
-				this.votos.add(voto);
-				break;
-			}
-		}
-	}
-
-	public void addVotoAntecipado(Voto voto, Lista lista, String tipo) {
-
-		if (!this.checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())) {
-
-			switch (tipo) {
-			case "Valido":
-				lista.aumentaVotos();
 				this.votos.add(voto);
 				break;
 

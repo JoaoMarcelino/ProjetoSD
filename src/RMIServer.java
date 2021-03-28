@@ -1,8 +1,8 @@
+import java.lang.reflect.Array;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.*;
-import java.util.ArrayList;
 import java.util.*;
 
 public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
@@ -10,6 +10,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	ArrayList<Eleicao> eleicoes = new ArrayList<>();
 	ArrayList<Pessoa> pessoas = new ArrayList<>();
 	ArrayList<MesaVoto> mesas = new ArrayList<>();
+	ArrayList<Resultado> resultados = new ArrayList<>();
 
 	public RMIServer() throws RemoteException {
 		super();
@@ -17,27 +18,23 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
 	// Inserir métodos aqui
 
-	public void createPessoa(String nome, String password, String departamento, String telefone, String morada,
+	public void createPessoa(String nome, String password, Departamento departamento, String telefone, String morada,
 			String numberCC, Date expireCCDate, Profissao profissao) throws RemoteException {
 		Pessoa pessoa = new Pessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao);
-		pessoas.add(pessoa);
+		this.pessoas.add(pessoa);
 	}
 
 	public void createEleicao(Date dataInicio, Date dataFim, String titulo, String descricao, ArrayList<Lista> listas,
 			ArrayList<MesaVoto> mesas, ArrayList<Profissao> profissoes, ArrayList<Departamento> departamentos)
 			throws RemoteException {
 		Eleicao eleicao = new Eleicao(dataInicio, dataFim, titulo, descricao, listas, mesas, profissoes, departamentos);
-		eleicoes.add(eleicao);
+		this.eleicoes.add(eleicao);
 	}
 
 	public void createMesa(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port)
 			throws RemoteException {
 		MesaVoto mesa = new MesaVoto(departamento, membros, ip, port);
-		mesas.add(mesa);
-	}
-
-	public void addLista(Eleicao eleicao, Lista lista) throws RemoteException {
-		eleicao.addLista(lista);
+		this.mesas.add(mesa);
 	}
 
 	public void addLista(Eleicao eleicao, ArrayList<Pessoa> listaPessoas, Profissao tipoLista, String nome)
@@ -48,6 +45,61 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
 	public void removeLista(Eleicao eleicao, String nome) throws RemoteException {
 		eleicao.removeLista(nome);
+	}
+
+	public void adicionarVoto(Eleicao eleicao, Voto voto, String lista, String tipo) throws RemoteException {
+		eleicao.addVoto(voto, lista, tipo);
+	}
+
+	public void adicionarVotoAntecipado(Eleicao eleicao, Voto voto, String lista, String tipo) throws RemoteException {
+		eleicao.addVotoAntecipado(voto, lista, tipo);
+	}
+
+	public Voto getVoto(Eleicao eleicao, String nome) throws RemoteException {
+		return eleicao.getVotoByName(nome);
+	}
+
+	public Eleicao getEleicao(String nome){
+		for (Eleicao eleicao : eleicoes){
+			if (eleicao.getTitulo().equals(nome))
+				return eleicao;
+		}
+		return null;
+	}
+
+	public ArrayList<Resultado> getResultados() throws RemoteException {
+		return this.resultados;
+	}
+
+	public ArrayList<Pessoa> getMembrosMesa(Departamento departamento) throws RemoteException {
+
+		for (MesaVoto mesa : mesas){
+			if (mesa.getDepartamento() == departamento){
+				return mesa.getMembros();
+			}
+		}
+		return null;
+	}
+
+	public ArrayList<MesaVoto> getMesasByStatus(boolean status){
+
+		ArrayList<MesaVoto> aux = new ArrayList<>();
+
+		for (MesaVoto mesa : mesas) {
+			if (mesa.isStatus() == status)
+				aux.add(mesa);
+		}
+		return aux;
+	}
+
+	public void setMembrosMesa(Departamento departamento, ArrayList<Pessoa> membros) throws RemoteException {
+
+		for (MesaVoto mesa : mesas){
+			if (mesa.getDepartamento() == departamento){
+				mesa.setMembros(membros);
+				return;
+			}
+		}
 	}
 
 	public String sayHello() throws RemoteException {
