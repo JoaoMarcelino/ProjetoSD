@@ -1,5 +1,7 @@
+import javax.xml.stream.events.ProcessingInstruction;
 import java.net.*;
 import java.io.*;
+import java.rmi.registry.LocateRegistry;
 import java.util.*;
 import java.rmi.*;
 import java.time.*;
@@ -10,7 +12,7 @@ public class AdminConsole extends Thread {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha = "";
         try {
-            // Universidade uni = (Universidade) Naming.lookup("uni");
+            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(7000).lookup("ServidorRMI");
             while (true) {
                 System.out.println(printMenu());
                 System.out.print("Opcao: ");
@@ -18,43 +20,52 @@ public class AdminConsole extends Thread {
 
                 switch (escolha) {
                     case "1.1":
-                        addPessoa(reader);
+                        addPessoa(reader,servidor);
                         break;
                     case "1.2":
-                        editPessoa(reader);
+                        editPessoa(reader,servidor);
+                        break;
+                    case "1.3":
+                        listPessoas(reader,servidor);
                         break;
                     case "2.1":
-                        addEleicao(reader);
+                        addEleicao(reader,servidor);
                         break;
                     case "2.2":
-                        editEleicao(reader);
+                        editEleicao(reader,servidor);
                         break;
                     case "2.3":
-                        getResultados(reader);
+                        getResultados(reader,servidor);
                         break;
                     case "2.4":
-                        getVoto(reader);
+                        getVoto(reader,servidor);
                         break;
                     case "2.5":
-                        votar(reader);
+                        votar(reader,servidor);
+                        break;
+                    case "2.6":
+                        listEleicoes(reader,servidor);
                         break;
                     case "3.1":
-                        addLista(reader);
+                        addLista(reader,servidor);
                         break;
                     case "3.2":
-                        removeLista(reader);
+                        removeLista(reader,servidor);
                         break;
                     case "3.3":
-                        editLista(reader);
+                        editLista(reader,servidor);
+                        break;
+                    case "3.4":
+                        listListas(reader,servidor);
                         break;
                     case "4.1":
-                        addMesa(reader);
+                        addMesa(reader,servidor);
                         break;
                     case "4.2":
-                        removeMesa(reader);
+                        removeMesa(reader,servidor);
                         break;
                     case "4.3":
-                        editMesa(reader);
+                        editMesa(reader,servidor);
                         break;
                     case "5":
                         Exception e = new Exception("Consola encerrada.");
@@ -67,55 +78,85 @@ public class AdminConsole extends Thread {
                 reader.readLine();
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public static String printMenu() {
-        String menu = "" + "OPCOES DISPONIVEIS. DIGITE 1.1 por exemplo.\n"
-                + "___________________________________________\n" + "1.Gerir Pessoas\n" + "   1.1.Registar Pessoa\n"
-                + "   1.2.Alterar dados pessoais\n" + "2.Gerir Eleicao\n" + "   2.1.Criar Eleicao\n"
-                + "   2.2.Alterar informacao de eleicao\n" + "   2.3.Consultar Resultados\n"
-                + "   2.4.Consultar Informacao de Voto\n" + "   2.5.Voto Antecipado\n" + "3.Gerir Candidatos\n"
-                + "   3.1.Adicionar Lista\n" + "   3.2 Remover Lista\n" + "   3.3 Alterar Lista\n"
-                + "4.Gerir Mesas de Voto\n" + "   4.1.Adicionar Mesa\n" + "   4.2.Remover mesa\n"
-                + "   4.3.Alterar membros de mesa\n" + "5.Sair.\n";
+        String menu ="OPCOES DISPONIVEIS. DIGITE 1.1 por exemplo.\n"
+                + "___________________________________________\n" +
+                "1.Gerir Pessoas\n" +
+                "   1.1.Registar Pessoa\n" +
+                "   1.2.Alterar dados pessoais\n" +
+                "   1.3.Listar Pessoas\n" +
+                "2.Gerir Eleicao\n" +
+                "   2.1.Criar Eleicao\n" +
+                "   2.2.Alterar informacao de eleicao\n" +
+                "   2.3.Consultar Resultados\n" +
+                "   2.4.Consultar Informacao de Voto\n" +
+                "   2.5.Voto Antecipado\n" +
+                "   2.6.Listar Eleicoes\n"+
+                "3.Gerir Candidatos\n" +
+                "   3.1.Adicionar Lista\n" +
+                "   3.2 Remover Lista\n" +
+                "   3.3 Alterar Lista\n" +
+                "   3.4.Listar Listas\n"+
+                "4.Gerir Mesas de Voto\n" +
+                "   4.1.Adicionar Mesa\n" +
+                "   4.2.Remover mesa\n" +
+                "   4.3.Alterar membros de mesa\n" +
+                "5.Sair.\n";
         return menu;
     }
 
-    public static void addPessoa(BufferedReader reader) throws Exception {
+    public static void addPessoa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         String nome;
-        String type;
+        Profissao prof;
         String password;
-        String departamento, telefone, morada, cc, validadeCC;
+        String  telefone, morada, cc;
+        Date validadeCC;
+        Departamento dep;
 
         System.out.println("Preencha todos os campos.");
         System.out.print("Nome:");
         nome = reader.readLine();
         System.out.print("Estudante(1), Docente(2) ou Funcionario(3)?:");
-        type = reader.readLine();
-        System.out.print("Departamento:");
-        departamento = reader.readLine();
+        String type = reader.readLine();
+        switch (type){
+            case "1":
+                prof=Profissao.Estudante;
+                break;
+            case "2":
+                prof=Profissao.Docente;
+                break;
+            case "3":
+                prof=Profissao.Funcionario;
+                break;
+            default:
+                prof=Profissao.Estudante;
+        }
+        System.out.print("Departamento?("+ Arrays.toString(Departamento.values()) +"):");
+        String departamento = reader.readLine();
+        dep=Departamento.valueOf(departamento);
         System.out.print("Telefone:");
         telefone = reader.readLine();
         System.out.print("Morada:");
         morada = reader.readLine();
         System.out.print("Numero Cartao Cidado:");
         cc = reader.readLine();
-        System.out.print("Validade Cartao Cidado:");
-        validadeCC = reader.readLine();
+        validadeCC=new Date();
+
         System.out.print("Password:");
         password = reader.readLine();
 
-        System.out.println("Dados Introduzidos:\n" + nome + "\n" + type + "\n" + departamento + "\n" + telefone + "\n"
-                + morada + cc + "\n" + validadeCC + "\n" + password);
-        // uni.addPesoa(...);
-        System.out.println("Acao bem sucedida");
+        System.out.println("Dados Introduzidos:\n" + nome + "\n" + type + "\n" + departamento + "\n" + telefone + "\n" + morada + cc + "\n" + validadeCC + "\n" + password);
+        String status=servidor.addPessoa(nome,password,dep,telefone,morada,cc,validadeCC,prof);
+        System.out.println(status);
     }
 
-    public static void editPessoa(BufferedReader reader) throws Exception {
+    public static void editPessoa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         // list pessoas
         String idPessoa;
         System.out.print("Pessoa a editar:");
@@ -124,7 +165,15 @@ public class AdminConsole extends Thread {
         // uni.addPessoa();
     }
 
-    public static void addEleicao(BufferedReader reader) throws Exception {
+    public static void listPessoas(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+        ArrayList<Pessoa> pessoas=servidor.listPessoas();
+        System.out.println("PESSOAS REGISTADAS:");
+        for(Pessoa p:pessoas){
+            System.out.println(p.getNome()+" "+p.getNumberCC()+ " "+p.getDepartamento()+" "+p.getProfissao());
+        }
+    }
+
+    public static void addEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         String nome;
         String descricao;
         String hora, dia, mes, ano;
@@ -155,7 +204,7 @@ public class AdminConsole extends Thread {
 
     }
 
-    public static void editEleicao(BufferedReader reader) throws Exception {
+    public static void editEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         // list eleicoes
         String idEleicao;
         System.out.print("Eleicao a editar:");
@@ -164,7 +213,7 @@ public class AdminConsole extends Thread {
         // uni.addEleicao(idEleicao);
     }
 
-    public static void getResultados(BufferedReader reader) throws Exception {
+    public static void getResultados(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         // list eleicoes
         System.out.print("Nome da eleicao:");
         String idEleicao = reader.readLine();
@@ -173,7 +222,7 @@ public class AdminConsole extends Thread {
         System.out.println(resultados);
     }
 
-    public static void getVoto(BufferedReader reader) throws Exception {
+    public static void getVoto(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         // list eleicoes
         // list pessoas
         System.out.print("Nome da eleicao:");
@@ -185,7 +234,7 @@ public class AdminConsole extends Thread {
         System.out.println(resultados);
     }
 
-    public static void votar(BufferedReader reader) throws Exception {
+    public static void votar(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         // list eleicoes
         // list listas
         String nome, password, idEleicao, idLista;
@@ -202,7 +251,10 @@ public class AdminConsole extends Thread {
         System.out.println("Acao bem sucedida");
     }
 
-    public static void addLista(BufferedReader reader) throws Exception {
+    public static void listEleicoes(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    }
+
+    public static void addLista(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         ArrayList<String> lista = new ArrayList<String>();
         String idEleicao, nome, aux;
         // list Eleicoes
@@ -224,7 +276,7 @@ public class AdminConsole extends Thread {
 
     }
 
-    public static void removeLista(BufferedReader reader) throws Exception {
+    public static void removeLista(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         // list Eleicoes
         String idEleicao, idLista;
         System.out.print("Eleicao:");
@@ -236,7 +288,7 @@ public class AdminConsole extends Thread {
 
     }
 
-    public static void editLista(BufferedReader reader) throws Exception {
+    public static void editLista(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         // list Eleicoes
         String idEleicao, idLista;
         System.out.print("Eleicao:");
@@ -245,11 +297,14 @@ public class AdminConsole extends Thread {
         System.out.print("Lista:");
         idLista = reader.readLine();
         // uni.removeLista(idEleicao,idLista);
-        addLista(reader);
+        addLista(reader, servidor);
 
     }
 
-    public static void addMesa(BufferedReader reader) throws Exception {
+    public static void listListas(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    }
+
+    public static void addMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         String departamento;
         String membro1, membro2, membro3;
 
@@ -269,7 +324,7 @@ public class AdminConsole extends Thread {
         System.out.println("Acao bem sucedida");
     }
 
-    public static void removeMesa(BufferedReader reader) throws Exception {
+    public static void removeMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         // list mesas
         String idMesa;
         System.out.print("Mesa:");
@@ -277,12 +332,12 @@ public class AdminConsole extends Thread {
         // uni.removeMesa(idmesa);
     }
 
-    public static void editMesa(BufferedReader reader) throws Exception {
+    public static void editMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         // list mesas
         String idMesa;
         System.out.print("Mesa:");
         idMesa = reader.readLine();
         // uni.removeLista(idMesa);
-        addMesa(reader);
+        addMesa(reader, servidor);
     }
 }
