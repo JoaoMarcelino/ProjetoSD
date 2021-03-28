@@ -13,6 +13,8 @@ public class Pessoa implements Serializable {
     private Profissao profissao;
 
     public Pessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, GregorianCalendar expireCCDate, Profissao profissao) {
+
+
         this.nome = nome;
         this.password = password;
         this.departamento = departamento;
@@ -47,6 +49,7 @@ public class Pessoa implements Serializable {
         this.numberCC = numberCC;
     }
 
+
     public void setExpireCCDate(GregorianCalendar expireCCDate) {
         this.expireCCDate = expireCCDate;
     }
@@ -78,6 +81,7 @@ public class Pessoa implements Serializable {
     public String getNumberCC() {
         return numberCC;
     }
+
 
     public GregorianCalendar getExpireCCDate() {
         return expireCCDate;

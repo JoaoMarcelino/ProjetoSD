@@ -2,9 +2,9 @@ import java.io.Serializable;
 import java.util.*;
 
 public class Eleicao implements Serializable {
-
 	private GregorianCalendar dataInicio;
 	private GregorianCalendar dataFim;
+
 	private String titulo;
 	private String descricao;
 	private int brancos;
@@ -15,9 +15,7 @@ public class Eleicao implements Serializable {
 	protected ArrayList<Profissao> profissoesPermitidas;
 	protected ArrayList<Departamento> departamentosPermitidos;
 
-	public Eleicao(GregorianCalendar dataInicio, GregorianCalendar dataFim, String titulo, String descricao, ArrayList<Lista> listas,
-			ArrayList<MesaVoto> mesas, ArrayList<Profissao> profissoesPermitidas,
-			ArrayList<Departamento> departamentosPermitidos) {
+	public Eleicao(GregorianCalendar dataInicio, GregorianCalendar dataFim, String titulo, String descricao, ArrayList<Lista> listas, ArrayList<MesaVoto> mesas, ArrayList<Profissao> profissoesPermitidas, ArrayList<Departamento> departamentosPermitidos) {
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
 		this.titulo = titulo;
@@ -31,8 +29,7 @@ public class Eleicao implements Serializable {
 		this.departamentosPermitidos = departamentosPermitidos;
 	}
 
-	public Eleicao(GregorianCalendar dataInicio, GregorianCalendar dataFim, String titulo, String descricao, ArrayList<Profissao> profissoesPermitidas,
-				   ArrayList<Departamento> departamentosPermitidos) {
+	public Eleicao(GregorianCalendar dataInicio, GregorianCalendar dataFim, String titulo, String descricao, ArrayList<Profissao> profissoesPermitidas,ArrayList<Departamento> departamentosPermitidos) {
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
 		this.titulo = titulo;
@@ -49,6 +46,7 @@ public class Eleicao implements Serializable {
 
 	public boolean checkStart() {
 		GregorianCalendar dataAtual = new GregorianCalendar();
+
 		return dataAtual.before(this.dataInicio);
 	}
 
@@ -121,6 +119,7 @@ public class Eleicao implements Serializable {
 	}
 
 	public void setDataFim(GregorianCalendar dataFim) {
+
 		if (!this.checkStart())
 			this.dataFim = dataFim;
 	}
@@ -186,6 +185,7 @@ public class Eleicao implements Serializable {
 		if (!this.checkStart())
 			this.profissoesPermitidas.remove(departamento);
 	}
+
 
 	public GregorianCalendar getDataInicio() {
 		return dataInicio;

@@ -1,8 +1,10 @@
 import java.rmi.*;
 import java.util.*;
 
+
 public interface RMI_S_Interface extends Remote {
 	public String sayHello() throws java.rmi.RemoteException;
+
 
 	public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, GregorianCalendar expireCCDate, Profissao profissao) throws java.rmi.RemoteException;
 

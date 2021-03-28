@@ -1,3 +1,5 @@
+import jdk.swing.interop.SwingInterOpUtils;
+
 import javax.xml.stream.events.ProcessingInstruction;
 import java.net.*;
 import java.io.*;
@@ -111,19 +113,98 @@ public class AdminConsole extends Thread {
         return menu;
     }
 
-    public static void addPessoa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        String nome;
-        Profissao prof;
-        String password;
-        String  telefone, morada, cc;
+    public static String readInteger(BufferedReader reader, String info) throws Exception{
+        String input = "";
+        int intInputValue = 0;
+        boolean isValid = false;
+
+        while (!isValid){
+            System.out.print(info);
+            input = reader.readLine();
+            intInputValue = 0;
+            try {
+                intInputValue = Integer.parseInt(input);
+                if (intInputValue > 0){
+                    isValid = true;
+                }
+            } catch (NumberFormatException ne) {
+                System.out.println("Not a valid Input");
+            }
+        }
+        return input;
+    }
+
+    public static String readInteger(BufferedReader reader, String info, int max) throws Exception{
+        String input = "";
+        int intInputValue = 0;
+        boolean isValid = false;
+
+        while (!isValid){
+            System.out.print(info);
+            input = reader.readLine();
+            intInputValue = 0;
+            try {
+                intInputValue = Integer.parseInt(input);
+                if (intInputValue <= max && intInputValue > 0) isValid = true;
+                else System.out.println("Not a valid Input");
+            } catch (NumberFormatException ne) {
+                System.out.println("Not a valid Input");
+            }
+        }
+        return input;
+    }
+
+    public static GregorianCalendar readDate(BufferedReader reader, String info, boolean flagHora) throws Exception{
+        GregorianCalendar calendar = new GregorianCalendar();
+        String ano, mes, dia, hora;
+        boolean isValid = false;
+
+        while(!isValid){
+
+            System.out.println(info);
+
+            ano = readInteger(reader, "Ano:");
+            mes = readInteger(reader, "Mes:", 12);
+
+            if(mes == "4" || mes == "6" || mes == "9" || mes == "11" )
+                dia = readInteger(reader, "Dia:", 30);
+            else if(mes == "2" && Integer.parseInt(ano) % 4 ==0)
+                dia = readInteger(reader, "Dia:", 29);
+            else if (mes == "2")
+                dia = readInteger(reader, "Dia:", 28);
+            else
+                dia = readInteger(reader, "Dia:", 31);
+
+            if (flagHora){
+                hora = readInteger(reader, "Hora:", 24);
+                calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia), Integer.parseInt(hora), 0);
+            }
+            else{
+                calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia));
+
+            }
+            isValid = true;
+
+        }
+
+        return calendar;
+    }
+
+    public static void addPessoa(BufferedReader reader, RMI_S_Interface servidor) throws Exception {
+
+        String nome,password;
+        String  telefone, morada, cc, departamento, type;
         GregorianCalendar validadeCC;
+
+        Profissao prof;
         Departamento dep;
 
         System.out.println("Preencha todos os campos.");
         System.out.print("Nome:");
         nome = reader.readLine();
-        System.out.print("Estudante(1), Docente(2) ou Funcionario(3)?:");
-        String type = reader.readLine();
+
+        type = readInteger(reader, "Profissao: Estudante(1), Docente(2) ou Funcionario(3)?:", 3);
+
         switch (type){
             case "1":
                 prof=Profissao.Estudante;
@@ -137,23 +218,37 @@ public class AdminConsole extends Thread {
             default:
                 prof=Profissao.Estudante;
         }
-        System.out.print("Departamento?("+ Arrays.toString(Departamento.values()) +"):");
-        String departamento = reader.readLine();
-        dep=Departamento.valueOf(departamento);
-        System.out.print("Telefone:");
-        telefone = reader.readLine();
+
+        departamento = readInteger(reader, "\"Departamento: DA (1), DCT (2), DCV (3), DEC (4), DEEC (5), DEI (6), DEM (7), DEQ (8), DF(9), DM (10), DQ (11)?", 11);
+
+        dep = switch (departamento) {
+            case "1" -> Departamento.DA;
+            case "2" -> Departamento.DCT;
+            case "3" -> Departamento.DCV;
+            case "4" -> Departamento.DEC;
+            case "5" -> Departamento.DEEC;
+            case "6" -> Departamento.DEI;
+            case "7" -> Departamento.DEM;
+            case "8" -> Departamento.DEQ;
+            case "9" -> Departamento.DF;
+            case "10" -> Departamento.DM;
+            case "11" -> Departamento.DQ;
+            default -> Departamento.DA;
+        };
+
+        telefone = readInteger(reader, "Telefone:");
         System.out.print("Morada:");
         morada = reader.readLine();
-        System.out.print("Numero Cartao Cidado:");
-        cc = reader.readLine();
-        validadeCC=new GregorianCalendar();
 
+        cc = readInteger(reader, "Numero Cartao Cidado:");
+
+        validadeCC = readDate(reader, "Validade Cartao Cidado:", false);
         System.out.print("Password:");
         password = reader.readLine();
 
-        System.out.println("Dados Introduzidos:\n" + nome + "\n" + type + "\n" + departamento + "\n" + telefone + "\n" + morada + cc + "\n" + validadeCC + "\n" + password);
         String status=servidor.addPessoa(nome,password,dep,telefone,morada,cc,validadeCC,prof);
         System.out.println(status);
+
     }
 
     public static void editPessoa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
@@ -174,63 +269,43 @@ public class AdminConsole extends Thread {
     }
 
     public static void addEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        String nome;
-        String descricao;
+        String nome, descricao,type;
         String hora, dia, mes, ano;
         ArrayList<Profissao> profs=new ArrayList<Profissao>();
         ArrayList<Departamento> deps=new ArrayList<Departamento>(Arrays.asList(Departamento.values()));
+        GregorianCalendar dataInicio = new GregorianCalendar(), dataTermino = new GregorianCalendar();
+        boolean notValid = true;
+
         System.out.println("Preencha todos os campos.");
         System.out.print("Nome:");
         nome = reader.readLine();
         System.out.print("Descricao:");
         descricao = reader.readLine();
-        System.out.print("Eleicao de Estudantes(1), Docentes(2), Funcionarios(3) ou Geral(4)?:");
-        String type = reader.readLine();
-        switch (type){
-            case "1":
-                profs.add(Profissao.Estudante);
-                break;
-            case "2":
-                profs.add(Profissao.Docente);
-                break;
-            case "3":
-                profs.add(Profissao.Funcionario);
-                break;
-            case "4":
+
+        type = readInteger(reader, "Eleicao de Estudantes(1), Docentes(2), Funcionarios(3) ou Geral(4)?:", 4);
+        switch (type) {
+            case "1" -> profs.add(Profissao.Estudante);
+            case "2" -> profs.add(Profissao.Docente);
+            case "3" -> profs.add(Profissao.Funcionario);
+            case "4" -> {
                 profs.add(Profissao.Estudante);
                 profs.add(Profissao.Docente);
                 profs.add(Profissao.Funcionario);
-                break;
-            default:
-                profs.add(Profissao.Estudante);
-                break;
+            }
         }
 
-        System.out.print("Data de Inicio:\nAno:");
-        ano = reader.readLine();
-        System.out.print("Mes:");
-        mes = reader.readLine();
-        System.out.print("Dia:");
-        dia = reader.readLine();
-        System.out.print("Hora:");
-        hora = reader.readLine();
+        while(notValid){
+            dataInicio = readDate(reader, "Data de Inicio", true);
+            dataTermino = readDate(reader, "Data de Termino", true);
 
-        GregorianCalendar dataInicio=new GregorianCalendar(Integer.parseInt(ano), Integer.parseInt(mes), Integer.parseInt(dia), Integer.parseInt(hora), 0, 0);
+            if (dataInicio.before(dataTermino))
+                notValid = false;
+            else
+                System.out.println("Data Final deve ser depois da data Inical");
+        }
 
-        System.out.print("Data de Termino:\nAno:");
-        ano = reader.readLine();
-        System.out.print("Mes:");
-        mes = reader.readLine();
-        System.out.print("Dia:");
-        dia = reader.readLine();
-        System.out.print("Hora:");
-        hora = reader.readLine();
-
-        GregorianCalendar dataFim=new GregorianCalendar(Integer.parseInt(ano), Integer.parseInt(mes), Integer.parseInt(dia), Integer.parseInt(hora), 0, 0);
-
-        String status=servidor.addEleicao(nome,descricao,dataInicio,dataFim,profs,deps);
+        String status=servidor.addEleicao(nome,descricao,dataInicio,dataTermino,profs,deps);
         System.out.println(status);
-
     }
 
     public static void editEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
@@ -340,22 +415,47 @@ public class AdminConsole extends Thread {
 
     public static void addMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         String departamento;
-        String membro1, membro2, membro3;
+        String membro1, membro2, membro3,ip,port;
+        Departamento dep;
+        ArrayList<Pessoa> membros=new ArrayList<Pessoa>();
 
         System.out.println("Preencha todos os campos.");
-        System.out.print("Departamento:");
-        departamento = reader.readLine();
+        departamento = readInteger(reader, "\"Departamento: DA (1), DCT (2), DCV (3), DEC (4), DEEC (5), DEI (6), DEM (7), DEQ (8), DF(9), DM (10), DQ (11)?", 11);
+        dep = switch (departamento) {
+            case "1" -> Departamento.DA;
+            case "2" -> Departamento.DCT;
+            case "3" -> Departamento.DCV;
+            case "4" -> Departamento.DEC;
+            case "5" -> Departamento.DEEC;
+            case "6" -> Departamento.DEI;
+            case "7" -> Departamento.DEM;
+            case "8" -> Departamento.DEQ;
+            case "9" -> Departamento.DF;
+            case "10" -> Departamento.DM;
+            case "11" -> Departamento.DQ;
+            default -> Departamento.DA;
+        };
+
         System.out.print("Membro de mesa #1:");
         membro1 = reader.readLine();
         System.out.print("Membro de mesa #2:");
         membro2 = reader.readLine();
         System.out.print("Membro de mesa #3:");
         membro3 = reader.readLine();
+        System.out.print("IP grupo multicast:");
+        ip = reader.readLine();
+        System.out.print("Port grupo multicast:");
+        port = reader.readLine();
 
-        System.out.println(
-                "Dados Introduzidos:\n" + departamento + "\n" + membro1 + "\n" + membro2 + "\n" + membro3 + "\n");
-        // uni.addMesa(...);
-        System.out.println("Acao bem sucedida");
+        Pessoa p1=new Pessoa(departamento,membro1,Departamento.DA,"-1","-1","-1",new GregorianCalendar(),Profissao.Estudante);
+        Pessoa p2=new Pessoa(departamento,membro2,Departamento.DA,"-1","-1","-1",new GregorianCalendar(),Profissao.Estudante);
+        Pessoa p3=new Pessoa(departamento,membro3,Departamento.DA,"-1","-1","-1",new GregorianCalendar(),Profissao.Estudante);
+        membros.add(p1);
+        membros.add(p2);
+        membros.add(p3);
+
+        String status=servidor.addMesa(dep,membros,ip, port);
+        System.out.println(status);
     }
 
     public static void removeMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
