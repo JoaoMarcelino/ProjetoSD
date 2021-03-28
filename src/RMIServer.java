@@ -16,31 +16,63 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		super();
 	}
 
-	// Inserir métodos aqui
-
-	public void createPessoa(String nome, String password, Departamento departamento, String telefone, String morada,
+	public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada,
 			String numberCC, Date expireCCDate, Profissao profissao) throws RemoteException {
-		Pessoa pessoa = new Pessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao);
-		this.pessoas.add(pessoa);
+		if(getPessoaByCC(numberCC)==null){
+			Pessoa pessoa = new Pessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao);
+			this.pessoas.add(pessoa);
+			return nome+"("+numberCC+") adicionado.";
+		}
+		else {
+			return nome + "(" + numberCC + ") já existe.";
+		}
 	}
 
-	public void createEleicao(Date dataInicio, Date dataFim, String titulo, String descricao, ArrayList<Lista> listas,
-			ArrayList<MesaVoto> mesas, ArrayList<Profissao> profissoes, ArrayList<Departamento> departamentos)
-			throws RemoteException {
-		Eleicao eleicao = new Eleicao(dataInicio, dataFim, titulo, descricao, listas, mesas, profissoes, departamentos);
-		this.eleicoes.add(eleicao);
+	public String addEleicao(String titulo, String descricao,Date dataInicio, Date dataFim, ArrayList<Profissao> profissoes, ArrayList<Departamento> departamentos) throws RemoteException {
+		if(getEleicaoByName(titulo)==null){
+			Eleicao eleicao = new Eleicao(dataInicio, dataFim, titulo, descricao, profissoes, departamentos);
+			this.eleicoes.add(eleicao);
+			return titulo + " adicionada.";
+		}
+		else{
+			return titulo + " já existe.";
+		}
 	}
 
-	public void createMesa(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port)
-			throws RemoteException {
-		MesaVoto mesa = new MesaVoto(departamento, membros, ip, port);
-		this.mesas.add(mesa);
+	public String editEleicao(String tituloAntigo,String tituloNovo, String descricaoNova) throws java.rmi.RemoteException{
+		Eleicao escolhida=getEleicaoByName(tituloAntigo);
+		if(escolhida==null || getEleicaoByName(tituloNovo)!=null){
+			return tituloAntigo + " não existe ou titulo novo já em uso.";
+		}
+		else{
+			escolhida.setTitulo(tituloNovo);
+			escolhida.setDescricao(descricaoNova);
+			return escolhida.getTitulo() + " alterada.";
+		}
 	}
 
-	public void addLista(Eleicao eleicao, ArrayList<Pessoa> listaPessoas, Profissao tipoLista, String nome)
-			throws RemoteException {
-		Lista lista = new Lista(listaPessoas, tipoLista, nome);
-		eleicao.addLista(lista);
+	public String addMesa(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port) throws RemoteException {
+		if(getMesaByDepartamento(departamento.name())== null && getMesaByMulticastGroup(ip,port)==null){
+			MesaVoto mesa = new MesaVoto(departamento, membros, ip, port);
+			this.mesas.add(mesa);
+			return departamento+" adicionada.";
+		}
+		else{
+			return departamento + " ou grupo Multicast já existe.";
+		}
+
+	}
+
+	public String addLista(String nomeEleicao,String nomeLista, ArrayList<Pessoa> listaPessoas, Profissao tipoLista) throws RemoteException {
+		Eleicao election=getEleicaoByName(nomeEleicao);
+		if(election==null || getListaByName(nomeEleicao,nomeLista)!=null){
+			return nomeEleicao+" nao existe ou "+nomeLista+" ja existe";
+		}
+		else{
+			Lista lista = new Lista(listaPessoas, tipoLista, nomeLista);
+			election.addLista(lista);
+			return nomeLista+" adicionada a "+nomeEleicao;
+		}
 	}
 
 	public void removeLista(Eleicao eleicao, String nome) throws RemoteException {
@@ -59,10 +91,48 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return eleicao.getVotoByName(nome);
 	}
 
-	public Eleicao getEleicao(String nome){
+	public Pessoa getPessoaByCC(String numberCC){
+		for (Pessoa pessoa : pessoas){
+			if (pessoa.getNumberCC().equals(numberCC))
+				return pessoa;
+		}
+		return null;
+	}
+	public Eleicao getEleicaoByName(String nome){
 		for (Eleicao eleicao : eleicoes){
 			if (eleicao.getTitulo().equals(nome))
 				return eleicao;
+		}
+		return null;
+	}
+
+	public MesaVoto getMesaByDepartamento(String dep){
+		for(MesaVoto mesa: mesas){
+			if(mesa.getDepartamento().name().equals(dep)){
+				return mesa;
+			}
+		}
+		return null;
+	}
+
+	public MesaVoto getMesaByMulticastGroup(String ip,String port){
+		for(MesaVoto mesa: mesas){
+			if(mesa.getIp().equals(ip) && mesa.getPort().equals(port)){
+				return mesa;
+			}
+		}
+		return null;
+	}
+
+	public Lista getListaByName(String eleicao,String nome){
+		Eleicao election=getEleicaoByName(eleicao);
+		if(election==null){
+			return null;
+		}
+		for(Lista lista:election.getListas()){
+			if(lista.getNome().equals(nome)){
+				return lista;
+			}
 		}
 		return null;
 	}
