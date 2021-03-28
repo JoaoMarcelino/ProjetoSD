@@ -15,7 +15,7 @@ public class Eleicao {
 	protected ArrayList<Departamento> departamentosPermitidos;
 
 	public Eleicao(Date dataInicio, Date dataFim, String titulo, String descricao, ArrayList<Lista> listas,
-				   ArrayList<Voto> votos, ArrayList<MesaVoto> mesas, ArrayList<Profissao> profissoesPermitidas,
+				   ArrayList<MesaVoto> mesas, ArrayList<Profissao> profissoesPermitidas,
 				   ArrayList<Departamento> departamentosPermitidos) {
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
@@ -24,7 +24,7 @@ public class Eleicao {
 		this.brancos = 0;
 		this.nulos = 0;
 		this.listas = listas;
-		this.votos = votos;
+		this.votos = new ArrayList<Voto>();
 		this.mesas = mesas;
 		this.profissoesPermitidas = profissoesPermitidas;
 		this.departamentosPermitidos = departamentosPermitidos;

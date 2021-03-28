@@ -4,6 +4,7 @@ public class MesaVoto {
 
 	private String ip;
 	private String port;
+	private boolean status;
 	private Departamento departamento;
 	protected ArrayList<Pessoa> membros;
 
@@ -12,6 +13,7 @@ public class MesaVoto {
 		this.port = port;
 		this.departamento = departamento;
 		this.membros = membros;
+		this.status = false;
 	}
 
 	public void setMembros(ArrayList<Pessoa> membros) {
@@ -32,5 +34,13 @@ public class MesaVoto {
 
 	public String getPort() {
 		return port;
+	}
+
+	public void turnOn(){
+		this.status = true;
+	}
+
+	public void turnOff(){
+		this.status = false;
 	}
 }
