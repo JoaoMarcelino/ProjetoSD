@@ -116,7 +116,7 @@ public class AdminConsole extends Thread {
         Profissao prof;
         String password;
         String  telefone, morada, cc;
-        Date validadeCC;
+        GregorianCalendar validadeCC;
         Departamento dep;
 
         System.out.println("Preencha todos os campos.");
@@ -146,7 +146,7 @@ public class AdminConsole extends Thread {
         morada = reader.readLine();
         System.out.print("Numero Cartao Cidado:");
         cc = reader.readLine();
-        validadeCC=new Date();
+        validadeCC=new GregorianCalendar();
 
         System.out.print("Password:");
         password = reader.readLine();
@@ -177,15 +177,46 @@ public class AdminConsole extends Thread {
         String nome;
         String descricao;
         String hora, dia, mes, ano;
-        String type;
-
+        ArrayList<Profissao> profs=new ArrayList<Profissao>();
+        ArrayList<Departamento> deps=new ArrayList<Departamento>(Arrays.asList(Departamento.values()));
         System.out.println("Preencha todos os campos.");
         System.out.print("Nome:");
         nome = reader.readLine();
         System.out.print("Descricao:");
         descricao = reader.readLine();
         System.out.print("Eleicao de Estudantes(1), Docentes(2), Funcionarios(3) ou Geral(4)?:");
-        type = reader.readLine();
+        String type = reader.readLine();
+        switch (type){
+            case "1":
+                profs.add(Profissao.Estudante);
+                break;
+            case "2":
+                profs.add(Profissao.Docente);
+                break;
+            case "3":
+                profs.add(Profissao.Funcionario);
+                break;
+            case "4":
+                profs.add(Profissao.Estudante);
+                profs.add(Profissao.Docente);
+                profs.add(Profissao.Funcionario);
+                break;
+            default:
+                profs.add(Profissao.Estudante);
+                break;
+        }
+
+        System.out.print("Data de Inicio:\nAno:");
+        ano = reader.readLine();
+        System.out.print("Mes:");
+        mes = reader.readLine();
+        System.out.print("Dia:");
+        dia = reader.readLine();
+        System.out.print("Hora:");
+        hora = reader.readLine();
+
+        GregorianCalendar dataInicio=new GregorianCalendar(Integer.parseInt(ano), Integer.parseInt(mes), Integer.parseInt(dia), Integer.parseInt(hora), 0, 0);
+
         System.out.print("Data de Termino:\nAno:");
         ano = reader.readLine();
         System.out.print("Mes:");
@@ -195,12 +226,10 @@ public class AdminConsole extends Thread {
         System.out.print("Hora:");
         hora = reader.readLine();
 
-        LocalDateTime dataFim = LocalDateTime.of(Integer.parseInt(ano), Integer.parseInt(mes), Integer.parseInt(dia),
-                Integer.parseInt(hora), 0, 0);
-        System.out.println(
-                "Dados Introduzidos:\n" + nome + "\n" + descricao + "\n" + type + "\n" + dataFim.toString() + "\n");
-        // uni.addEleicao(...);
-        System.out.println("Acao bem sucedida");
+        GregorianCalendar dataFim=new GregorianCalendar(Integer.parseInt(ano), Integer.parseInt(mes), Integer.parseInt(dia), Integer.parseInt(hora), 0, 0);
+
+        String status=servidor.addEleicao(nome,descricao,dataInicio,dataFim,profs,deps);
+        System.out.println(status);
 
     }
 
@@ -252,6 +281,11 @@ public class AdminConsole extends Thread {
     }
 
     public static void listEleicoes(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+        ArrayList<Eleicao> eleicoes=servidor.listEleicoes();
+        System.out.println("ELEICOES REGISTADAS:");
+        for(Eleicao ele:eleicoes){
+            System.out.println(ele.getTitulo()+" "+ele.getDescricao()+" "+ele.getProfissoesPermitidas() +" "+printGregorianCalendar(ele.getDataInicio())+" "+printGregorianCalendar(ele.getDataFim()));
+        }
     }
 
     public static void addLista(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
@@ -339,5 +373,15 @@ public class AdminConsole extends Thread {
         idMesa = reader.readLine();
         // uni.removeLista(idMesa);
         addMesa(reader, servidor);
+    }
+
+    public static String printGregorianCalendar(GregorianCalendar data){
+        int hora=data.get(Calendar.HOUR);
+        int dia=data.get(Calendar.DATE);
+        int mes=data.get(Calendar.MONTH);
+        int ano=data.get(Calendar.YEAR);
+
+        return hora+"h "+dia+" "+mes+" "+ano;
+
     }
 }

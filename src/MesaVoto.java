@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.*;
 
-public class MesaVoto {
+public class MesaVoto implements Serializable {
 
 	private String ip;
 	private String port;

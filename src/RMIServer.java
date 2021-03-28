@@ -70,6 +70,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		mesas.add(mesa1);
 
 		ArrayList<Profissao> profissoes = new ArrayList<>();
+		ArrayList<Profissao> profissoes = new ArrayList<>();
 		profissoes.add(Profissao.Estudante);
 
 		ArrayList<Departamento> departamentos = new ArrayList<>();
@@ -109,7 +110,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	}
 
 	public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada,
-			String numberCC, Date expireCCDate, Profissao profissao) throws RemoteException {
+			String numberCC, GregorianCalendar expireCCDate, Profissao profissao) throws RemoteException {
 		if(getPessoaByCC(numberCC)==null){
 			Pessoa pessoa = new Pessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao);
 			this.pessoas.add(pessoa);
@@ -120,7 +121,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		}
 	}
 
-	public String addEleicao(String titulo, String descricao,Date dataInicio, Date dataFim, ArrayList<Profissao> profissoes, ArrayList<Departamento> departamentos) throws RemoteException {
+	public String addEleicao(String titulo, String descricao,GregorianCalendar dataInicio, GregorianCalendar dataFim, ArrayList<Profissao> profissoes, ArrayList<Departamento> departamentos) throws RemoteException {
 		if(getEleicaoByName(titulo)==null){
 			Eleicao eleicao = new Eleicao(dataInicio, dataFim, titulo, descricao, profissoes, departamentos);
 			this.eleicoes.add(eleicao);
