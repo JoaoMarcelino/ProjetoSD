@@ -25,7 +25,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		System.getProperties().put("java.security.policy", "policy.all");
 		try {
 			Registry r = LocateRegistry.getRegistry(7000);
-			RMI_S_Interface servidorPrinciapl = (RMI_S_Interface) r.lookup("ServidorRMI");
+			RMI_S_Interface servidorPrincipal = (RMI_S_Interface) r.lookup("ServidorRMI");
 
 			System.out.println("Servidor RMI Secundario em execucao.");
 			int failed=0;
@@ -34,7 +34,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			while(failed<toRecover){
 				sleep(frequency*1000);
 				try {
-					servidorPrinciapl.ping();
+					servidorPrincipal.ping();
 				}catch (RemoteException e){
 					failed++;
 					System.out.println("Heartbeat falhou."+failed+"/"+toRecover);
