@@ -146,10 +146,13 @@ class MulticastReader extends Thread {
                 case "vote":
                     break;
                 case "listElections":
+                    listElections(msg);
                     break;
                 case "listCandidates":
+                    listCandidates(msg);
                     break;
                 case "login":
+                    login(msg);
                     break;
                 }
             }
@@ -167,6 +170,55 @@ class MulticastReader extends Thread {
         counterID++;
         String newId = Integer.toString(counterID);
         sendMessage("type:set | terminalId:-1 | newId:" + newId);
+    }
+
+    private void listElections(Message message) throws Exception {
+        String id = message.pares.get("terminalId");
+        ArrayList<Eleicao> eleicoes = new ArrayList<>();
+        //get all elections para esta mesa de voto
+
+        //length de eleicoes
+        int length = 5;
+
+        sendMessage("type:itemList | terminalId:" + id + " | item_count:" + length);
+
+        for(int i = 0; i< length; i++){
+            String name = "name"; // get election name
+            String description = "description"; //get election description;
+            System.out.println("type:itemList | terminalId:" + id + " | item_name:" + name + " | item_description:" + description);
+            sendMessage("type:itemList | terminalId:" + id + " | item_name:" + name + " | item_description:" + description);
+        }
+    }
+
+    private void listCandidates(Message message) throws Exception {
+        String id = message.pares.get("terminalId");
+        String electionName = message.pares.get("election");
+        ArrayList<Eleicao> candidaturas = new ArrayList<>();
+        //get all candidates para esta eleicao
+
+        //length de candidatos
+        int length = 3;
+
+        sendMessage("type:itemList | terminalId:" + id + " | item_count:" + length);
+
+        for(int i = 0; i< length; i++){
+            String name = "name"; // get election name
+            System.out.println("type:itemList | terminalId:" + id + " | item_name:" + name);
+            sendMessage("type:itemList | terminalId:" + id + " | item_name:" + name);
+        }
+    }
+
+    private void login(Message message) throws Exception {
+        String id = message.pares.get("terminalId");
+        String username = message.pares.get("username");
+        String password = message.pares.get("password");
+
+        //verify login status
+
+        String mensagem = "true | ExtraInfo";
+        String[] msg = mensagem.split("\\|");
+
+        sendMessage("type:loginStatus | terminalId:" + id + " | success:" + msg[0].trim() + " | msg:" + msg[1].trim());
     }
 
     private void sendMessage(String message) throws Exception {

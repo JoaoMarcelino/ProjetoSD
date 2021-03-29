@@ -1,5 +1,6 @@
 import java.net.*;
 import java.io.*;
+import java.sql.SQLOutput;
 import java.util.*;
 
 public class MulticastClient extends Thread {
@@ -72,7 +73,7 @@ public class MulticastClient extends Thread {
     }
 
     private void unlock(Message msg) throws Exception{
-        MulticastUser user = new MulticastUser(address, port, id,5);
+        MulticastUser user = new MulticastUser(address, port, id,120);
         Watcher watcher=new Watcher(user);
         user.start();
         watcher.start();
@@ -123,10 +124,11 @@ class MulticastUser extends Thread {
     public long timeout;
 
 
-    public MulticastUser(String address, int port,String id,long timeout) {
+    public MulticastUser(String address, int port, String id,long timeout) {
         super("User " + (long) (Math.random() * 1000));
         this.address=address;
         this.port=port;
+        this.id = id;
         this.reader = new BufferedReader(new InputStreamReader(System.in));
         this.timeout=timeout;
         this.lastTime=(new Date()).getTime();
@@ -134,8 +136,9 @@ class MulticastUser extends Thread {
 
      public void run() {
         try {
+            socket = new MulticastSocket(port); // create socket and bind it
             group = InetAddress.getByName(address);
-            socket = new MulticastSocket();
+            socket.joinGroup(group);
 
             //BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String escolha = "";
@@ -149,13 +152,13 @@ class MulticastUser extends Thread {
 
                 switch (escolha) {
                     case "1":
-                        login();
+                        login(reader);
                         break;
                     case "2":
                         listElections();
                         break;
                     case "3":
-                        listCandidates();
+                        listCandidates(reader);
                         break;
                     case "4":
                         if (isLogged)
@@ -187,14 +190,65 @@ class MulticastUser extends Thread {
     }
 
 
-    public void login() {
-        this.isLogged = true;
+    public void login(BufferedReader reader) throws Exception {
+        System.out.print("username: ");
+        String user = reader.readLine();
+        System.out.print("password: ");
+        String password = reader.readLine();
+
+        sendMessage("type:login | terminalId:" + this.id + " | username:" + user +  " | password:" + password);
+
+        Message message = getMessage(); // own message
+
+        message = getMessage();
+
+        this.isLogged =  Boolean.parseBoolean(message.pares.get("success"));
+
+        String info = message.pares.get("msg");
+        if (info != null)
+            System.out.println(info);
+
     }
 
-    public void listElections() {
+    public void listElections() throws Exception{
+        int countItems = 0;
+        sendMessage("type:listElections | terminalId:" + this.id);
+        Message message;
+        do{
+            message = getMessage();
+        }while(!message.tipo.equals("itemList"));
+
+        String value = message.pares.get("item_count");
+        countItems =  Integer.parseInt(value);
+
+        System.out.println("Lista de Eleicoes");
+        for (int i = 0; i < countItems ; i++){
+            message = getMessage();
+            String name = message.pares.get("item_name");
+            String description = message.pares.get("item_description");
+            System.out.println("Item " + i + ": "+ name + " -> " + description);
+        }
     }
 
-    public void listCandidates() {
+    public void listCandidates(BufferedReader reader) throws Exception{
+        int countItems = 0;
+
+        System.out.print("Eleicao: ");
+        String election = reader.readLine();
+
+        sendMessage("type:listCandidates | terminalId:" + this.id + "| election:" + election);
+        Message message = getMessage(); //own message
+
+        message = getMessage();
+        String value = message.pares.get("item_count");
+        countItems =  Integer.parseInt(value);
+
+        System.out.println("Lista de Candidatos");
+        for (int i = 0; i < countItems ; i++){
+            message = getMessage();
+            String name = message.pares.get("item_name");
+            System.out.println("Item " + i + ": "+ name);
+        }
     }
 
     public boolean vote(){

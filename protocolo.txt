@@ -1,12 +1,14 @@
 Multicast Protocol
-type:loginStatus | terminalId:{id} |  success:{yes,no} | msg:{msg}
+type:loginStatus | terminalId:{id} |  success:{true,false} | msg:{msg}
 type:login | terminalId:{id} | username:{username} | password:{password}
 
-type:itemList| terminalId:{id} |  item_count:{num} | item_0_name:{name} | item_0_description:{description} | item1_name:{name} | item_1_description:{description}
-type:listElections | terminalId:{id}
+type:listElections | terminalId:{id} |
+type:itemList | terminalId:{id} | item_count:{num}
+type:itemList | terminalId:{id} | item_name:{name} | item_description:{description}
 
-type:itemList | terminalId:{id} | item_count:{num} | item_0_name:{name} | item1_name:{name}
 type:listCandidates | terminalId:{id} | election:{election_name}
+type:itemList | terminalId:{id} | item_count:{num}
+type:itemList | terminalId:{id} | item_name:{name}
 
 type:voteStatus|terminalId:{id} | success:{yes,no} | msg:{msg}
 type:vote | terminalId:{id} | election:{election_name} | candidate:{cadidate_name,null,blank}

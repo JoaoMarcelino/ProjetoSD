@@ -410,9 +410,11 @@ public class AdminConsole extends Thread {
         System.out.print("Port grupo multicast:");
         port = reader.readLine();
 
-        Pessoa p1=new Pessoa(departamento,membro1,Departamento.DA,"-1","-1","-1",new GregorianCalendar(),Profissao.Estudante);
-        Pessoa p2=new Pessoa(departamento,membro2,Departamento.DA,"-1","-1","-1",new GregorianCalendar(),Profissao.Estudante);
-        Pessoa p3=new Pessoa(departamento,membro3,Departamento.DA,"-1","-1","-1",new GregorianCalendar(),Profissao.Estudante);
+        GregorianCalendar date = new GregorianCalendar();
+
+        Pessoa p1=new Pessoa(departamento,membro1,Departamento.DA,"-1","-1","-1", date,Profissao.Estudante);
+        Pessoa p2=new Pessoa(departamento,membro2,Departamento.DA,"-1","-1","-1", date,Profissao.Estudante);
+        Pessoa p3=new Pessoa(departamento,membro3,Departamento.DA,"-1","-1","-1", date,Profissao.Estudante);
         membros.add(p1);
         membros.add(p2);
         membros.add(p3);
