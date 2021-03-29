@@ -251,6 +251,14 @@ public class Eleicao implements Serializable {
 		return null;
 	}
 
+	public Voto getVotoByCC(String numeroCC) {
+		for (Voto voto : this.votos) {
+			if (voto.getPessoa().getNumberCC().equals(numeroCC))
+				return voto;
+		}
+		return null;
+	}
+
 	public ArrayList<MesaVoto> getMesas() {
 		return mesas;
 	}

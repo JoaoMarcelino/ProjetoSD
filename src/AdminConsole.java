@@ -199,24 +199,51 @@ public class AdminConsole extends Thread {
     }
 
     public static void getResultados(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        // list eleicoes
+        String nomeEleicao;
+
         System.out.print("Nome da eleicao:");
-        String idEleicao = reader.readLine();
-        String resultados = "";
-        // resultados=uni.getResultados(idEleicao);
-        System.out.println(resultados);
+        nomeEleicao = reader.readLine();
+
+        Resultado res=servidor.getResultados(nomeEleicao);
+        if(res==null){
+            System.out.println("Eleicao nao existe");
+        }
+        else{
+            System.out.println("Eleicao:"+res.getTitulo());
+            System.out.println("Total de Votos:"+res.getTotalVotos());
+            System.out.println("Votos em Branco:"+res.getBrancos());
+            System.out.println("Votos Nulos:"+res.getNulos());
+            ArrayList<String> listas=res.getNomesListas();
+            ArrayList<Integer> results=res.getResultados();
+
+            for(int i=0;i<listas.size();i++){
+                System.out.println("\tLista "+listas.get(i)+":"+results.get(i));
+            }
+        }
     }
 
     public static void getVoto(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        // list eleicoes
-        // list pessoas
+        String numeroCC,nomeEleicao;
+
+        System.out.print("Numero CC:");
+        numeroCC = reader.readLine();
         System.out.print("Nome da eleicao:");
-        String idEleicao = reader.readLine();
-        System.out.print("Nome da pessoa:");
-        String idNome = reader.readLine();
-        String resultados = "";
-        // resultados=uni.getResultados(idEleicao);
-        System.out.println(resultados);
+        nomeEleicao = reader.readLine();
+
+        Voto v=servidor.getVoto(numeroCC,nomeEleicao);
+        if(v==null){
+            System.out.println("Pessoa ou eleicao nao existe.");
+        }
+        else{
+            System.out.print(v.getPessoa().getNome()+" "+nomeEleicao+" "+printGregorianCalendar(v.getData()));
+            if(v.getMesa()==null){
+                System.out.print(" Admin Console");
+            }
+            else {
+                System.out.print(v.getMesa().getDepartamento());
+            }
+            System.out.print("\n");
+        }
     }
 
     public static void votar(BufferedReader reader,RMI_S_Interface servidor) throws Exception {

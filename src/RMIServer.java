@@ -121,8 +121,26 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return status;
 	}
 
-	public Voto getVoto(Eleicao eleicao, String nome) throws RemoteException {
-		return eleicao.getVotoByName(nome);
+	public Resultado getResultados(String nomeEleicao) throws RemoteException{
+		Eleicao ele=getEleicaoByName(nomeEleicao);
+
+		if(ele==null){
+			return null;
+		}
+		return ele.getResultados();
+	}
+
+	public Voto getVoto(String numeroCC, String nomeEleicao) throws RemoteException {
+		Pessoa p=getPessoaByCC(numeroCC);
+		Eleicao ele=getEleicaoByName(nomeEleicao);
+
+		if(p==null){
+			return null;
+		}
+		if(ele==null){
+			return null;
+		}
+		return ele.getVotoByCC(numeroCC);
 	}
 
 	public Pessoa getPessoaByCC(String numberCC){

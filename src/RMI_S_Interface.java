@@ -20,6 +20,10 @@ public interface RMI_S_Interface extends Remote {
 
 	public String addVotoAntecipado(String numeroCC,String password,String nomeEleicao,String nomeLista) throws RemoteException;
 
+	public Resultado getResultados(String nomeEleicao) throws RemoteException;
+
+	public Voto getVoto(String numeroCC, String nomeEleicao) throws RemoteException;
+
 	public ArrayList<Pessoa> listPessoas() throws  RemoteException;
 
 	public ArrayList<Eleicao> listEleicoes() throws  RemoteException;

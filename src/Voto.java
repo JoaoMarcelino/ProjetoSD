@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.*;
 
-public class Voto {
+public class Voto implements Serializable {
 
 	private Pessoa pessoa;
 	private GregorianCalendar data;
