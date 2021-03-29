@@ -30,4 +30,5 @@ public interface RMI_S_Interface extends Remote {
 
 	public ArrayList<Lista> listListas(String nomeEleicao) throws  RemoteException;
 
+	public void ping() throws RemoteException;
 	}

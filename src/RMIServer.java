@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -5,28 +8,63 @@ import java.rmi.server.*;
 import java.util.*;
 import java.net.*;
 
+import static java.lang.Thread.sleep;
+
 public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
-	ArrayList<Eleicao> eleicoes = new ArrayList<>();
-	ArrayList<Pessoa> pessoas = new ArrayList<>();
-	ArrayList<MesaVoto> mesas = new ArrayList<>();
-	ArrayList<Resultado> resultados = new ArrayList<>();
+	public ArrayList<Eleicao> eleicoes = new ArrayList<>();
+	public ArrayList<Pessoa> pessoas = new ArrayList<>();
+	public ArrayList<MesaVoto> mesas = new ArrayList<>();
+	public ArrayList<Resultado> resultados = new ArrayList<>();
 
 	public RMIServer() throws RemoteException {
 		super();
 	}
 
 	public static void main(String args[]) {
+		System.getProperties().put("java.security.policy", "policy.all");
 		try {
-			System.getProperties().put("java.security.policy", "policy.all");
-			RMIServer servidor = new RMIServer();
-			Registry r = LocateRegistry.createRegistry(7000);
-			r.rebind("ServidorRMI", servidor);
-			System.out.println("¡El servidor RMI está listo!");
-		} catch (RemoteException re) {
-			System.out.println("Exception in HelloImpl.main: " + re);
+			Registry r = LocateRegistry.getRegistry(7000);
+			RMI_S_Interface servidorPrinciapl = (RMI_S_Interface) r.lookup("ServidorRMI");
+
+			System.out.println("Servidor RMI Secundario em execucao.");
+			int failed=0;
+			int toRecover=3;
+			int frequency=1;
+			while(failed<toRecover){
+				sleep(frequency*1000);
+				try {
+					servidorPrinciapl.ping();
+				}catch (RemoteException e){
+					failed++;
+					System.out.println("Heartbeat falhou."+failed+"/"+toRecover);
+				}
+			}
+			servidorPrincipal();
+		}catch (NotBoundException e){
+			servidorPrincipal();
+		} catch (RemoteException e) {
+			System.out.println(e.getMessage());
 		}catch (Exception e){
-			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		finally {
+			System.exit(1);
+		}
+	}
+
+	public static void servidorPrincipal(){
+		try {
+			System.out.println("Servidor RMI Principal em execucao.");
+			Registry r = LocateRegistry.getRegistry(7000);
+			RMIServer servidor = new RMIServer();
+			r.rebind("ServidorRMI", servidor);
+
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("Enter para encerrar servidor.");
+			String espera=reader.readLine();
+		}catch (Exception e){
+			System.out.println(e.getMessage());
 		}
 	}
 
@@ -238,6 +276,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			return escolhida.getListas();
 		}
 		return null;
+	}
+
+	public void ping() throws RemoteException {
 	}
 
 	public String sayHello() throws RemoteException {
