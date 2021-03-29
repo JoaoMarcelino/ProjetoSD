@@ -17,6 +17,7 @@ public class AdminConsole extends Thread {
                 System.out.print("Opcao: ");
                 escolha = reader.readLine();
 
+
                 switch (escolha) {
                     case "1.1":
                         addPessoa(reader,servidor);
