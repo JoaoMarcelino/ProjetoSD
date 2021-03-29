@@ -17,50 +17,53 @@ public class AdminConsole extends Thread {
                 System.out.print("Opcao: ");
                 escolha = reader.readLine();
 
-
-                switch (escolha) {
-                    case "1.1":
-                        addPessoa(reader,servidor);
-                        break;
-                    case "1.2":
-                        listPessoas(reader,servidor);
-                        break;
-                    case "2.1":
-                        addEleicao(reader,servidor);
-                        break;
-                    case "2.2":
-                        getResultados(reader,servidor);
-                        break;
-                    case "2.3":
-                        getVoto(reader,servidor);
-                        break;
-                    case "2.4":
-                        votar(reader,servidor);
-                        break;
-                    case "2.5":
-                        listEleicoes(reader,servidor);
-                        break;
-                    case "3.1":
-                        addLista(reader,servidor);
-                        break;
-                    case "3.2":
-                        listListas(reader,servidor);
-                        break;
-                    case "4.1":
-                        addMesa(reader,servidor);
-                        break;
-                    case "5":
-                        Exception e = new Exception("Consola encerrada.");
-                        throw e;
-                    default:
-                        System.out.println("Escolha invalida.Tente 1.1, por exemplo.");
-                        break;
+                try {
+                    switch (escolha) {
+                        case "1.1":
+                            addPessoa(reader, servidor);
+                            break;
+                        case "1.2":
+                            listPessoas(reader, servidor);
+                            break;
+                        case "2.1":
+                            addEleicao(reader, servidor);
+                            break;
+                        case "2.2":
+                            getResultados(reader, servidor);
+                            break;
+                        case "2.3":
+                            getVoto(reader, servidor);
+                            break;
+                        case "2.4":
+                            votar(reader, servidor);
+                            break;
+                        case "2.5":
+                            listEleicoes(reader, servidor);
+                            break;
+                        case "3.1":
+                            addLista(reader, servidor);
+                            break;
+                        case "3.2":
+                            listListas(reader, servidor);
+                            break;
+                        case "4.1":
+                            addMesa(reader, servidor);
+                            break;
+                        case "5":
+                            Exception e = new Exception("Consola encerrada.");
+                            throw e;
+                        default:
+                            System.out.println("Escolha invalida.Tente 1.1, por exemplo.");
+                            break;
+                    }
+                }catch ( RemoteException e){
+                    System.out.println("Falha de ligacao ao servidor.Tente Novamente");
+                    servidor=(RMI_S_Interface) LocateRegistry.getRegistry(7000).lookup("ServidorRMI");
                 }
                 System.out.println("Pressione Enter para continuar.");
                 reader.readLine();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

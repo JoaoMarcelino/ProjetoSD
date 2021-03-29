@@ -2,37 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8de3e883-e073-41fa-8e75-1162d98c81b9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/uiDesigner.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AdminConsole.class" beforeDir="false" afterPath="$PROJECT_DIR$/AdminConsole.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/AdminConsole.java" beforeDir="false" afterPath="$PROJECT_DIR$/AdminConsole.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Departamento.class" beforeDir="false" afterPath="$PROJECT_DIR$/Departamento.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Eleicao.class" beforeDir="false" afterPath="$PROJECT_DIR$/Eleicao.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Lista.class" beforeDir="false" afterPath="$PROJECT_DIR$/Lista.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MesaVoto.class" beforeDir="false" afterPath="$PROJECT_DIR$/MesaVoto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Message.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MulticastClient.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MulticastReader.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MulticastServer.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MulticastUser.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pessoa.class" beforeDir="false" afterPath="$PROJECT_DIR$/Pessoa.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Profissao.class" beforeDir="false" afterPath="$PROJECT_DIR$/Profissao.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RMIServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/RMIServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RMIServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/RMIServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RMI_C_Interface.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/RMI_S_Interface.class" beforeDir="false" afterPath="$PROJECT_DIR$/RMI_S_Interface.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RMI_S_Interface.java" beforeDir="false" afterPath="$PROJECT_DIR$/RMI_S_Interface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Resultado.class" beforeDir="false" afterPath="$PROJECT_DIR$/Resultado.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Voto.class" beforeDir="false" afterPath="$PROJECT_DIR$/Voto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Watcher.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
