@@ -95,8 +95,30 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		eleicao.addVoto(voto, lista, tipo);
 	}
 
-	public void adicionarVotoAntecipado(Eleicao eleicao, Voto voto, String lista, String tipo) throws RemoteException {
-		eleicao.addVotoAntecipado(voto, lista, tipo);
+	public String addVotoAntecipado(String numeroCC,String password,String nomeEleicao,String nomeLista) throws RemoteException {
+		Pessoa p=getPessoaByCC(numeroCC);
+		Eleicao ele =getEleicaoByName(nomeEleicao);
+		if(p==null || !(p.getPassword().equals(password))){
+			return "Pessoa ou password incorreta.";
+		}
+		if(ele==null){
+			return "Eleicao ("+ele.getTitulo()+") nao existe.";
+		}
+		Voto v=new Voto(p,new GregorianCalendar());
+		String tipo="";
+		switch (nomeLista){
+			case "Branco":
+				tipo="Branco";
+				break;
+			case "Nulo":
+				tipo="Nulo";
+				break;
+			default:
+				tipo="Valido";
+				break;
+		}
+		String status=ele.addVotoAntecipado(v,nomeLista,tipo);
+		return status;
 	}
 
 	public Voto getVoto(Eleicao eleicao, String nome) throws RemoteException {

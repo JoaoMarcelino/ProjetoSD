@@ -18,6 +18,8 @@ public interface RMI_S_Interface extends Remote {
 
 	public void removeLista(Eleicao eleicao, String nome) throws java.rmi.RemoteException;
 
+	public String addVotoAntecipado(String numeroCC,String password,String nomeEleicao,String nomeLista) throws RemoteException;
+
 	public ArrayList<Pessoa> listPessoas() throws  RemoteException;
 
 	public ArrayList<Eleicao> listEleicoes() throws  RemoteException;

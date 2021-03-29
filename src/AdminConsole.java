@@ -220,20 +220,18 @@ public class AdminConsole extends Thread {
     }
 
     public static void votar(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        // list eleicoes
-        // list listas
-        String nome, password, idEleicao, idLista;
-        System.out.print("Nome:");
-        nome = reader.readLine();
+        String numeroCC, password, nomeEleicao, nomeLista;
+        System.out.print("Numero CC:");
+        numeroCC = reader.readLine();
         System.out.print("Password:");
         password = reader.readLine();
         System.out.print("Eleicao:");
-        idEleicao = reader.readLine();
+        nomeEleicao = reader.readLine();
         System.out.print("Lista a votar:");
-        idLista = reader.readLine();
+        nomeLista = reader.readLine();
 
-        // uni.vote(nome,password,eleicao,lista,"antecipado");
-        System.out.println("Acao bem sucedida");
+        String status=servidor.addVotoAntecipado(numeroCC,password,nomeEleicao,nomeLista);
+        System.out.println(status);
     }
 
     public static void listEleicoes(BufferedReader reader,RMI_S_Interface servidor) throws Exception {

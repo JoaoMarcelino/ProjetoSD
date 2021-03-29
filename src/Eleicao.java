@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.Serializable;
 import java.util.*;
 
@@ -119,27 +120,41 @@ public class Eleicao implements Serializable {
 		}
 	}
 
-	public void addVotoAntecipado(Voto voto, String nomeLista, String tipo) {
-
-		if (!this.checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())) {
-
-			switch (tipo) {
-			case "Valido":
-				this.getListaByName(nomeLista).aumentaVotos();
-				this.votos.add(voto);
-				break;
-
-			case "Branco":
-				this.brancos++;
-				this.votos.add(voto);
-				break;
-
-			case "Nulo":
-				this.nulos++;
-				this.votos.add(voto);
-				break;
-			}
+	public String addVotoAntecipado(Voto voto, String nomeLista, String tipo) {
+		Lista lis=this.getListaByName(nomeLista);
+		if(this.checkStart()){
+			return "Eleicao em progresso. Vote numa mesa de voto.";
 		}
+
+		if(hasVoted(voto.getPessoa())){
+			return "Ja votou nesta eleicao.";
+		}
+
+		if(!canVote(voto.getPessoa())){
+			return "Nao pode votar nesta eleicao.";
+		}
+
+		if(lis==null){
+			return "Lista ("+nomeLista+") nao existe.";
+		}
+
+		switch (tipo) {
+		case "Valido":
+			lis.aumentaVotos();
+			this.votos.add(voto);
+			break;
+
+		case "Branco":
+			this.brancos++;
+			this.votos.add(voto);
+			break;
+
+		case "Nulo":
+			this.nulos++;
+			this.votos.add(voto);
+			break;
+		}
+		return "Voto realizado com sucesso.["+voto.getPessoa().getNome()+" "+this.getTitulo()+" "+lis.getNome()+"]";
 	}
 
 	public String addLista(Lista lista) {
