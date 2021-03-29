@@ -270,7 +270,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return eleicoes;
 	}
 
-	public ArrayList<Lista> listListas(String nomeEleicao) throws  RemoteException{
+	public ArrayList<Lista> listListas(String nomeEleicao) throws  RemoteException {
 		Eleicao escolhida=getEleicaoByName(nomeEleicao);
 		if(escolhida!=null){
 			return escolhida.getListas();
@@ -278,7 +278,38 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
+
+	public void setDataInicio(String nomeEleicao, GregorianCalendar dataInicio) throws  RemoteException {
+		Eleicao eleicao = getEleicaoByName(nomeEleicao);
+		if (eleicao != null)
+			eleicao.setDataInicio(dataInicio);
+	}
+
+	public void setDataFim(String nomeEleicao, GregorianCalendar dataFim) throws  RemoteException {
+		Eleicao eleicao = getEleicaoByName(nomeEleicao);
+		if (eleicao != null)
+			eleicao.setDataFim(dataFim);
+	}
+
+	public boolean login(String cc, String password) throws  RemoteException {
+
+		for (Pessoa pessoa : pessoas) {
+			if (pessoa.getNumberCC().equals(cc) && pessoa.getPassword().equals(password))
+				return true;
+		}
+		return false;
+	}
+
 	public void ping() throws RemoteException {
+	}
+
+	public Pessoa identificar(String cc) throws  RemoteException {
+
+		for (Pessoa pessoa : pessoas) {
+			if (pessoa.getNumberCC().equals(cc))
+				return pessoa;
+		}
+		return null;
 	}
 
 	public String sayHello() throws RemoteException {
