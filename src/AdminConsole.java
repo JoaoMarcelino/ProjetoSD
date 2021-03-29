@@ -95,7 +95,7 @@ public class AdminConsole extends Thread {
         GregorianCalendar validadeCC;
 
         Profissao prof;
-        Departamento dep;
+        Departamento dep=Departamento.DA;
 
         System.out.println("Preencha todos os campos.");
         System.out.print("Nome:");
@@ -119,20 +119,41 @@ public class AdminConsole extends Thread {
 
         departamento = readInteger(reader, "Departamento: DA (1), DCT (2), DCV (3), DEC (4), DEEC (5), DEI (6), DEM (7), DEQ (8), DF(9), DM (10), DQ (11)?", 11);
 
-        dep = switch (departamento) {
-            case "1" -> Departamento.DA;
-            case "2" -> Departamento.DCT;
-            case "3" -> Departamento.DCV;
-            case "4" -> Departamento.DEC;
-            case "5" -> Departamento.DEEC;
-            case "6" -> Departamento.DEI;
-            case "7" -> Departamento.DEM;
-            case "8" -> Departamento.DEQ;
-            case "9" -> Departamento.DF;
-            case "10" -> Departamento.DM;
-            case "11" -> Departamento.DQ;
-            default -> Departamento.DA;
-        };
+        switch (departamento) {
+            case "1":
+                dep = Departamento.DA;
+                break;
+            case "2":
+                dep = Departamento.DCT;
+                break;
+            case "3":
+                dep = Departamento.DCV;
+                break;
+            case "4":
+                dep = Departamento.DEC;
+                break;
+            case "5":
+                dep = Departamento.DEEC;
+                break;
+            case "6":
+                dep = Departamento.DEI;
+                break;
+            case "7":
+                dep = Departamento.DEM;
+                break;
+            case "8":
+                dep = Departamento.DEQ;
+                break;
+            case "9":
+                dep = Departamento.DF;
+                break;
+            case "10":
+                dep = Departamento.DM;
+                break;
+            case "11":
+                dep = Departamento.DQ;
+                break;
+        }
 
         telefone = readInteger(reader, "Telefone:");
         System.out.print("Morada:");
@@ -174,14 +195,20 @@ public class AdminConsole extends Thread {
 
         type = readInteger(reader, "Eleicao de Estudantes(1), Docentes(2), Funcionarios(3) ou Geral(4)?:", 4);
         switch (type) {
-            case "1" -> profs.add(Profissao.Estudante);
-            case "2" -> profs.add(Profissao.Docente);
-            case "3" -> profs.add(Profissao.Funcionario);
-            case "4" -> {
+            case "1":
+                profs.add(Profissao.Estudante);
+                break;
+            case "2":
+                profs.add(Profissao.Docente);
+                break;
+            case "3":
+                profs.add(Profissao.Funcionario);
+                break;
+            case "4":
                 profs.add(Profissao.Estudante);
                 profs.add(Profissao.Docente);
                 profs.add(Profissao.Funcionario);
-            }
+                break;
         }
 
         while(notValid){
@@ -281,9 +308,15 @@ public class AdminConsole extends Thread {
         nome = reader.readLine();
         type = readInteger(reader, "Lista de Estudantes(1), Docentes(2) ou Funcionarios(3)?:", 3);
         switch (type) {
-            case "1" -> prof=Profissao.Estudante;
-            case "2" -> prof=Profissao.Docente;
-            case "3" -> prof=Profissao.Funcionario;
+            case "1":
+                prof=Profissao.Estudante;
+                break;
+            case "2":
+                prof=Profissao.Docente;
+                break;
+            case "3":
+                prof=Profissao.Funcionario;
+                break;
         }
 
         do{
@@ -323,25 +356,48 @@ public class AdminConsole extends Thread {
     public static void addMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         String departamento;
         String membro1, membro2, membro3,ip,port;
-        Departamento dep;
+        Departamento dep=Departamento.DA;
         ArrayList<Pessoa> membros=new ArrayList<Pessoa>();
 
         System.out.println("Preencha todos os campos.");
         departamento = readInteger(reader, "\"Departamento: DA (1), DCT (2), DCV (3), DEC (4), DEEC (5), DEI (6), DEM (7), DEQ (8), DF(9), DM (10), DQ (11)?", 11);
-        dep = switch (departamento) {
-            case "1" -> Departamento.DA;
-            case "2" -> Departamento.DCT;
-            case "3" -> Departamento.DCV;
-            case "4" -> Departamento.DEC;
-            case "5" -> Departamento.DEEC;
-            case "6" -> Departamento.DEI;
-            case "7" -> Departamento.DEM;
-            case "8" -> Departamento.DEQ;
-            case "9" -> Departamento.DF;
-            case "10" -> Departamento.DM;
-            case "11" -> Departamento.DQ;
-            default -> Departamento.DA;
-        };
+
+        switch (departamento) {
+            case "1":
+                dep = Departamento.DA;
+                break;
+            case "2":
+                dep = Departamento.DCT;
+                break;
+            case "3":
+                dep = Departamento.DCV;
+                break;
+            case "4":
+                dep = Departamento.DEC;
+                break;
+            case "5":
+                dep = Departamento.DEEC;
+                break;
+            case "6":
+                dep = Departamento.DEI;
+                break;
+            case "7":
+                dep = Departamento.DEM;
+                break;
+            case "8":
+                dep = Departamento.DEQ;
+                break;
+            case "9":
+                dep = Departamento.DF;
+                break;
+            case "10":
+                dep = Departamento.DM;
+                break;
+            case "11":
+                dep = Departamento.DQ;
+                break;
+        }
+
 
         System.out.print("Membro de mesa #1:");
         membro1 = reader.readLine();
