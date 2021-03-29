@@ -50,6 +50,8 @@ public class MulticastClient extends Thread {
                     case ("unlock"):
                         unlock(msg);
                         break;
+                    case ("reset"):
+                        resetId(msg);
                 }
             }
         } catch (IOException e) {
@@ -79,6 +81,10 @@ public class MulticastClient extends Thread {
         watcher.start();
         watcher.join();
         System.out.println("\nLocked");
+    }
+
+    private void resetId(Message msg) throws Exception{
+        sendMessage("type:reset | terminalId:" + id);
     }
 
     private void setId(Message msg) {
