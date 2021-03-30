@@ -416,13 +416,16 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 				try{
 					switch (aux) {
 						case "eleicoes":
-							eleicoes = (ArrayList<Eleicao>) ois.readObject();
+							List<Eleicao> listEleicao = (List<Eleicao>)ois.readObject();
+							eleicoes = (ArrayList<Eleicao>) listEleicao;
 							break;
 						case "pessoas":
-							pessoas = (ArrayList<Pessoa>) ois.readObject();
+							List<Pessoa> listPessoa = (List<Pessoa>)ois.readObject();
+							pessoas = (ArrayList<Pessoa>) listPessoa;
 							break;
 						case "mesas":
-							mesas = (ArrayList<MesaVoto>) ois.readObject();
+							List<MesaVoto> listMesas = (List<MesaVoto>)ois.readObject();
+							mesas = (ArrayList<MesaVoto>) listMesas;
 							break;
 						default:
 							System.out.println("Erro: Array nao existente.");
