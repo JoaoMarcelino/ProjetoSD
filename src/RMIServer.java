@@ -1,6 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -19,6 +17,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
 	public RMIServer() throws RemoteException {
 		super();
+		load();
+
 	}
 
 	public static void main(String args[]) {
@@ -34,9 +34,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			System.out.println("Servidor RMI Secundario em execucao.");
 			int failed = 0;
 			int toRecover = 3;
-			int frequency = 1;
+			int frequency = 10;
 			while (failed < toRecover) {
-				sleep(frequency * 1000);
+				sleep(frequency);
 				try {
 					servidorPrincipal.ping();
 				} catch (RemoteException e) {
@@ -81,6 +81,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		if(getPessoaByCC(numberCC)==null){
 			Pessoa pessoa = new Pessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao);
 			this.pessoas.add(pessoa);
+			save("pessoas");
 			return nome+"("+numberCC+") adicionado.";
 		}
 		else {
@@ -92,6 +93,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		if(getEleicaoByName(titulo)==null){
 			Eleicao eleicao = new Eleicao(dataInicio, dataFim, titulo, descricao, profissoes, departamentos);
 			this.eleicoes.add(eleicao);
+			save("eleicoes");
 			return titulo + " adicionada.";
 		}
 		else{
@@ -99,28 +101,57 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		}
 	}
 
-	public String editEleicao(String tituloAntigo,String tituloNovo, String descricaoNova) throws java.rmi.RemoteException{
+	public String editEleicao(String tituloAntigo,String tituloNovo, String descricaoNova,GregorianCalendar dataInicio,GregorianCalendar dataFim) throws java.rmi.RemoteException{
 		Eleicao escolhida=getEleicaoByName(tituloAntigo);
 		if(escolhida==null || getEleicaoByName(tituloNovo)!=null){
 			return tituloAntigo + " nao existe ou titulo novo ja em uso.";
 		}
-		else{
-			escolhida.setTitulo(tituloNovo);
-			escolhida.setDescricao(descricaoNova);
-			return escolhida.getTitulo() + " alterada.";
-		}
+		String status=escolhida.editDados(tituloNovo,descricaoNova,dataInicio,dataFim);
+		save("eleicoes");
+		return status;
 	}
 
 	public String addMesa(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port) throws RemoteException {
 		if(getMesaByDepartamento(departamento.name())== null && getMesaByMulticastGroup(ip,port)==null){
 			MesaVoto mesa = new MesaVoto(departamento, membros, ip, port);
 			this.mesas.add(mesa);
+			save("mesas");
 			return departamento+" adicionada.";
 		}
 		else{
 			return departamento + " ou grupo Multicast ja existe.";
 		}
+	}
 
+	public String addMesaEleicao(String nomeMesa,String nomeEleicao) throws  RemoteException{
+		MesaVoto mesa=getMesaByDepartamento(nomeMesa);
+		Eleicao ele=getEleicaoByName(nomeEleicao);
+		if(mesa==null){
+			return "Mesa nao existe.";
+		}
+		if(ele==null){
+			return "Eleicao nao existe.";
+		}
+		String status= ele.addMesa(mesa);
+		save("eleicoes");
+		return status;
+	}
+
+	public String editMesa(String nomeMesa,String membro1,String membro2,String membro3) throws RemoteException{
+		MesaVoto mesa=getMesaByDepartamento(nomeMesa);
+		if(mesa==null){
+			return "Mesa nao existe.";
+		}
+		ArrayList<Pessoa> membros=new ArrayList<Pessoa>();
+		Pessoa p1=new Pessoa(membro1,membro1,Departamento.DA,"-1","-1","-1", new GregorianCalendar(),Profissao.Estudante);
+		Pessoa p2=new Pessoa(membro2,membro2,Departamento.DA,"-1","-1","-1", new GregorianCalendar(),Profissao.Estudante);
+		Pessoa p3=new Pessoa(membro3,membro3,Departamento.DA,"-1","-1","-1", new GregorianCalendar(),Profissao.Estudante);
+		membros.add(p1);
+		membros.add(p2);
+		membros.add(p3);
+		mesa.setMembros(membros);
+		save("mesas");
+		return "Membros de Mesa alterados.";
 	}
 
 	public String addLista(String nomeEleicao,String nomeLista, ArrayList<Pessoa> listaPessoas, Profissao tipoLista) throws RemoteException {
@@ -128,10 +159,12 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		if(election==null){
 			return nomeEleicao+" nao existe.";
 		}
-		else{
-			Lista lista = new Lista(listaPessoas, tipoLista, nomeLista);
-			return election.addLista(lista);
-		}
+
+		Lista lista = new Lista(listaPessoas, tipoLista, nomeLista);
+		String status= election.addLista(lista);
+		save("eleicoes");
+		return status;
+
 	}
 
 	public void removeLista(Eleicao eleicao, String nome) throws RemoteException {
@@ -170,6 +203,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 				break;
 		}
 		String status=ele.addVotoAntecipado(v,nomeLista,tipo);
+		save("eleicoes");
 		return status;
 	}
 
@@ -336,9 +370,110 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
-	public String sayHello() throws RemoteException {
-		return "¡Hola mundo, soy el servidor y he establecido contacto con el cliente!";
+	public void save(String arrayName) {
+		File file = new File("./ObjectFiles/" + arrayName + ".obj");
+
+		writeObjects(arrayName, file);
+	}
+
+	public void saveAll() {
+
+		File eleicoes = new File("./ObjectFiles/eleicoes.obj");
+		File pessoas = new File("./ObjectFiles/pessoas.obj");
+		File mesas = new File("./ObjectFiles/mesas.obj");
+
+		writeObjects( "eleicoes", eleicoes);
+		writeObjects( "pessoas", pessoas);
+		writeObjects( "mesas", mesas);
 	}
 
 
+	public void writeObjects(String aux, File f){
+
+		try {
+			f.getParentFile().mkdirs();
+			f.createNewFile();
+			FileOutputStream fos = new FileOutputStream(f);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+			switch (aux) {
+				case "eleicoes":
+					oos.writeObject(eleicoes);
+					break;
+				case "pessoas":
+					oos.writeObject(pessoas);
+					break;
+				case "mesas":
+					oos.writeObject(mesas);
+					break;
+				default:
+					System.out.println("Erro: Array nao existente.");
+			}
+			oos.close();
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println("Erro a criar ficheiro.");
+
+		}
+		catch (IOException ex) {
+			System.out.println("Erro a escrever para o ficheiro.");
+		}
+
+	}
+
+	public void load() {
+
+		File eleicoes = new File("./ObjectFiles/eleicoes.obj");
+		File pessoas = new File("./ObjectFiles/pessoas.obj");
+		File mesas = new File("./ObjectFiles/mesas.obj");
+
+		readObjects( "eleicoes", eleicoes);
+		readObjects( "pessoas", pessoas);
+		readObjects( "mesas", mesas);
+	}
+
+	public void readObjects(String aux, File f) {
+
+		try {
+			FileInputStream fis = new FileInputStream(f);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+
+			while(true){
+				try{
+					switch (aux) {
+						case "eleicoes":
+							List<Eleicao> listEleicao = (List<Eleicao>)ois.readObject();
+							eleicoes = (ArrayList<Eleicao>) listEleicao;
+							break;
+						case "pessoas":
+							List<Pessoa> listPessoa = (List<Pessoa>)ois.readObject();
+							pessoas = (ArrayList<Pessoa>) listPessoa;
+							break;
+						case "mesas":
+							List<MesaVoto> listMesas = (List<MesaVoto>)ois.readObject();
+							mesas = (ArrayList<MesaVoto>) listMesas;
+							break;
+						default:
+							System.out.println("Erro: Array nao existente.");
+					}
+				}
+				catch (ClassNotFoundException ex) {
+					System.out.println("Erro a converter objeto");
+				}
+				catch (EOFException ex){
+					ois.close();
+				}
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println("Erro a abrir ficheiro.");
+		}
+		catch (IOException ex) {
+			System.out.println("Erro a ler ficheiro.");
+		}
+	}
+
+	public String sayHello() throws RemoteException {
+		return "¡Hola mundo, soy el servidor y he establecido contacto con el cliente!";
+	}
 }
