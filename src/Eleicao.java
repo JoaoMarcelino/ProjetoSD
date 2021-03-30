@@ -97,7 +97,7 @@ public class Eleicao implements Serializable {
 		return (isDepartamentoPermitida(pessoa.getDepartamento()) && isProfissaoPermitida(pessoa.getProfissao()));
 	}
 
-	public void addVoto(Voto voto, String nomeLista, String tipo) {
+	public boolean addVoto(Voto voto, String nomeLista, String tipo) {
 
 		if (checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())) {
 
@@ -118,6 +118,8 @@ public class Eleicao implements Serializable {
 				break;
 			}
 		}
+
+		return true;
 	}
 
 	public String addVotoAntecipado(Voto voto, String nomeLista, String tipo) {

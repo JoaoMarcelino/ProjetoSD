@@ -138,8 +138,13 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		eleicao.removeLista(nome);
 	}
 
-	public void adicionarVoto(Eleicao eleicao, Voto voto, String lista, String tipo) throws RemoteException {
-		eleicao.addVoto(voto, lista, tipo);
+	public String adicionarVoto(String nomeEleicao, Voto voto, String lista, String tipo) throws RemoteException {
+		Eleicao ele = getEleicaoByName(nomeEleicao);
+		boolean hasVoted = ele.addVoto(voto, lista, tipo);
+		if (hasVoted){
+			return "true | Voto com Sucesso";
+		}
+		return "false | Voto não aceite";
 	}
 
 	public String addVotoAntecipado(String numeroCC,String password,String nomeEleicao,String nomeLista) throws RemoteException {
@@ -190,7 +195,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return ele.getVotoByCC(numeroCC);
 	}
 
-	public Pessoa getPessoaByCC(String numberCC){
+	public Pessoa getPessoaByCC(String numberCC) throws java.rmi.RemoteException{
 		for (Pessoa pessoa : pessoas){
 			if (pessoa.getNumberCC().equals(numberCC))
 				return pessoa;
@@ -214,7 +219,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
-	public MesaVoto getMesaByMulticastGroup(String ip,String port){
+	public MesaVoto getMesaByMulticastGroup(String ip,String port) throws java.rmi.RemoteException{
 		for(MesaVoto mesa: mesas){
 			if(mesa.getIp().equals(ip) && mesa.getPort().equals(port)){
 				return mesa;
@@ -279,6 +284,16 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return eleicoes;
 	}
 
+	public ArrayList<Eleicao> listEleicoes(MesaVoto mesa) throws  RemoteException{
+		ArrayList<Eleicao> lista = new ArrayList<>();
+		Departamento departamento = mesa.getDepartamento();
+		for(Eleicao eleicao: this.eleicoes){
+			if(eleicao.getMesaVotoByDepartamento(departamento) != null)
+				lista.add(eleicao);
+		}
+		return lista;
+	}
+
 	public ArrayList<Lista> listListas(String nomeEleicao) throws  RemoteException {
 		Eleicao escolhida=getEleicaoByName(nomeEleicao);
 		if(escolhida!=null){
@@ -300,13 +315,13 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			eleicao.setDataFim(dataFim);
 	}
 
-	public boolean login(String cc, String password) throws  RemoteException {
+	public String login(String cc, String password) throws  RemoteException {
 
 		for (Pessoa pessoa : pessoas) {
 			if (pessoa.getNumberCC().equals(cc) && pessoa.getPassword().equals(password))
-				return true;
+				return "true | Login com Sucesso";
 		}
-		return false;
+		return "false | Login Incorreto";
 	}
 
 	public void ping() throws RemoteException {

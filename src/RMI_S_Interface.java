@@ -25,7 +25,11 @@ public interface RMI_S_Interface extends Remote {
 
 	public ArrayList<Pessoa> listPessoas() throws  java.rmi.RemoteException;
 
+	public Pessoa getPessoaByCC(String numberCC) throws java.rmi.RemoteException;;
+
 	public ArrayList<Eleicao> listEleicoes() throws  java.rmi.RemoteException;
+
+	public ArrayList<Eleicao> listEleicoes(MesaVoto mesaVoto) throws  RemoteException;
 
 	public ArrayList<Lista> listListas(String nomeEleicao) throws  java.rmi.RemoteException;
 
@@ -33,9 +37,14 @@ public interface RMI_S_Interface extends Remote {
 
 	public void setDataFim(String nomeEleicao, GregorianCalendar dataFim) throws java.rmi.RemoteException;
 
-	public boolean login(String cc, String password) throws java.rmi.RemoteException;
+	public String login(String cc, String password) throws java.rmi.RemoteException;
 
 	public Pessoa identificar(String cc) throws java.rmi.RemoteException;
 
 	public void ping() throws java.rmi.RemoteException;
-}
+
+	public MesaVoto getMesaByMulticastGroup(String ip,String port) throws java.rmi.RemoteException;
+
+	public String adicionarVoto(String eleicao, Voto voto, String lista, String tipo) throws RemoteException;
+
+	}
