@@ -1,4 +1,5 @@
 Multicast Protocol
+
 type:loginStatus | terminalId:{id} |  success:{true,false} | msg:{msg}
 type:login | terminalId:{id} | username:{username} | password:{password}
 
@@ -22,3 +23,4 @@ type:unlockStatus | terminalId:{id} | success;{yes,no}
 type:free | terminalId:{id,server,all}
 type:freeStatus | terminalId:{id,server,all} | success;{yes,no}
 
+type:reset | terminalId:{all}

@@ -137,8 +137,9 @@ class MulticastReader extends Thread {
             group = InetAddress.getByName(address);
             socket.joinGroup(group);
 
+            Message msg = verifyIds();
+
             while (true) {
-                Message msg = getMessage();
                 switch (msg.tipo) {
                 case "joinGroup":
                     startConnection();
@@ -155,6 +156,8 @@ class MulticastReader extends Thread {
                     login(msg);
                     break;
                 }
+
+                msg = getMessage();
             }
 
         } catch (IOException e) {
@@ -164,6 +167,24 @@ class MulticastReader extends Thread {
         } finally {
             socket.close();
         }
+    }
+
+    private Message verifyIds() throws Exception{
+
+        sendMessage("type:reset | terminalId:all");
+        Message message = getMessage(); //own
+
+        message = getMessage();
+        while(message.tipo.equals("reset")){
+            String value = message.pares.get("terminalId");
+            int count = Integer.parseInt(value);
+            if (count> counterID){
+                counterID = count;
+            }
+            message = getMessage();
+        }
+
+        return message;
     }
 
     private void startConnection() throws Exception {
