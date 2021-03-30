@@ -22,29 +22,35 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	}
 
 	public static void main(String args[]) {
+		if(args.length!=1){
+			System.out.println("Bad arguments. run java RMIServer {RMIHostIP}");
+			System.exit(1);
+		}
 		System.getProperties().put("java.security.policy", "policy.all");
+		System.setSecurityManager(new RMISecurityManager());
 		try {
-			Registry r = LocateRegistry.getRegistry(7000);
+			Registry r = LocateRegistry.getRegistry(args[0],7000);
 			RMI_S_Interface servidorPrincipal = (RMI_S_Interface) r.lookup("ServidorRMI");
-
 			System.out.println("Servidor RMI Secundario em execucao.");
-			int failed=0;
-			int toRecover=3;
-			int frequency=1;
-			while(failed<toRecover){
-				sleep(frequency*1000);
+			int failed = 0;
+			int toRecover = 3;
+			int frequency = 1;
+			while (failed < toRecover) {
+				sleep(frequency * 1000);
 				try {
 					servidorPrincipal.ping();
-				}catch (RemoteException e){
+				} catch (RemoteException e) {
 					failed++;
-					System.out.println("Heartbeat falhou."+failed+"/"+toRecover);
+					System.out.println("Heartbeat falhou." + failed + "/" + toRecover);
 				}
 			}
-			servidorPrincipal();
-		}catch (NotBoundException e){
-			servidorPrincipal();
-		} catch (RemoteException e) {
-			System.out.println(e.getMessage());
+			servidorPrincipal(args[0]);
+		}catch (NotBoundException e) {
+			System.out.println("Objeto servidorRMI nao eiste em RMI.");
+			servidorPrincipal(args[0]);
+		}catch (RemoteException e){
+			System.out.println("RMI nao existe.");
+			servidorPrincipal(args[0]);
 		}catch (Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -53,10 +59,12 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		}
 	}
 
-	public static void servidorPrincipal(){
+	public static void servidorPrincipal(String RMIHostIP){
 		try {
 			System.out.println("Servidor RMI Principal em execucao.");
-			Registry r = LocateRegistry.getRegistry(7000);
+			System.setProperty("java.rmi.server.hostname", RMIHostIP);
+			Registry r = LocateRegistry.createRegistry(7000);
+			System.out.println(r.toString());
 			RMIServer servidor = new RMIServer();
 			r.rebind("ServidorRMI", servidor);
 
@@ -67,6 +75,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			System.out.println(e.getMessage());
 		}
 	}
+
 
 	public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada,String numberCC, GregorianCalendar expireCCDate, Profissao profissao) throws RemoteException {
 		if(getPessoaByCC(numberCC)==null){

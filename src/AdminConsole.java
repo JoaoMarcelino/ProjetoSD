@@ -7,11 +7,17 @@ import java.time.*;
 
 public class AdminConsole extends Thread {
     public static void main(String[] args) {
+        if(args.length!=1){
+            System.out.println("Bad arguments. run java AdminConsole {RMIHostIP}");
+            System.exit(1);
+        }
         System.getProperties().put("java.security.policy", "policy.all");
+        System.setSecurityManager(new RMISecurityManager());
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha = "";
         try {
-            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(7000).lookup("ServidorRMI");
+            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[0],7000).lookup("ServidorRMI");
             while (true) {
                 System.out.println(printMenu());
                 System.out.print("Opcao: ");
