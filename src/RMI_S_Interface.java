@@ -9,9 +9,13 @@ public interface RMI_S_Interface extends Remote {
 
 	public String addEleicao(String titulo, String descricao,GregorianCalendar dataInicio, GregorianCalendar dataFim, ArrayList<Profissao> profissoes, ArrayList<Departamento> departamentos) throws RemoteException;
 
-	public String editEleicao(String tituloAntigo,String tituloNovo, String descricaoNova) throws java.rmi.RemoteException;
+	public String editEleicao(String tituloAntigo,String tituloNovo, String descricaoNova,GregorianCalendar dataInicio,GregorianCalendar dataFim) throws java.rmi.RemoteException;
 
 	public String addMesa(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port) throws java.rmi.RemoteException;
+
+	public String addMesaEleicao(String nomeMesa,String nomeEleicao) throws java.rmi.RemoteException;
+
+	public String editMesa(String nomeMesa,String membro1,String membro2,String membro3) throws RemoteException;
 
 	public String addLista(String nomeEleicao,String nomeLista, ArrayList<Pessoa> listaPessoas, Profissao tipoLista) throws java.rmi.RemoteException;
 

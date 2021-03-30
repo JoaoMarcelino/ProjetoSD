@@ -23,10 +23,11 @@ public class Eleicao implements Serializable {
 		this.descricao = descricao;
 		this.brancos = 0;
 		this.nulos = 0;
+
 		this.votos = new ArrayList<Voto>();
 		this.listas = new ArrayList<Lista>();
+
 		this.mesas = new ArrayList<MesaVoto>();
-		this.votos = new ArrayList<Voto>();
 		this.profissoesPermitidas = profissoesPermitidas;
 		this.departamentosPermitidos = departamentosPermitidos;
 	}
@@ -97,6 +98,20 @@ public class Eleicao implements Serializable {
 		return (isDepartamentoPermitida(pessoa.getDepartamento()) && isProfissaoPermitida(pessoa.getProfissao()));
 	}
 
+	public String editDados(String tituloNovo,String descricaoNova,GregorianCalendar dataInicio,GregorianCalendar dataFim){
+		if(this.checkStart()){
+			return "Eleicao a decorrer ou encerrada.";
+		}
+		if(dataInicio.before(new GregorianCalendar())){
+			return "Data de Inicio escolhida ja passou.";
+		}
+
+		setTitulo(tituloNovo);
+		setDescricao(descricaoNova);
+		setDataInicio(dataInicio);
+		setDataFim(dataFim);
+		return "Dados de Eleicao alterados.";
+	}
 	public void addVoto(Voto voto, String nomeLista, String tipo) {
 
 		if (checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())) {
@@ -130,8 +145,12 @@ public class Eleicao implements Serializable {
 			return "Ja votou nesta eleicao.";
 		}
 
-		if(!canVote(voto.getPessoa())){
+		if( !canVote(voto.getPessoa())){
 			return "Nao pode votar nesta eleicao.";
+		}
+
+		if(voto.getMesa()!=null && !mesas.contains(voto.getMesa())){
+			return "Mesa nao associada a eleicao.";
 		}
 
 		if(lis==null){
@@ -173,9 +192,16 @@ public class Eleicao implements Serializable {
 
 	}
 
-	public void addMesa(MesaVoto mesa) {
-		if (!this.checkStart() && !mesas.contains(mesa))
-			this.mesas.add(mesa);
+	public String addMesa(MesaVoto mesa) {
+		if(this.checkStart()){
+			return "Eleicao em progresso.";
+		}
+		if(mesas.contains(mesa)){
+			return "Mesa ja associada a eleicao.";
+		}
+
+		this.mesas.add(mesa);
+		return "Messa associada a eleicao";
 	}
 
 	public void addProfissaoPermitida(Profissao profissao) {

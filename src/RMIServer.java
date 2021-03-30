@@ -34,9 +34,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			System.out.println("Servidor RMI Secundario em execucao.");
 			int failed = 0;
 			int toRecover = 3;
-			int frequency = 1;
+			int frequency = 10;
 			while (failed < toRecover) {
-				sleep(frequency * 1000);
+				sleep(frequency);
 				try {
 					servidorPrincipal.ping();
 				} catch (RemoteException e) {
@@ -99,16 +99,13 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		}
 	}
 
-	public String editEleicao(String tituloAntigo,String tituloNovo, String descricaoNova) throws java.rmi.RemoteException{
+	public String editEleicao(String tituloAntigo,String tituloNovo, String descricaoNova,GregorianCalendar dataInicio,GregorianCalendar dataFim) throws java.rmi.RemoteException{
 		Eleicao escolhida=getEleicaoByName(tituloAntigo);
 		if(escolhida==null || getEleicaoByName(tituloNovo)!=null){
 			return tituloAntigo + " nao existe ou titulo novo ja em uso.";
 		}
-		else{
-			escolhida.setTitulo(tituloNovo);
-			escolhida.setDescricao(descricaoNova);
-			return escolhida.getTitulo() + " alterada.";
-		}
+		return escolhida.editDados(tituloNovo,descricaoNova,dataInicio,dataFim);
+
 	}
 
 	public String addMesa(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port) throws RemoteException {
@@ -120,7 +117,34 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		else{
 			return departamento + " ou grupo Multicast ja existe.";
 		}
+	}
 
+	public String addMesaEleicao(String nomeMesa,String nomeEleicao) throws  RemoteException{
+		MesaVoto mesa=getMesaByDepartamento(nomeMesa);
+		Eleicao ele=getEleicaoByName(nomeEleicao);
+		if(mesa==null){
+			return "Mesa nao existe.";
+		}
+		if(ele==null){
+			return "Eleicao nao existe.";
+		}
+		return ele.addMesa(mesa);
+	}
+
+	public String editMesa(String nomeMesa,String membro1,String membro2,String membro3) throws RemoteException{
+		MesaVoto mesa=getMesaByDepartamento(nomeMesa);
+		if(mesa==null){
+			return "Mesa nao existe.";
+		}
+		ArrayList<Pessoa> membros=new ArrayList<Pessoa>();
+		Pessoa p1=new Pessoa(membro1,membro1,Departamento.DA,"-1","-1","-1", new GregorianCalendar(),Profissao.Estudante);
+		Pessoa p2=new Pessoa(membro2,membro2,Departamento.DA,"-1","-1","-1", new GregorianCalendar(),Profissao.Estudante);
+		Pessoa p3=new Pessoa(membro3,membro3,Departamento.DA,"-1","-1","-1", new GregorianCalendar(),Profissao.Estudante);
+		membros.add(p1);
+		membros.add(p2);
+		membros.add(p3);
+		mesa.setMembros(membros);
+		return "Membros de Mesa alterados.";
 	}
 
 	public String addLista(String nomeEleicao,String nomeLista, ArrayList<Pessoa> listaPessoas, Profissao tipoLista) throws RemoteException {
