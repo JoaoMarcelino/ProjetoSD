@@ -17,6 +17,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
 	public RMIServer() throws RemoteException {
 		super();
+		load();
+
 	}
 
 	public static void main(String args[]) {
@@ -79,6 +81,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		if(getPessoaByCC(numberCC)==null){
 			Pessoa pessoa = new Pessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao);
 			this.pessoas.add(pessoa);
+			save("pessoas");
 			return nome+"("+numberCC+") adicionado.";
 		}
 		else {
@@ -90,6 +93,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		if(getEleicaoByName(titulo)==null){
 			Eleicao eleicao = new Eleicao(dataInicio, dataFim, titulo, descricao, profissoes, departamentos);
 			this.eleicoes.add(eleicao);
+			save("eleicoes");
 			return titulo + " adicionada.";
 		}
 		else{
@@ -102,14 +106,16 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		if(escolhida==null || getEleicaoByName(tituloNovo)!=null){
 			return tituloAntigo + " nao existe ou titulo novo ja em uso.";
 		}
-		return escolhida.editDados(tituloNovo,descricaoNova,dataInicio,dataFim);
-
+		String status=escolhida.editDados(tituloNovo,descricaoNova,dataInicio,dataFim);
+		save("eleicoes");
+		return status;
 	}
 
 	public String addMesa(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port) throws RemoteException {
 		if(getMesaByDepartamento(departamento.name())== null && getMesaByMulticastGroup(ip,port)==null){
 			MesaVoto mesa = new MesaVoto(departamento, membros, ip, port);
 			this.mesas.add(mesa);
+			save("mesas");
 			return departamento+" adicionada.";
 		}
 		else{
@@ -126,7 +132,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		if(ele==null){
 			return "Eleicao nao existe.";
 		}
-		return ele.addMesa(mesa);
+		String status= ele.addMesa(mesa);
+		save("eleicoes");
+		return status;
 	}
 
 	public String editMesa(String nomeMesa,String membro1,String membro2,String membro3) throws RemoteException{
@@ -142,6 +150,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		membros.add(p2);
 		membros.add(p3);
 		mesa.setMembros(membros);
+		save("mesas");
 		return "Membros de Mesa alterados.";
 	}
 
@@ -150,10 +159,12 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		if(election==null){
 			return nomeEleicao+" nao existe.";
 		}
-		else{
-			Lista lista = new Lista(listaPessoas, tipoLista, nomeLista);
-			return election.addLista(lista);
-		}
+
+		Lista lista = new Lista(listaPessoas, tipoLista, nomeLista);
+		String status= election.addLista(lista);
+		save("eleicoes");
+		return status;
+
 	}
 
 	public void removeLista(Eleicao eleicao, String nome) throws RemoteException {
@@ -187,6 +198,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 				break;
 		}
 		String status=ele.addVotoAntecipado(v,nomeLista,tipo);
+		save("eleicoes");
 		return status;
 	}
 
@@ -344,16 +356,16 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	}
 
 	public void save(String arrayName) {
-		File file = new File("\\ObjectFiles\\" + arrayName + ".obj");
+		File file = new File("./ObjectFiles/" + arrayName + ".obj");
 
 		writeObjects(arrayName, file);
 	}
 
 	public void saveAll() {
 
-		File eleicoes = new File("\\ObjectFiles\\eleicoes.obj");
-		File pessoas = new File("\\ObjectFiles\\pessoas.obj");
-		File mesas = new File("\\ObjectFiles\\mesas.obj");
+		File eleicoes = new File("./ObjectFiles/eleicoes.obj");
+		File pessoas = new File("./ObjectFiles/pessoas.obj");
+		File mesas = new File("./ObjectFiles/mesas.obj");
 
 		writeObjects( "eleicoes", eleicoes);
 		writeObjects( "pessoas", pessoas);
@@ -364,21 +376,20 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	public void writeObjects(String aux, File f){
 
 		try {
+			f.getParentFile().mkdirs();
+			f.createNewFile();
 			FileOutputStream fos = new FileOutputStream(f);
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 
 			switch (aux) {
 				case "eleicoes":
-					for (Eleicao eleicao : eleicoes)
-						oos.writeObject(eleicao);
+					oos.writeObject(eleicoes);
 					break;
 				case "pessoas":
-					for (Pessoa pessoa : pessoas)
-						oos.writeObject(pessoa);
+					oos.writeObject(pessoas);
 					break;
 				case "mesas":
-					for (MesaVoto mesa : mesas)
-						oos.writeObject(mesa);
+					oos.writeObject(mesas);
 					break;
 				default:
 					System.out.println("Erro: Array nao existente.");
@@ -397,9 +408,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
 	public void load() {
 
-		File eleicoes = new File("\\ObjectFiles\\eleicoes.obj");
-		File pessoas = new File("\\ObjectFiles\\pessoas.obj");
-		File mesas = new File("\\ObjectFiles\\mesas.obj");
+		File eleicoes = new File("./ObjectFiles/eleicoes.obj");
+		File pessoas = new File("./ObjectFiles/pessoas.obj");
+		File mesas = new File("./ObjectFiles/mesas.obj");
 
 		readObjects( "eleicoes", eleicoes);
 		readObjects( "pessoas", pessoas);
@@ -416,13 +427,16 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 				try{
 					switch (aux) {
 						case "eleicoes":
-							eleicoes = (ArrayList<Eleicao>) ois.readObject();
+							List<Eleicao> listEleicao = (List<Eleicao>)ois.readObject();
+							eleicoes = (ArrayList<Eleicao>) listEleicao;
 							break;
 						case "pessoas":
-							pessoas = (ArrayList<Pessoa>) ois.readObject();
+							List<Pessoa> listPessoa = (List<Pessoa>)ois.readObject();
+							pessoas = (ArrayList<Pessoa>) listPessoa;
 							break;
 						case "mesas":
-							mesas = (ArrayList<MesaVoto>) ois.readObject();
+							List<MesaVoto> listMesas = (List<MesaVoto>)ois.readObject();
+							mesas = (ArrayList<MesaVoto>) listMesas;
 							break;
 						default:
 							System.out.println("Erro: Array nao existente.");
