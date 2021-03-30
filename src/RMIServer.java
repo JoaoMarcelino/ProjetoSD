@@ -1,6 +1,4 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -345,9 +343,108 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
-	public String sayHello() throws RemoteException {
-		return "¡Hola mundo, soy el servidor y he establecido contacto con el cliente!";
+	public void save(String arrayName) {
+		File file = new File("\\ObjectFiles\\" + arrayName + ".obj");
+
+		writeObjects(arrayName, file);
+	}
+
+	public void saveAll() {
+
+		File eleicoes = new File("\\ObjectFiles\\eleicoes.obj");
+		File pessoas = new File("\\ObjectFiles\\pessoas.obj");
+		File mesas = new File("\\ObjectFiles\\mesas.obj");
+
+		writeObjects( "eleicoes", eleicoes);
+		writeObjects( "pessoas", pessoas);
+		writeObjects( "mesas", mesas);
 	}
 
 
+	public void writeObjects(String aux, File f){
+
+		try {
+			FileOutputStream fos = new FileOutputStream(f);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+			switch (aux) {
+				case "eleicoes":
+					for (Eleicao eleicao : eleicoes)
+						oos.writeObject(eleicao);
+					break;
+				case "pessoas":
+					for (Pessoa pessoa : pessoas)
+						oos.writeObject(pessoa);
+					break;
+				case "mesas":
+					for (MesaVoto mesa : mesas)
+						oos.writeObject(mesa);
+					break;
+				default:
+					System.out.println("Erro: Array nao existente.");
+			}
+			oos.close();
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println("Erro a criar ficheiro.");
+
+		}
+		catch (IOException ex) {
+			System.out.println("Erro a escrever para o ficheiro.");
+		}
+
+	}
+
+	public void load() {
+
+		File eleicoes = new File("\\ObjectFiles\\eleicoes.obj");
+		File pessoas = new File("\\ObjectFiles\\pessoas.obj");
+		File mesas = new File("\\ObjectFiles\\mesas.obj");
+
+		readObjects( "eleicoes", eleicoes);
+		readObjects( "pessoas", pessoas);
+		readObjects( "mesas", mesas);
+	}
+
+	public void readObjects(String aux, File f) {
+
+		try {
+			FileInputStream fis = new FileInputStream(f);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+
+			while(true){
+				try{
+					switch (aux) {
+						case "eleicoes":
+							eleicoes = (ArrayList<Eleicao>) ois.readObject();
+							break;
+						case "pessoas":
+							pessoas = (ArrayList<Pessoa>) ois.readObject();
+							break;
+						case "mesas":
+							mesas = (ArrayList<MesaVoto>) ois.readObject();
+							break;
+						default:
+							System.out.println("Erro: Array nao existente.");
+					}
+				}
+				catch (ClassNotFoundException ex) {
+					System.out.println("Erro a converter objeto");
+				}
+				catch (EOFException ex){
+					ois.close();
+				}
+			}
+		}
+		catch (FileNotFoundException ex) {
+			System.out.println("Erro a abrir ficheiro.");
+		}
+		catch (IOException ex) {
+			System.out.println("Erro a ler ficheiro.");
+		}
+	}
+
+	public String sayHello() throws RemoteException {
+		return "¡Hola mundo, soy el servidor y he establecido contacto con el cliente!";
+	}
 }
