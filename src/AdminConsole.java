@@ -17,7 +17,7 @@ public class AdminConsole extends Thread {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha = "";
         try {
-            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[0],7000).lookup("ServidorRMI");
+            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[0],7040).lookup("ServidorRMI");
             while (true) {
                 System.out.println(printMenu());
                 System.out.print("Opcao: ");
@@ -64,7 +64,7 @@ public class AdminConsole extends Thread {
                     }
                 }catch ( RemoteException e){
                     System.out.println("Falha de ligacao ao servidor.Tente Novamente");
-                    servidor=(RMI_S_Interface) LocateRegistry.getRegistry(7000).lookup("ServidorRMI");
+                    servidor=(RMI_S_Interface) LocateRegistry.getRegistry(7040).lookup("ServidorRMI");
                 }
                 System.out.println("Pressione Enter para continuar.");
                 reader.readLine();

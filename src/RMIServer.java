@@ -29,7 +29,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		System.getProperties().put("java.security.policy", "policy.all");
 		System.setSecurityManager(new RMISecurityManager());
 		try {
-			Registry r = LocateRegistry.getRegistry(args[0],7000);
+			Registry r = LocateRegistry.getRegistry(args[0],7040);
 			RMI_S_Interface servidorPrincipal = (RMI_S_Interface) r.lookup("ServidorRMI");
 			System.out.println("Servidor RMI Secundario em execucao.");
 			int failed = 0;
@@ -63,7 +63,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		try {
 			System.out.println("Servidor RMI Principal em execucao.");
 			System.setProperty("java.rmi.server.hostname", RMIHostIP);
-			Registry r = LocateRegistry.createRegistry(7000);
+			Registry r = LocateRegistry.createRegistry(7040);
 			System.out.println(r.toString());
 			RMIServer servidor = new RMIServer();
 			r.rebind("ServidorRMI", servidor);
