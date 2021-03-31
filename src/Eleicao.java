@@ -234,15 +234,20 @@ public class Eleicao implements Serializable {
 		}
 	}
 
-	public void removeMesa(Departamento departamento) {
-		if (!this.checkStart()) {
-			for (MesaVoto mesa : this.mesas) {
-				if (mesa.getDepartamento() == departamento) {
-					this.mesas.remove(mesa);
-					return;
-				}
+	public String removeMesa(MesaVoto mesa) {
+		if(this.checkStart()){
+			return "Eleicao em progresso.";
+		}
+		if(!mesas.contains(mesa)){
+			return "Mesa nao se econtra associcada a eleicao.";
+		}
+
+		for(int i=0;i<mesas.size();i++){
+			if(mesas.get(i).getDepartamento().equals(mesa.getDepartamento())){
+				mesas.remove(i);
 			}
 		}
+		return "Mesa de Voto desassociada da Eleicao.";
 	}
 
 	public void removeProfissao(Profissao profissao) {

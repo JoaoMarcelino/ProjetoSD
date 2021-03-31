@@ -139,6 +139,20 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return status;
 	}
 
+	public String removeMesaEleicao(String nomeMesa,String nomeEleicao) throws  RemoteException{
+		MesaVoto mesa=getMesaByDepartamento(nomeMesa);
+		Eleicao ele=getEleicaoByName(nomeEleicao);
+		if(mesa==null){
+			return "Mesa nao existe.";
+		}
+		if(ele==null){
+			return "Eleicao nao existe.";
+		}
+		String status= ele.removeMesa(mesa);
+		save("eleicoes");
+		return status;
+	}
+
 	public String editMesa(String nomeMesa,String membro1,String membro2,String membro3) throws RemoteException{
 		MesaVoto mesa=getMesaByDepartamento(nomeMesa);
 		if(mesa==null){

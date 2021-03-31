@@ -74,9 +74,12 @@ public class AdminConsole extends Thread {
                             addMesaEleicao(reader, servidor);
                             break;
                         case "4.3":
-                            editMesa(reader, servidor);
+                            removeMesaEleicao(reader, servidor);
                             break;
                         case "4.4":
+                            editMesa(reader, servidor);
+                            break;
+                        case "4.5":
                             listMesas(reader, servidor);
                             break;
                         case "5":
@@ -121,8 +124,9 @@ public class AdminConsole extends Thread {
                 "4.Gerir Mesas de Voto\n" +
                 "   4.1.Adicionar Mesa\n" +
                 "   4.2.Associar Mesa a Eleicao\n" +
-                "   4.3.Alterar Membros de Mesa\n" +
-                "   4.4.Listar Mesas existentes\n" +
+                "   4.3.Desassociar Mesa a Eleicao\n" +
+                "   4.4.Alterar Membros de Mesa\n" +
+                "   4.5.Listar Mesas existentes\n" +
                 "5.Entrar em Modo de Monitorizacao\n"+
                 "6.Sair.\n";
         return menu;
@@ -277,8 +281,23 @@ public class AdminConsole extends Thread {
                 System.out.println("Data Final deve ser depois da data Inical");
         }
 
-        String status=servidor.addEleicao(nome,descricao,dataInicio,dataTermino,profs,deps);
-        System.out.println(status);
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                String status=servidor.addEleicao(nome,descricao,dataInicio,dataTermino,profs,deps);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
     }
 
     public static void getResultados(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
@@ -287,7 +306,23 @@ public class AdminConsole extends Thread {
         System.out.print("Nome da eleicao:");
         nomeEleicao = reader.readLine();
 
-        Resultado res=servidor.getResultados(nomeEleicao);
+        Resultado res=null;
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                res=servidor.getResultados(nomeEleicao);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
         if(res==null){
             System.out.println("Eleicao nao existe");
         }
@@ -313,7 +348,23 @@ public class AdminConsole extends Thread {
         System.out.print("Nome da eleicao:");
         nomeEleicao = reader.readLine();
 
-        Voto v=servidor.getVoto(numeroCC,nomeEleicao);
+        Voto v=null; servidor.getVoto(numeroCC,nomeEleicao);
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                v=servidor.getVoto(numeroCC,nomeEleicao);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
         if(v==null){
             System.out.println("Pessoa ou eleicao nao existe.");
         }
@@ -340,12 +391,44 @@ public class AdminConsole extends Thread {
         System.out.print("Lista a votar (ou Nulo/Branco):");
         nomeLista = reader.readLine();
 
-        String status=servidor.addVotoAntecipado(numeroCC,password,nomeEleicao,nomeLista);
-        System.out.println(status);
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                String status=servidor.addVotoAntecipado(numeroCC,password,nomeEleicao,nomeLista);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
+
     }
 
     public static void listEleicoes(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        ArrayList<Eleicao> eleicoes=servidor.listEleicoes();
+        ArrayList<Eleicao> eleicoes=null;
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                eleicoes=servidor.listEleicoes();
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
         System.out.println("ELEICOES REGISTADAS:");
         for(Eleicao ele:eleicoes){
             System.out.println(ele.getTitulo()+" "+ele.getDescricao()+" "+ele.getProfissoesPermitidas() +" "+printGregorianCalendar(ele.getDataInicio())+" "+printGregorianCalendar(ele.getDataFim()));
@@ -377,8 +460,24 @@ public class AdminConsole extends Thread {
                 System.out.println("Data Final deve ser depois da data Inical");
         }
 
-        String status=servidor.editEleicao(nomeAntigo,nomeNovo,descricaoNova,dataInicio,dataTermino);
-        System.out.println(status);
+        String status="";
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                status=servidor.editEleicao(nomeAntigo,nomeNovo,descricaoNova,dataInicio,dataTermino);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
     }
 
     public static void addLista(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
@@ -412,8 +511,23 @@ public class AdminConsole extends Thread {
             i++;
         }while (!aux.equals(""));
 
-        String status=servidor.addLista(eleicao,nome,membros,prof);
-        System.out.println(status);
+        String status="";
+        //RMI Method call
+        for(int j=0;j<totalTries;j++){
+            try{
+                status=servidor.addLista(eleicao,nome,membros,prof);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(j==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
     }
 
 
@@ -422,7 +536,22 @@ public class AdminConsole extends Thread {
         System.out.print("Nome da eleicao:");
         eleicao=reader.readLine();
 
-        ArrayList<Lista> listas=servidor.listListas(eleicao);
+        ArrayList<Lista> listas=null;
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                listas=servidor.listListas(eleicao);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
 
         if(listas==null){
             System.out.println("Eleicao nao existe.");
@@ -507,8 +636,23 @@ public class AdminConsole extends Thread {
         membros.add(p2);
         membros.add(p3);
 
-        String status=servidor.addMesa(dep,membros,ip, port);
-        System.out.println(status);
+        String status="";
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                status=servidor.addMesa(dep,membros,ip, port);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
     }
 
     public static void addMesaEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
@@ -517,8 +661,50 @@ public class AdminConsole extends Thread {
         nomeMesa = reader.readLine();
         System.out.print("Eleicao:");
         nomeEleicao = reader.readLine();
-        String status=servidor.addMesaEleicao(nomeMesa,nomeEleicao);
-        System.out.println(status);
+
+        String status="";
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                status=servidor.addMesaEleicao(nomeMesa,nomeEleicao);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+    }
+
+    public static void removeMesaEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception{
+        String nomeMesa,nomeEleicao;
+        System.out.print("Mesa(departamento):");
+        nomeMesa = reader.readLine();
+        System.out.print("Eleicao:");
+        nomeEleicao = reader.readLine();
+
+        String status="";
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                status=servidor.removeMesaEleicao(nomeMesa,nomeEleicao);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
     }
 
     public static void editMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
@@ -532,13 +718,44 @@ public class AdminConsole extends Thread {
         System.out.print("Membro de mesa #3:");
         membro3 = reader.readLine();
 
-        String status=servidor.editMesa(nomeMesa,membro1,membro2, membro3);
-        System.out.println(status);
+        String status="";
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                status=servidor.editMesa(nomeMesa,membro1,membro2, membro3);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
     }
 
     public static void listMesas(BufferedReader reader,RMI_S_Interface servidor) throws Exception{
 
-        ArrayList<MesaVoto> mesas=servidor.listMesas();
+        ArrayList<MesaVoto> mesas=null;
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                mesas=servidor.listMesas();
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
         System.out.println("MESSAS EXISTENTES:");
         for(MesaVoto mesa:mesas){
             //{NomeDepardamento} {Desilgada/Ligada} {Membro1} {Membro2} {Membro3} {IP} {Port}
