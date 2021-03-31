@@ -169,7 +169,7 @@ class MulticastUser extends Thread {
                         break;
                     case "4":
                         if (isLogged)
-                            voted = vote(reader);
+                            vote(reader);
                         break;
                     default:
                         System.out.println("Escolha invalida.Tente 1, por exemplo.");
@@ -259,7 +259,7 @@ class MulticastUser extends Thread {
         }
     }
 
-    public boolean vote(BufferedReader reader) throws Exception{
+    public void vote(BufferedReader reader) throws Exception{
         System.out.print("Eleicao: ");
         String eleicao = reader.readLine();
         System.out.print("voto: ");
@@ -275,7 +275,6 @@ class MulticastUser extends Thread {
 
         System.out.println("Vote Status: "+ sucess + " ->" + msg);
 
-        return Boolean.parseBoolean(sucess);
     }
 
     synchronized public void waitTimeout(int flag){

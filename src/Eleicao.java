@@ -128,14 +128,17 @@ public class Eleicao implements Serializable {
 				this.votos.add(voto);
 				break;
 
-			case "Nulo":
+			default: //Nulo
 				this.nulos++;
 				this.votos.add(voto);
 				break;
 			}
+
+
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	public String addVotoAntecipado(Voto voto, String nomeLista, String tipo) {

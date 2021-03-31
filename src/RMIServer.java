@@ -171,9 +171,22 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		eleicao.removeLista(nome);
 	}
 
-	public String adicionarVoto(String nomeEleicao, Voto voto, String lista, String tipo) throws RemoteException {
+	public String adicionarVoto(String nomeEleicao, Voto voto, String nomeLista) throws RemoteException {
 		Eleicao ele = getEleicaoByName(nomeEleicao);
-		boolean hasVoted = ele.addVoto(voto, lista, tipo);
+
+		String tipo="";
+
+		Lista candidato = ele.getListaByName(nomeLista);
+		if (candidato != null){
+			tipo = "Valido";
+		}else if(nomeLista.equals("Branco")){
+			tipo= "Branco";
+		}else{
+			tipo = "Nulo";
+		}
+
+		boolean hasVoted = ele.addVoto(voto, nomeLista, tipo);
+
 		if (hasVoted){
 			return "true | Voto com Sucesso";
 		}
@@ -191,17 +204,16 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		}
 		Voto v=new Voto(p,new GregorianCalendar());
 		String tipo="";
-		switch (nomeLista){
-			case "Branco":
-				tipo="Branco";
-				break;
-			case "Nulo":
-				tipo="Nulo";
-				break;
-			default:
-				tipo="Valido";
-				break;
+
+		Lista candidato = ele.getListaByName(nomeLista);
+		if (candidato != null){
+			tipo = "Valido";
+		}else if(nomeLista.equals("Branco")){
+			tipo= "Branco";
+		}else{
+			tipo = "Nulo";
 		}
+
 		String status=ele.addVotoAntecipado(v,nomeLista,tipo);
 		save("eleicoes");
 		return status;

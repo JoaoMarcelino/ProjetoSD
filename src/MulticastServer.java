@@ -244,7 +244,7 @@ class MulticastReader extends Thread {
         Voto voto = new Voto(pessoa, data, this.mesa);
 
         //create String
-        String mensagem = servidor.adicionarVoto(eleicao, voto, escolha, escolha);
+        String mensagem = servidor.adicionarVoto(eleicao, voto, escolha);
         String[] msg = mensagem.split("\\|");
 
         sendMessage("type:voteStatus | terminalId:" + id + " | success:" + msg[0].trim() + " | msg:" + msg[1].trim());
