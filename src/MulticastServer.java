@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.rmi.registry.LocateRegistry;
 
-public class MulticastServer extends Thread implements RMI_C_Interface{
+public class MulticastServer extends Thread {
     private String address;
     private int port;
     private DatagramPacket packet;
@@ -15,38 +15,35 @@ public class MulticastServer extends Thread implements RMI_C_Interface{
     private RMI_S_Interface servidor;
     private MesaVoto mesa = null;
 
-    public MulticastServer(String address, String port, RMI_S_Interface servidor) {
+    public MulticastServer(MesaVoto mesa, RMI_S_Interface servidor) {
         super("Server " + (long) (Math.random() * 1000));
-        this.address = address;
-        this.port = Integer.parseInt(port);
+        this.address = mesa.getIp();
+        this.port = Integer.parseInt(mesa.getPort());
         this.servidor = servidor;
-        try{
-            this.mesa = servidor.getMesaByMulticastGroup(address, port);
-        }
-        catch (RemoteException e){
-            System.out.println("Exception in RMIServer: " + e);
-            e.printStackTrace();
-        }
+        this.mesa = mesa;
+
+        System.out.println("Iniciar terminais em: " + this.address + ":" + this.port);
     }
 
     public static void main(String[] args) {
-        if (args.length != 3) {
-            System.out.println("Bad Arguments.Run java MulticastServer {address} {port} {rmi_adress}");
+        if (args.length != 2) {
+            System.out.println("Bad Arguments.Run java MulticastServer {departamento} {rmi_adress}");
             System.exit(1);
         }
         RMI_S_Interface servidor = null;
+        MesaVoto mesa = null;
         try {
-            servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[2],7040).lookup("ServidorRMI");
-            ;
-            String message = servidor.sayHello();
-            System.out.println("HelloClient: " + message);
+            servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[1], 7040).lookup("ServidorRMI");
+            mesa = servidor.getMesaByDepartamento(args[0]);
+            mesa.turnOn();
+
         } catch (Exception e) {
             System.out.println("Exception in main: " + e);
             e.printStackTrace();
         }
 
-        MulticastServer server = new MulticastServer(args[0], args[1], servidor);
-        MulticastReader reader = new MulticastReader(args[0], args[1], servidor);
+        MulticastServer server = new MulticastServer(mesa, servidor);
+        MulticastReader reader = new MulticastReader(mesa, servidor);
 
         server.start();
         reader.start();
@@ -80,6 +77,7 @@ public class MulticastServer extends Thread implements RMI_C_Interface{
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            mesa.turnOff();
             socket.close();
         }
     }
@@ -96,7 +94,7 @@ public class MulticastServer extends Thread implements RMI_C_Interface{
 
         Pessoa pessoa = servidor.getPessoaByCC(numeroCC);
 
-        if (pessoa != null){
+        if (pessoa != null) {
             sendMessage("type:free | terminalId:all");
             Message resposta = getMessage();
             while (!resposta.tipo.equals("freeStatus")) {// descartar mensagens nao importantes
@@ -106,21 +104,19 @@ public class MulticastServer extends Thread implements RMI_C_Interface{
             String freeTerminal = resposta.pares.get("terminalId");
             sendMessage("type: unlock | terminalId:" + freeTerminal);
             System.out.println("Dirija-se ao terminal " + freeTerminal + " para votar.");
-        }
-        else{
+        } else {
             System.out.println("Numero não existente");
         }
-
 
         System.out.println("Carregue Enter para sair.");
         reader.readLine();
     }
 
     public void listMembers() {
-        if (this.mesa != null){
-            ArrayList<Pessoa> membros =  this.mesa.getMembros();
+        if (this.mesa != null) {
+            ArrayList<Pessoa> membros = this.mesa.getMembros();
             System.out.println("Membros:");
-            for(Pessoa membro: membros){
+            for (Pessoa membro : membros) {
                 System.out.println("- " + membro);
             }
         }
@@ -142,7 +138,6 @@ public class MulticastServer extends Thread implements RMI_C_Interface{
         Message msg = new Message(message);
         return msg;
     }
-
 }
 
 class MulticastReader extends Thread {
@@ -155,18 +150,12 @@ class MulticastReader extends Thread {
     private RMI_S_Interface servidor;
     private MesaVoto mesa;
 
-    public MulticastReader(String address, String port, RMI_S_Interface servidor) {
+    public MulticastReader(MesaVoto mesa, RMI_S_Interface servidor) {
         super("User " + (long) (Math.random() * 1000));
-        this.address = address;
-        this.port = Integer.parseInt(port);
+        this.address = mesa.getIp();
+        this.port = Integer.parseInt(mesa.getPort());
         this.servidor = servidor;
-        try{
-            this.mesa = servidor.getMesaByMulticastGroup(address, port);
-        }
-        catch (RemoteException e){
-            System.out.println("Exception in RMIServer: " + e);
-            e.printStackTrace();
-        }
+        this.mesa = mesa;
     }
 
     public void run() {
@@ -208,16 +197,16 @@ class MulticastReader extends Thread {
         }
     }
 
-    private Message verifyIds() throws Exception{
+    private Message verifyIds() throws Exception {
 
         sendMessage("type:reset | terminalId:all");
-        Message message = getMessage(); //own
+        Message message = getMessage(); // own
 
         message = getMessage();
-        while(message.tipo.equals("reset")){
+        while (message.tipo.equals("reset")) {
             String value = message.pares.get("terminalId");
             int count = Integer.parseInt(value);
-            if (count> counterID){
+            if (count > counterID) {
                 counterID = count;
             }
             message = getMessage();
@@ -232,18 +221,18 @@ class MulticastReader extends Thread {
         sendMessage("type:set | terminalId:-1 | newId:" + newId);
     }
 
-    private void vote(Message message) throws Exception{
+    private void vote(Message message) throws Exception {
         String id = message.pares.get("terminalId");
         String numeroCC = message.pares.get("numeroCC");
         String eleicao = message.pares.get("election");
         String escolha = message.pares.get("candidate");
 
-        //Create Voto
+        // Create Voto
         Pessoa pessoa = servidor.getPessoaByCC(numeroCC);
         GregorianCalendar data = new GregorianCalendar();
         Voto voto = new Voto(pessoa, data, this.mesa);
 
-        //create String
+        // create String
         String mensagem = servidor.adicionarVoto(eleicao, voto, escolha);
         String[] msg = mensagem.split("\\|");
 
@@ -253,32 +242,34 @@ class MulticastReader extends Thread {
 
     private void listElections(Message message) throws Exception {
         String id = message.pares.get("terminalId");
-        //get all elections para esta mesa de voto
+        // get all elections para esta mesa de voto
         ArrayList<Eleicao> eleicoes = servidor.listEleicoes(this.mesa);
-        //length de eleicoes
+        // length de eleicoes
         int length = eleicoes.size();
 
         sendMessage("type:itemList | terminalId:" + id + " | item_count:" + length);
 
-        for(Eleicao eleicao : eleicoes){
+        for (Eleicao eleicao : eleicoes) {
             String name = eleicao.getTitulo(); // get election name
-            String description = eleicao.getDescricao(); //get election description;
-            System.out.println("type:itemList | terminalId:" + id + " | item_name:" + name + " | item_description:" + description);
-            sendMessage("type:itemList | terminalId:" + id + " | item_name:" + name + " | item_description:" + description);
+            String description = eleicao.getDescricao(); // get election description;
+            System.out.println(
+                    "type:itemList | terminalId:" + id + " | item_name:" + name + " | item_description:" + description);
+            sendMessage(
+                    "type:itemList | terminalId:" + id + " | item_name:" + name + " | item_description:" + description);
         }
     }
 
     private void listCandidates(Message message) throws Exception {
         String id = message.pares.get("terminalId");
         String electionName = message.pares.get("election");
-        //get all candidates para esta eleicao
+        // get all candidates para esta eleicao
         ArrayList<Lista> candidaturas = servidor.listListas(electionName);
 
-        //length de candidatos
+        // length de candidatos
         int length = candidaturas.size();
         sendMessage("type:itemList | terminalId:" + id + " | item_count:" + length);
 
-        for(Lista candidatura: candidaturas){
+        for (Lista candidatura : candidaturas) {
             String name = candidatura.getNome(); // get election name
             System.out.println("type:itemList | terminalId:" + id + " | item_name:" + name);
             sendMessage("type:itemList | terminalId:" + id + " | item_name:" + name);
@@ -290,13 +281,12 @@ class MulticastReader extends Thread {
         String numeroCC = message.pares.get("numeroCC");
         String password = message.pares.get("password");
 
-        //verify login status
+        // verify login status
         String mensagem = servidor.login(numeroCC, password);
         String[] msg = mensagem.split("\\|");
 
         sendMessage("type:loginStatus | terminalId:" + id + " | success:" + msg[0].trim() + " | msg:" + msg[1].trim());
     }
-
 
     private void sendMessage(String message) throws Exception {
         byte[] buffer = message.getBytes();

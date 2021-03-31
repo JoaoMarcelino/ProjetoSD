@@ -55,6 +55,13 @@ public interface RMI_S_Interface extends Remote {
 
 	public MesaVoto getMesaByMulticastGroup(String ip,String port) throws java.rmi.RemoteException;
 
+	public MesaVoto getMesaByDepartamento(String dep) throws java.rmi.RemoteException;
+
 	public String adicionarVoto(String eleicao, Voto voto, String lista) throws RemoteException;
 
-	}
+	public Eleicao getEleicaoByName(String nome)  throws java.rmi.RemoteException;
+
+	public void subscribe(RMI_C_Interface c) throws java.rmi.RemoteException;
+
+	public void sendToAll(String s) throws java.rmi.RemoteException;
+}

@@ -6,12 +6,18 @@ import java.util.*;
 import java.rmi.*;
 import java.time.*;
 
-public class AdminConsole extends Thread {
+import java.rmi.server.*;
+
+public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface {
     public static String RMIHostIP;
     public static int RMIHostPort;
     public static int totalTries=10;//n tentativas de invocacao de metodo RMI ate desistir
     public static Registry r=null;
     public static RMI_S_Interface servidor;
+
+    public AdminConsole() throws RemoteException {
+        super();
+    }
 
     public static void main(String[] args) {
         if(args.length!=2){
@@ -21,14 +27,17 @@ public class AdminConsole extends Thread {
         RMIHostIP=args[0];
         RMIHostPort=Integer.parseInt(args[1]);
 
-        System.getProperties().put("java.security.policy", "policy.all");
-        System.setSecurityManager(new RMISecurityManager());
+        //System.getProperties().put("java.security.policy", "policy.all");
+        //System.setSecurityManager(new RMISecurityManager());
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha = "";
 
         try {
-            r= LocateRegistry.getRegistry(RMIHostIP,RMIHostPort);
+            r = LocateRegistry.getRegistry(RMIHostIP,RMIHostPort);
             servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
+
+            AdminConsole consola = new AdminConsole();
+            servidor.subscribe((RMI_C_Interface) consola);
 
             while (true) {
                 System.out.println(printMenu());
@@ -131,7 +140,6 @@ public class AdminConsole extends Thread {
                 "6.Sair.\n";
         return menu;
     }
-
 
 
     public static void addPessoa(BufferedReader reader, RMI_S_Interface servidor) throws Exception {
@@ -306,11 +314,11 @@ public class AdminConsole extends Thread {
         System.out.print("Nome da eleicao:");
         nomeEleicao = reader.readLine();
 
-        Resultado res=null;
+        Eleicao eleicao=null;
         //RMI Method call
         for(int i=0;i<totalTries;i++){
             try{
-                res=servidor.getResultados(nomeEleicao);
+                eleicao=servidor.getEleicaoByName(nomeEleicao);
                 break;
             }catch (RemoteException e){
                 try {
@@ -322,21 +330,15 @@ public class AdminConsole extends Thread {
                 }
             }
         }
-
-        if(res==null){
+        
+        if(eleicao==null){
             System.out.println("Eleicao nao existe");
         }
         else{
-            System.out.println("Eleicao:"+res.getTitulo());
-            System.out.println("Total de Votos:"+res.getTotalVotos());
-            System.out.println("Votos em Branco:"+res.getBrancos());
-            System.out.println("Votos Nulos:"+res.getNulos());
-            ArrayList<String> listas=res.getNomesListas();
-            ArrayList<Integer> results=res.getResultados();
-
-            for(int i=0;i<listas.size();i++){
-                System.out.println("\tLista "+listas.get(i)+":"+results.get(i));
-            }
+            System.out.println("Eleicao:"+eleicao.getTitulo());
+            System.out.println("Total de Votos:"+eleicao.getTotalVotos());
+            System.out.print("Votos:\n" + eleicao.getTotalVotosString());
+            System.out.printf("Vencedor: "+ eleicao.getVencedor());
         }
     }
 
@@ -865,5 +867,9 @@ public class AdminConsole extends Thread {
 
         }
         return calendar;
+    }
+
+    public void printOnClient(String s) throws RemoteException {
+        System.out.println("> " + s);
     }
 }
