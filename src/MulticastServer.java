@@ -27,7 +27,7 @@ public class MulticastServer extends Thread {
 
     public static void main(String[] args) {
         if (args.length != 2) {
-            System.out.println("Bad Arguments.Run java MulticastServer {address} {port} {rmi_adress}");
+            System.out.println("Bad Arguments.Run java MulticastServer {departamento} {rmi_adress}");
             System.exit(1);
         }
         RMI_S_Interface servidor = null;
