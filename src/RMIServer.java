@@ -9,68 +9,70 @@ import java.net.*;
 import static java.lang.Thread.sleep;
 
 public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
+	public static String RMIHostIP;
+	public static int RMIHostPort;
+	public static int frequency=1000; //frequencia de pings entre servidores (milisegundos)
+	public static int totalTries=3;//n tentativas ate assumir papel de servidor principal
 
 	public ArrayList<Eleicao> eleicoes = new ArrayList<>();
 	public ArrayList<Pessoa> pessoas = new ArrayList<>();
 	public ArrayList<MesaVoto> mesas = new ArrayList<>();
 	public ArrayList<Resultado> resultados = new ArrayList<>();
-
+	public Stack<String> novidades=new Stack<>();
 	public RMIServer() throws RemoteException {
 		super();
 		load();
-
 	}
 
 	public static void main(String args[]) {
-		if(args.length!=1){
-			System.out.println("Bad arguments. run java RMIServer {RMIHostIP}");
+		if(args.length!=2){
+			System.out.println("Bad arguments. Run java RMIServer {RMIHostIP} {RMIHostPort}");
 			System.exit(1);
 		}
+		RMIHostIP=args[0];
+		RMIHostPort=Integer.parseInt(args[1]);
+
 		System.getProperties().put("java.security.policy", "policy.all");
 		System.setSecurityManager(new RMISecurityManager());
+
 		try {
-			Registry r = LocateRegistry.getRegistry(args[0],7040);
+			Registry r = LocateRegistry.getRegistry(RMIHostIP,RMIHostPort);
 			RMI_S_Interface servidorPrincipal = (RMI_S_Interface) r.lookup("ServidorRMI");
-			System.out.println("Servidor RMI Secundario em execucao.");
 			int failed = 0;
-			int toRecover = 3;
-			int frequency = 10;
-			while (failed < toRecover) {
+
+			System.out.println("Servidor RMI Secundario em execucao.");
+			while (failed < totalTries) {
 				sleep(frequency);
 				try {
 					servidorPrincipal.ping();
 				} catch (RemoteException e) {
 					failed++;
-					System.out.println("Heartbeat falhou." + failed + "/" + toRecover);
+					System.out.println("Heartbeat falhou." + failed + "/" + totalTries);
 				}
 			}
-			servidorPrincipal(args[0]);
-		}catch (NotBoundException e) {
-			System.out.println("Objeto servidorRMI nao eiste em RMI.");
-			servidorPrincipal(args[0]);
-		}catch (RemoteException e){
-			System.out.println("RMI nao existe.");
-			servidorPrincipal(args[0]);
-		}catch (Exception e){
+			servidorPrincipal();
+
+		}catch (NotBoundException | RemoteException e) {
+			servidorPrincipal();
+		} catch (Exception e){
 			System.out.println(e.getMessage());
-		}
-		finally {
-			System.exit(1);
+		}finally {
+			System.exit(0);
 		}
 	}
 
-	public static void servidorPrincipal(String RMIHostIP){
+	public static void servidorPrincipal(){
 		try {
-			System.out.println("Servidor RMI Principal em execucao.");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 			System.setProperty("java.rmi.server.hostname", RMIHostIP);
-			Registry r = LocateRegistry.createRegistry(7040);
-			System.out.println(r.toString());
+			Registry r = LocateRegistry.createRegistry(RMIHostPort);
 			RMIServer servidor = new RMIServer();
 			r.rebind("ServidorRMI", servidor);
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("Servidor RMI Principal em execucao. ["+System.getProperty("java.rmi.server.hostname")+" "+RMIHostPort+"]");
 			System.out.println("Enter para encerrar servidor.");
-			String espera=reader.readLine();
+			reader.readLine();
+			reader.close();
 		}catch (Exception e){
 			System.out.println(e.getMessage());
 		}
@@ -182,7 +184,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			return "Pessoa ou password incorreta.";
 		}
 		if(ele==null){
-			return "Eleicao ("+ele.getTitulo()+") nao existe.";
+			return "Eleicao nao existe.";
 		}
 		Voto v=new Voto(p,new GregorianCalendar());
 		String tipo="";
@@ -197,8 +199,13 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 				tipo="Valido";
 				break;
 		}
+
 		String status=ele.addVotoAntecipado(v,nomeLista,tipo);
-		save("eleicoes");
+		if(status.equals("Voto realizado com sucesso.")){
+			save("eleicoes");
+			String update=p.getNome()+" votou na Eleicao "+ele.getTitulo()+" a "+printGregorianCalendar(new GregorianCalendar())+ " na mesa "+v.getMesa();
+			accessNovidades(true,update);
+		}
 		return status;
 	}
 
@@ -321,6 +328,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
+		public ArrayList<MesaVoto> listMesas() throws  RemoteException {
+		return mesas;
+	}
 
 	public void setDataInicio(String nomeEleicao, GregorianCalendar dataInicio) throws  RemoteException {
 		Eleicao eleicao = getEleicaoByName(nomeEleicao);
@@ -355,9 +365,27 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
+	synchronized public String accessNovidades(boolean flagPublish,String update) throws RemoteException{
+		if(flagPublish){
+			novidades.push(update);	//publicar novidade na stack e acordar consumidores
+			notifyAll();
+			return "";
+		}
+		else{
+			int tam=novidades.size();
+			while(tam==novidades.size()){ //verificar se foram publicadas novidades na stack
+				try{
+					wait();
+				}catch (InterruptedException e){
+					System.out.println(e.getMessage());
+				}
+			}
+			return novidades.peek(); //aceder à ultima novidade publicada, sem a remover(outros consumidores podem necessitar tambem dela
+		}
+	}
+
 	public void save(String arrayName) {
 		File file = new File("./ObjectFiles/" + arrayName + ".obj");
-
 		writeObjects(arrayName, file);
 	}
 
@@ -395,15 +423,11 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 					System.out.println("Erro: Array nao existente.");
 			}
 			oos.close();
-		}
-		catch (FileNotFoundException ex) {
+		}catch (FileNotFoundException ex) {
 			System.out.println("Erro a criar ficheiro.");
-
-		}
-		catch (IOException ex) {
+		}catch (IOException ex) {
 			System.out.println("Erro a escrever para o ficheiro.");
 		}
-
 	}
 
 	public void load() {
@@ -423,39 +447,39 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			FileInputStream fis = new FileInputStream(f);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 
-			while(true){
-				try{
-					switch (aux) {
-						case "eleicoes":
-							List<Eleicao> listEleicao = (List<Eleicao>)ois.readObject();
-							eleicoes = (ArrayList<Eleicao>) listEleicao;
-							break;
-						case "pessoas":
-							List<Pessoa> listPessoa = (List<Pessoa>)ois.readObject();
-							pessoas = (ArrayList<Pessoa>) listPessoa;
-							break;
-						case "mesas":
-							List<MesaVoto> listMesas = (List<MesaVoto>)ois.readObject();
-							mesas = (ArrayList<MesaVoto>) listMesas;
-							break;
-						default:
-							System.out.println("Erro: Array nao existente.");
-					}
-				}
-				catch (ClassNotFoundException ex) {
-					System.out.println("Erro a converter objeto");
-				}
-				catch (EOFException ex){
-					ois.close();
-				}
+
+			switch (aux) {
+				case "eleicoes":
+					List<Eleicao> listEleicao = (List<Eleicao>)ois.readObject();
+					eleicoes = (ArrayList<Eleicao>) listEleicao;
+					break;
+				case "pessoas":
+					List<Pessoa> listPessoa = (List<Pessoa>)ois.readObject();
+					pessoas = (ArrayList<Pessoa>) listPessoa;
+					break;
+				case "mesas":
+					List<MesaVoto> listMesas = (List<MesaVoto>)ois.readObject();
+					mesas = (ArrayList<MesaVoto>) listMesas;
+					break;
 			}
+			ois.close();
 		}
-		catch (FileNotFoundException ex) {
+		catch (ClassNotFoundException ex) {
+			System.out.println("Erro a converter objeto");
+		}catch (FileNotFoundException ex) {
 			System.out.println("Erro a abrir ficheiro.");
-		}
-		catch (IOException ex) {
+		}catch (IOException ex) {
 			System.out.println("Erro a ler ficheiro.");
 		}
+	}
+
+	public static String printGregorianCalendar(GregorianCalendar data){
+		int hora=data.get(Calendar.HOUR);
+		int dia=data.get(Calendar.DATE);
+		int mes=data.get(Calendar.MONTH)+1;
+		int ano=data.get(Calendar.YEAR);
+
+		return hora+"h "+dia+" "+mes+" "+ano;
 	}
 
 	public String sayHello() throws RemoteException {

@@ -33,6 +33,8 @@ public interface RMI_S_Interface extends Remote {
 
 	public ArrayList<Lista> listListas(String nomeEleicao) throws  java.rmi.RemoteException;
 
+	public ArrayList<MesaVoto> listMesas() throws  java.rmi.RemoteException;
+
 	public void setDataInicio(String nomeEleicao, GregorianCalendar dataInicio) throws java.rmi.RemoteException;
 
 	public void setDataFim(String nomeEleicao, GregorianCalendar dataFim) throws java.rmi.RemoteException;
@@ -40,6 +42,8 @@ public interface RMI_S_Interface extends Remote {
 	public boolean login(String cc, String password) throws java.rmi.RemoteException;
 
 	public Pessoa identificar(String cc) throws java.rmi.RemoteException;
+
+	public String accessNovidades(boolean flagPublish,String update) throws RemoteException;
 
 	public void ping() throws java.rmi.RemoteException;
 }
