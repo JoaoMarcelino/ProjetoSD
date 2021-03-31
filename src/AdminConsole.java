@@ -1,22 +1,35 @@
 import java.net.*;
 import java.io.*;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.*;
 import java.rmi.*;
 import java.time.*;
 
 public class AdminConsole extends Thread {
+    public static String RMIHostIP;
+    public static int RMIHostPort;
+    public static int totalTries=10;//n tentativas de invocacao de metodo RMI ate desistir
+    public static Registry r=null;
+    public static RMI_S_Interface servidor;
+
     public static void main(String[] args) {
-        if(args.length!=1){
-            System.out.println("Bad arguments. run java AdminConsole {RMIHostIP}");
+        if(args.length!=2){
+            System.out.println("Bad arguments. run java AdminConsole {RMIHostIP} {RMIHostPort}");
             System.exit(1);
         }
+        RMIHostIP=args[0];
+        RMIHostPort=Integer.parseInt(args[1]);
+
         System.getProperties().put("java.security.policy", "policy.all");
         System.setSecurityManager(new RMISecurityManager());
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha = "";
+
         try {
-            RMI_S_Interface servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[0],7040).lookup("ServidorRMI");
+            r= LocateRegistry.getRegistry(RMIHostIP,RMIHostPort);
+            servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
+
             while (true) {
                 System.out.println(printMenu());
                 System.out.print("Opcao: ");
@@ -63,16 +76,22 @@ public class AdminConsole extends Thread {
                         case "4.3":
                             editMesa(reader, servidor);
                             break;
+                        case "4.4":
+                            listMesas(reader, servidor);
+                            break;
                         case "5":
+                            modoMonitor(reader,servidor);
+                        case "6":
                             Exception e = new Exception("Consola encerrada.");
                             throw e;
+
                         default:
                             System.out.println("Escolha invalida.Tente 1.1, por exemplo.");
                             break;
                     }
                 }catch ( RemoteException e){
-                    System.out.println("Falha de ligacao ao servidor.Tente Novamente");
-                    servidor=(RMI_S_Interface) LocateRegistry.getRegistry(7040).lookup("ServidorRMI");
+                    System.out.println("Falha de ligacao ao servidor. Tente Novamente");
+                    servidor=(RMI_S_Interface) r.lookup("ServidorRMI");
                 }
                 System.out.println("Pressione Enter para continuar.");
                 reader.readLine();
@@ -88,7 +107,7 @@ public class AdminConsole extends Thread {
                 + "___________________________________________\n" +
                 "1.Gerir Pessoas\n" +
                 "   1.1.Registar Pessoa\n" +
-                "   1.2.Listar Pessoas\n" +
+                "   1.2.Listar Pessoas registadas\n" +
                 "2.Gerir Eleicao\n" +
                 "   2.1.Criar Eleicao\n" +
                 "   2.2.Consultar Resultados\n" +
@@ -98,12 +117,14 @@ public class AdminConsole extends Thread {
                 "   2.6.Alterar Dados de Eleicao\n"+
                 "3.Gerir Candidatos\n" +
                 "   3.1.Adicionar Lista\n" +
-                "   3.2.Listar Listas\n"+
+                "   3.2.Listar Listas de Eleicao\n"+
                 "4.Gerir Mesas de Voto\n" +
                 "   4.1.Adicionar Mesa\n" +
                 "   4.2.Associar Mesa a Eleicao\n" +
                 "   4.3.Alterar Membros de Mesa\n" +
-                "5.Sair.\n";
+                "   4.4.Listar Mesas existentes\n" +
+                "5.Entrar em Modo de Monitorizacao\n"+
+                "6.Sair.\n";
         return menu;
     }
 
@@ -192,8 +213,23 @@ public class AdminConsole extends Thread {
     }
 
 
-    public static void listPessoas(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        ArrayList<Pessoa> pessoas=servidor.listPessoas();
+    public static void listPessoas(BufferedReader reader,RMI_S_Interface servidor)throws NotBoundException {
+        ArrayList<Pessoa> pessoas=new ArrayList<>();
+        for(int i=0;i<totalTries;i++){
+            try{
+                pessoas=servidor.listPessoas(); //metodo RMI que se quer chamar
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
         System.out.println("PESSOAS REGISTADAS:");
         for(Pessoa p:pessoas){
             System.out.println(p.getNome()+" "+p.getNumberCC()+ " "+p.getDepartamento()+" "+p.getProfissao());
@@ -202,7 +238,6 @@ public class AdminConsole extends Thread {
 
     public static void addEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         String nome, descricao,type;
-        String hora, dia, mes, ano;
         ArrayList<Profissao> profs=new ArrayList<Profissao>();
         ArrayList<Departamento> deps=new ArrayList<Departamento>(Arrays.asList(Departamento.values()));
         GregorianCalendar dataInicio = new GregorianCalendar(), dataTermino = new GregorianCalendar();
@@ -252,21 +287,15 @@ public class AdminConsole extends Thread {
         System.out.print("Nome da eleicao:");
         nomeEleicao = reader.readLine();
 
-        Resultado res=servidor.getResultados(nomeEleicao);
-        if(res==null){
+        Eleicao eleicao=servidor.getEleicaoByName(nomeEleicao);
+        if(eleicao==null){
             System.out.println("Eleicao nao existe");
         }
         else{
-            System.out.println("Eleicao:"+res.getTitulo());
-            System.out.println("Total de Votos:"+res.getTotalVotos());
-            System.out.println("Votos em Branco:"+res.getBrancos());
-            System.out.println("Votos Nulos:"+res.getNulos());
-            ArrayList<String> listas=res.getNomesListas();
-            ArrayList<Integer> results=res.getResultados();
-
-            for(int i=0;i<listas.size();i++){
-                System.out.println("\tLista "+listas.get(i)+":"+results.get(i));
-            }
+            System.out.println("Eleicao:"+eleicao.getTitulo());
+            System.out.println("Total de Votos:"+eleicao.getTotalVotos());
+            System.out.print("Votos:\n" + eleicao.getTotalVotosString());
+            System.out.printf("Vencedor: "+ eleicao.getVencedor());
         }
     }
 
@@ -302,7 +331,7 @@ public class AdminConsole extends Thread {
         password = reader.readLine();
         System.out.print("Eleicao:");
         nomeEleicao = reader.readLine();
-        System.out.print("Lista a votar:");
+        System.out.print("Lista a votar (ou Nulo/Branco):");
         nomeLista = reader.readLine();
 
         String status=servidor.addVotoAntecipado(numeroCC,password,nomeEleicao,nomeLista);
@@ -391,16 +420,19 @@ public class AdminConsole extends Thread {
 
         if(listas==null){
             System.out.println("Eleicao nao existe.");
+
+        }
+        else{
+            System.out.println("LISTAS REGISTADAS:");
+            for(Lista lis:listas){
+                System.out.print(lis.getNome()+" "+lis.getTipoLista()+" [ ");
+                for(Pessoa p:lis.getListaPessoas()){
+                    System.out.print(p.getNome()+" ");
+                }
+                System.out.println("] ");
+            }
         }
 
-        System.out.println("LISTAS REGISTADAS:");
-        for(Lista lis:listas){
-            System.out.print(lis.getNome()+" "+lis.getTipoLista()+" [ ");
-            for(Pessoa p:lis.getListaPessoas()){
-                System.out.print(p.getNome()+" ");
-            }
-            System.out.println("] ");
-        }
     }
 
     public static void addMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
@@ -496,6 +528,35 @@ public class AdminConsole extends Thread {
 
         String status=servidor.editMesa(nomeMesa,membro1,membro2, membro3);
         System.out.println(status);
+    }
+
+    public static void listMesas(BufferedReader reader,RMI_S_Interface servidor) throws Exception{
+
+        ArrayList<MesaVoto> mesas=servidor.listMesas();
+        System.out.println("MESSAS EXISTENTES:");
+        for(MesaVoto mesa:mesas){
+            //{NomeDepardamento} {Desilgada/Ligada} {Membro1} {Membro2} {Membro3} {IP} {Port}
+            System.out.print(mesa.getDepartamento()+" ");
+            if(mesa.isStatus()){
+                System.out.print("Ligada ");
+            }
+            else{
+                System.out.print("Desligada ");
+            }
+            System.out.print(mesa.getMembros().get(0).getNome()+" ");
+            System.out.print(mesa.getMembros().get(1).getNome()+" ");
+            System.out.print(mesa.getMembros().get(2).getNome()+" ");
+
+            System.out.println(mesa.getIp()+" "+mesa.getPort());
+        }
+
+    }
+
+    public static void modoMonitor(BufferedReader reader,RMI_S_Interface servidor) throws Exception{
+        while(true){
+            String status=servidor.accessNovidades(false,"");
+            System.out.println(status);
+        }
     }
 
     public static String printGregorianCalendar(GregorianCalendar data){

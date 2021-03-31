@@ -88,7 +88,7 @@ public class Eleicao implements Serializable {
 
 	public boolean hasVoted(Pessoa pessoa) {
 		for (Voto voto : votos) {
-			if (voto.getPessoa().equals(pessoa))
+			if (voto.getPessoa().getNumberCC().equals(pessoa.getNumberCC()))
 				return true;
 		}
 		return false;
@@ -143,6 +143,10 @@ public class Eleicao implements Serializable {
 
 	public String addVotoAntecipado(Voto voto, String nomeLista, String tipo) {
 		Lista lis=this.getListaByName(nomeLista);
+		if(!tipo.equals("Branco") && !tipo.equals("Nulo") && lis==null){
+			return "Lista ("+nomeLista+") nao existe.";
+		}
+
 		if(this.checkStart()){
 			return "Eleicao em progresso. Vote numa mesa de voto.";
 		}
@@ -154,13 +158,12 @@ public class Eleicao implements Serializable {
 		if( !canVote(voto.getPessoa())){
 			return "Nao pode votar nesta eleicao.";
 		}
+		if(!tipo.equals("Branco") && !tipo.equals("Nulo") && lis.getTipoLista() != voto.getPessoa().getProfissao()){
+			return "Nao pode votar nesta lista.";
+		}
 
 		if(voto.getMesa()!=null && !mesas.contains(voto.getMesa())){
 			return "Mesa nao associada a eleicao.";
-		}
-
-		if(lis==null){
-			return "Lista ("+nomeLista+") nao existe.";
 		}
 
 		switch (tipo) {
@@ -179,7 +182,7 @@ public class Eleicao implements Serializable {
 			this.votos.add(voto);
 			break;
 		}
-		return "Voto realizado com sucesso.["+voto.getPessoa().getNome()+" "+this.getTitulo()+" "+lis.getNome()+"]";
+		return "Voto realizado com sucesso.";
 	}
 
 	public String addLista(Lista lista) {
