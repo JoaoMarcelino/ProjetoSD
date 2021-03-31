@@ -124,6 +124,7 @@ class MulticastUser extends Thread {
     private DatagramPacket packet;
     private MulticastSocket socket = null;
     private boolean isLogged = false;
+    private String numeroCC;
     BufferedReader reader;
 
     public long lastTime;
@@ -168,7 +169,7 @@ class MulticastUser extends Thread {
                         break;
                     case "4":
                         if (isLogged)
-                            voted = vote();
+                            vote(reader);
                         break;
                     default:
                         System.out.println("Escolha invalida.Tente 1, por exemplo.");
@@ -197,18 +198,19 @@ class MulticastUser extends Thread {
 
 
     public void login(BufferedReader reader) throws Exception {
-        System.out.print("username: ");
-        String user = reader.readLine();
+        System.out.print("numeroCC: ");
+        String numeroCC = reader.readLine();
         System.out.print("password: ");
         String password = reader.readLine();
 
-        sendMessage("type:login | terminalId:" + this.id + " | username:" + user +  " | password:" + password);
+        sendMessage("type:login | terminalId:" + this.id + " | numeroCC:" + numeroCC +  " | password:" + password);
 
         Message message = getMessage(); // own message
 
         message = getMessage();
 
         this.isLogged =  Boolean.parseBoolean(message.pares.get("success"));
+        if(this.isLogged) this.numeroCC = numeroCC;
 
         String info = message.pares.get("msg");
         if (info != null)
@@ -257,9 +259,24 @@ class MulticastUser extends Thread {
         }
     }
 
-    public boolean vote(){
-        return true;
+    public void vote(BufferedReader reader) throws Exception{
+        System.out.print("Eleicao: ");
+        String eleicao = reader.readLine();
+        System.out.print("voto: ");
+        String candidato = reader.readLine();
+
+        sendMessage("type:vote | terminalId:"+ this.id +" | numeroCC:"+ this.numeroCC +" | election:"+ eleicao +" | candidate:" + candidato);
+
+        Message message = getMessage(); // own message
+
+        message = getMessage();
+        String sucess = message.pares.get("sucess");
+        String msg = message.pares.get("msg");
+
+        System.out.println("Vote Status: "+ sucess + " ->" + msg);
+
     }
+
     synchronized public void waitTimeout(int flag){
         //MulticastUser executa isto depois de cada readline();
         //Dá reset ao timer c/ o notifyAll()
@@ -311,7 +328,7 @@ class Watcher extends Thread{
 
     public Watcher(MulticastUser watched){
         super("Watcher " + (long) (Math.random() * 1000));
-        this.watched=watched;
+        this.watched = watched;
     }
 
     public void run() {

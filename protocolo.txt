@@ -1,7 +1,7 @@
 Multicast Protocol
 
-type:loginStatus | terminalId:{id} |  success:{true,false} | msg:{msg}
-type:login | terminalId:{id} | username:{username} | password:{password}
+type:loginStatus | terminalId:{id} | success:{true,false} | msg:{msg}
+type:login | terminalId:{id} | numeroCC:{numeroCC} | password:{password}
 
 type:listElections | terminalId:{id} |
 type:itemList | terminalId:{id} | item_count:{num}
@@ -11,8 +11,8 @@ type:listCandidates | terminalId:{id} | election:{election_name}
 type:itemList | terminalId:{id} | item_count:{num}
 type:itemList | terminalId:{id} | item_name:{name}
 
-type:voteStatus|terminalId:{id} | success:{yes,no} | msg:{msg}
-type:vote | terminalId:{id} | election:{election_name} | candidate:{cadidate_name,null,blank}
+type:voteStatus| terminalId:{id} | success:{true,false} | msg:{msg}
+type:vote | terminalId:{id} | numeroCC:{numeroCC}  | election:{election_name} | candidate:{cadidate_name,null,blank}
 
 type:set | terminalId:{id} | newId:{id}
 type:joinGroup | terminalId:{id}

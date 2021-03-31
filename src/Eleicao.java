@@ -112,7 +112,8 @@ public class Eleicao implements Serializable {
 		setDataFim(dataFim);
 		return "Dados de Eleicao alterados.";
 	}
-	public void addVoto(Voto voto, String nomeLista, String tipo) {
+
+	public boolean addVoto(Voto voto, String nomeLista, String tipo) {
 
 		if (checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())) {
 
@@ -127,12 +128,17 @@ public class Eleicao implements Serializable {
 				this.votos.add(voto);
 				break;
 
-			case "Nulo":
+			default: //Nulo
 				this.nulos++;
 				this.votos.add(voto);
 				break;
 			}
+
+
+			return true;
 		}
+
+		return false;
 	}
 
 	public String addVotoAntecipado(Voto voto, String nomeLista, String tipo) {
