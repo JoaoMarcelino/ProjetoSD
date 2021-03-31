@@ -18,16 +18,18 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	public RMIServer() throws RemoteException {
 		super();
 		load();
-
 	}
 
 	public static void main(String args[]) {
+
 		if(args.length!=1){
 			System.out.println("Bad arguments. run java RMIServer {RMIHostIP}");
 			System.exit(1);
 		}
+
 		System.getProperties().put("java.security.policy", "policy.all");
 		System.setSecurityManager(new RMISecurityManager());
+
 		try {
 			Registry r = LocateRegistry.getRegistry(args[0],7040);
 			RMI_S_Interface servidorPrincipal = (RMI_S_Interface) r.lookup("ServidorRMI");
