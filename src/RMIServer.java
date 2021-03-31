@@ -274,9 +274,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
-	public MesaVoto getMesaByDepartamento(String dep) {
-		for (MesaVoto mesa : mesas) {
-			if (mesa.getDepartamento().name().equals(dep)) {
+	public MesaVoto getMesaByDepartamento(String dep) throws java.rmi.RemoteException{
+		for(MesaVoto mesa: mesas){
+			if(mesa.getDepartamento().name().equals(dep)){
 				return mesa;
 			}
 		}
