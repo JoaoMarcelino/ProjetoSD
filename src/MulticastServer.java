@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.rmi.registry.LocateRegistry;
 
-public class MulticastServer extends Thread implements RMI_C_Interface{
+public class MulticastServer extends Thread {
     private String address;
     private int port;
     private DatagramPacket packet;
@@ -31,7 +31,7 @@ public class MulticastServer extends Thread implements RMI_C_Interface{
 
     public static void main(String[] args) {
         if (args.length != 3) {
-            System.out.println("Bad Arguments.Run java MulticastServer {address} {port} {rmi_adress}");
+            System.out.println("Bad Arguments. Run java MulticastServer {address} {port} {rmi_adress}");
             System.exit(1);
         }
         RMI_S_Interface servidor = null;
@@ -142,7 +142,6 @@ public class MulticastServer extends Thread implements RMI_C_Interface{
         Message msg = new Message(message);
         return msg;
     }
-
 }
 
 class MulticastReader extends Thread {

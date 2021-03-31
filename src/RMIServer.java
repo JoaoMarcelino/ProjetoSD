@@ -14,6 +14,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	public static int frequency = 1000; // frequencia de pings entre servidores (milisegundos)
 	public static int totalTries = 3;// n tentativas ate assumir papel de servidor principal
 
+	public ArrayList<RMI_C_Interface> consolas = new ArrayList<>();
 	public ArrayList<Eleicao> eleicoes = new ArrayList<>();
 	public ArrayList<Pessoa> pessoas = new ArrayList<>();
 	public ArrayList<MesaVoto> mesas = new ArrayList<>();
@@ -33,8 +34,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		RMIHostIP = args[0];
 		RMIHostPort = Integer.parseInt(args[1]);
 
-		System.getProperties().put("java.security.policy", "policy.all");
-		System.setSecurityManager(new RMISecurityManager());
+		//System.getProperties().put("java.security.policy", "policy.all");
+		//System.setSecurityManager(new RMISecurityManager());
 
 		try {
 			Registry r = LocateRegistry.getRegistry(RMIHostIP, RMIHostPort);
@@ -229,8 +230,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			save("eleicoes");
 			String update = p.getNome() + " votou na Eleicao " + ele.getTitulo() + " a "
 					+ printGregorianCalendar(new GregorianCalendar()) + " na mesa " + v.getMesa();
-			accessNovidades(true, update);
+			sendToAll(update);
 		}
+
 		return status;
 	}
 
@@ -513,6 +515,15 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		int ano = data.get(Calendar.YEAR);
 
 		return hora + "h " + dia + " " + mes + " " + ano;
+	}
+
+	public void subscribe(RMI_C_Interface c) throws RemoteException {
+		consolas.add(c);
+	}
+
+	public void sendToAll(String s) throws RemoteException {
+		for (RMI_C_Interface consola : consolas)
+			consola.printOnClient(s);
 	}
 
 	public String sayHello() throws RemoteException {

@@ -6,12 +6,18 @@ import java.util.*;
 import java.rmi.*;
 import java.time.*;
 
-public class AdminConsole extends Thread {
+import java.rmi.server.*;
+
+public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface {
     public static String RMIHostIP;
     public static int RMIHostPort;
     public static int totalTries=10;//n tentativas de invocacao de metodo RMI ate desistir
     public static Registry r=null;
     public static RMI_S_Interface servidor;
+
+    public AdminConsole() throws RemoteException {
+        super();
+    }
 
     public static void main(String[] args) {
         if(args.length!=2){
@@ -21,14 +27,17 @@ public class AdminConsole extends Thread {
         RMIHostIP=args[0];
         RMIHostPort=Integer.parseInt(args[1]);
 
-        System.getProperties().put("java.security.policy", "policy.all");
-        System.setSecurityManager(new RMISecurityManager());
+        //System.getProperties().put("java.security.policy", "policy.all");
+        //System.setSecurityManager(new RMISecurityManager());
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha = "";
 
         try {
-            r= LocateRegistry.getRegistry(RMIHostIP,RMIHostPort);
+            r = LocateRegistry.getRegistry(RMIHostIP,RMIHostPort);
             servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
+
+            AdminConsole consola = new AdminConsole();
+            servidor.subscribe((RMI_C_Interface) consola);
 
             while (true) {
                 System.out.println(printMenu());
@@ -127,7 +136,6 @@ public class AdminConsole extends Thread {
                 "6.Sair.\n";
         return menu;
     }
-
 
 
     public static void addPessoa(BufferedReader reader, RMI_S_Interface servidor) throws Exception {
@@ -642,5 +650,9 @@ public class AdminConsole extends Thread {
 
         }
         return calendar;
+    }
+
+    public void printOnClient(String s) throws RemoteException {
+        System.out.println("> " + s);
     }
 }

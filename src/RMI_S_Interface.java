@@ -57,4 +57,7 @@ public interface RMI_S_Interface extends Remote {
 
 	public Eleicao getEleicaoByName(String nome)  throws java.rmi.RemoteException;
 
-	}
+	public void subscribe(RMI_C_Interface c) throws java.rmi.RemoteException;
+
+	public void sendToAll(String s) throws java.rmi.RemoteException;
+}
