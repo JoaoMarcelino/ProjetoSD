@@ -55,4 +55,6 @@ public interface RMI_S_Interface extends Remote {
 
 	public String adicionarVoto(String eleicao, Voto voto, String lista) throws RemoteException;
 
+	public Eleicao getEleicaoByName(String nome)  throws java.rmi.RemoteException;
+
 	}

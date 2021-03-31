@@ -287,21 +287,15 @@ public class AdminConsole extends Thread {
         System.out.print("Nome da eleicao:");
         nomeEleicao = reader.readLine();
 
-        Resultado res=servidor.getResultados(nomeEleicao);
-        if(res==null){
+        Eleicao eleicao=servidor.getEleicaoByName(nomeEleicao);
+        if(eleicao==null){
             System.out.println("Eleicao nao existe");
         }
         else{
-            System.out.println("Eleicao:"+res.getTitulo());
-            System.out.println("Total de Votos:"+res.getTotalVotos());
-            System.out.println("Votos em Branco:"+res.getBrancos());
-            System.out.println("Votos Nulos:"+res.getNulos());
-            ArrayList<String> listas=res.getNomesListas();
-            ArrayList<Integer> results=res.getResultados();
-
-            for(int i=0;i<listas.size();i++){
-                System.out.println("\tLista "+listas.get(i)+":"+results.get(i));
-            }
+            System.out.println("Eleicao:"+eleicao.getTitulo());
+            System.out.println("Total de Votos:"+eleicao.getTotalVotos());
+            System.out.print("Votos:\n" + eleicao.getTotalVotosString());
+            System.out.printf("Vencedor: "+ eleicao.getVencedor());
         }
     }
 

@@ -254,7 +254,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		}
 		return null;
 	}
-	public Eleicao getEleicaoByName(String nome){
+
+	public Eleicao getEleicaoByName(String nome)  throws java.rmi.RemoteException{
 		for (Eleicao eleicao : eleicoes){
 			if (eleicao.getTitulo().equals(nome))
 				return eleicao;
@@ -280,8 +281,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
-	public Lista getListaByName(String eleicao,String nome){
-		Eleicao election=getEleicaoByName(eleicao);
+	public Lista getListaByName(String eleicao,String nome) throws java.rmi.RemoteException{
+		Eleicao election= getEleicaoByName(eleicao);
 		if(election==null){
 			return null;
 		}
