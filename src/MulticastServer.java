@@ -15,38 +15,36 @@ public class MulticastServer extends Thread implements RMI_C_Interface{
     private RMI_S_Interface servidor;
     private MesaVoto mesa = null;
 
-    public MulticastServer(String address, String port, RMI_S_Interface servidor) {
+    public MulticastServer(MesaVoto mesa,  RMI_S_Interface servidor) {
         super("Server " + (long) (Math.random() * 1000));
-        this.address = address;
-        this.port = Integer.parseInt(port);
+        this.address = mesa.getIp();
+        this.port = Integer.parseInt(mesa.getPort());
         this.servidor = servidor;
-        try{
-            this.mesa = servidor.getMesaByMulticastGroup(address, port);
-        }
-        catch (RemoteException e){
-            System.out.println("Exception in RMIServer: " + e);
-            e.printStackTrace();
-        }
+        this.mesa = mesa;
+
+        System.out.println("Iniciar terminais em: " + this.address +":" +this.port);
     }
 
     public static void main(String[] args) {
-        if (args.length != 3) {
+        if (args.length != 2) {
             System.out.println("Bad Arguments.Run java MulticastServer {address} {port} {rmi_adress}");
             System.exit(1);
         }
         RMI_S_Interface servidor = null;
+        MesaVoto mesa = null;
         try {
-            servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[2],7040).lookup("ServidorRMI");
-            ;
-            String message = servidor.sayHello();
-            System.out.println("HelloClient: " + message);
+            servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[1],7040).lookup("ServidorRMI");
+            mesa = servidor.getMesaByDepartamento(args[0]);
+            mesa.turnOn();
+
         } catch (Exception e) {
             System.out.println("Exception in main: " + e);
             e.printStackTrace();
         }
 
-        MulticastServer server = new MulticastServer(args[0], args[1], servidor);
-        MulticastReader reader = new MulticastReader(args[0], args[1], servidor);
+        MulticastServer server = new MulticastServer(mesa, servidor);
+        MulticastReader reader = new MulticastReader(mesa, servidor);
+
 
         server.start();
         reader.start();
@@ -80,6 +78,7 @@ public class MulticastServer extends Thread implements RMI_C_Interface{
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            mesa.turnOff();
             socket.close();
         }
     }
@@ -155,18 +154,12 @@ class MulticastReader extends Thread {
     private RMI_S_Interface servidor;
     private MesaVoto mesa;
 
-    public MulticastReader(String address, String port, RMI_S_Interface servidor) {
+    public MulticastReader(MesaVoto mesa, RMI_S_Interface servidor) {
         super("User " + (long) (Math.random() * 1000));
-        this.address = address;
-        this.port = Integer.parseInt(port);
+        this.address = mesa.getIp();
+        this.port = Integer.parseInt(mesa.getPort());
         this.servidor = servidor;
-        try{
-            this.mesa = servidor.getMesaByMulticastGroup(address, port);
-        }
-        catch (RemoteException e){
-            System.out.println("Exception in RMIServer: " + e);
-            e.printStackTrace();
-        }
+        this.mesa = mesa;
     }
 
     public void run() {
