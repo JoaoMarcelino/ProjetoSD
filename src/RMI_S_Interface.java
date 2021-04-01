@@ -13,6 +13,8 @@ public interface RMI_S_Interface extends Remote {
 
 	public String addMesa(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port) throws java.rmi.RemoteException;
 
+	public String removeMesa(String nomeMesa) throws java.rmi.RemoteException;
+
 	public String addMesaEleicao(String nomeMesa,String nomeEleicao) throws java.rmi.RemoteException;
 
 	public String removeMesaEleicao(String nomeMesa,String nomeEleicao) throws  RemoteException;

@@ -376,17 +376,36 @@ public class Eleicao implements Serializable {
 		return vencedor;
 	}
 
+	public String getVencedorProfissao(Profissao prof){
+		String vencedor=prof.toString()+": Empate";
+		int max_value = 0;
+		int aux;
+		for (Lista lista : this.listas) {
+			if(lista.getTipoLista()==prof){
+				aux = lista.getVotos();
+				if (max_value == aux) {
+					vencedor =prof.toString()+": Empate";
+				} else if (aux > max_value) {
+					vencedor =prof.toString()+": "+lista.getNome();
+				}
+			}
+		}
+		return vencedor;
+	}
+
 	public Resultado getResultados() {
 
 		ArrayList<String> nomesListas = new ArrayList<>();
 		ArrayList<Integer> resultadosListas = new ArrayList<>();
-
+		ArrayList<String> nomeVencedores=new ArrayList<>();
 		for (Lista lista : this.listas) {
 			nomesListas.add(lista.getNome());
 			resultadosListas.add(lista.getVotos());
 		}
+		for(Profissao prof:profissoesPermitidas){
+			nomeVencedores.add(getVencedorProfissao(prof));
+		}
 
-		return new Resultado(this.titulo, this.getTotalVotos(), this.brancos, this.nulos, nomesListas,
-				resultadosListas);
+		return new Resultado(this.titulo, this.getTotalVotos(), this.brancos, this.nulos, nomesListas, resultadosListas,nomeVencedores);
 	}
 }

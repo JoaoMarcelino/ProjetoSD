@@ -80,22 +80,22 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                             addMesa(reader, servidor);
                             break;
                         case "4.2":
-                            addMesaEleicao(reader, servidor);
+                            removeMesa(reader, servidor);
                             break;
                         case "4.3":
-                            removeMesaEleicao(reader, servidor);
+                            addMesaEleicao(reader, servidor);
                             break;
                         case "4.4":
-                            editMesa(reader, servidor);
+                            removeMesaEleicao(reader, servidor);
                             break;
                         case "4.5":
+                            editMesa(reader, servidor);
+                            break;
+                        case "4.6":
                             listMesas(reader, servidor);
                             break;
                         case "5":
-                            modoMonitor(reader,servidor);
-                        case "6":
-                            Exception e = new Exception("Consola encerrada.");
-                            throw e;
+                             System.exit(0);
 
                         default:
                             System.out.println("Escolha invalida.Tente 1.1, por exemplo.");
@@ -132,12 +132,12 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                 "   3.2.Listar Listas de Eleicao\n"+
                 "4.Gerir Mesas de Voto\n" +
                 "   4.1.Adicionar Mesa\n" +
-                "   4.2.Associar Mesa a Eleicao\n" +
-                "   4.3.Desassociar Mesa a Eleicao\n" +
-                "   4.4.Alterar Membros de Mesa\n" +
-                "   4.5.Listar Mesas existentes\n" +
-                "5.Entrar em Modo de Monitorizacao\n"+
-                "6.Sair.\n";
+                "   4.2.Remover Mesa\n" +
+                "   4.3.Associar Mesa a Eleicao\n" +
+                "   4.4.Desassociar Mesa a Eleicao\n" +
+                "   4.5.Alterar Membros de Mesa\n" +
+                "   4.6.Listar Mesas existentes\n" +
+                "5.Sair\n";
         return menu;
     }
 
@@ -314,11 +314,11 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         System.out.print("Nome da eleicao:");
         nomeEleicao = reader.readLine();
 
-        Eleicao eleicao=null;
+        Resultado res=null;
         //RMI Method call
         for(int i=0;i<totalTries;i++){
             try{
-                eleicao=servidor.getEleicaoByName(nomeEleicao);
+                res=servidor.getResultados(nomeEleicao);
                 break;
             }catch (RemoteException e){
                 try {
@@ -330,15 +330,26 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                 }
             }
         }
-        
-        if(eleicao==null){
+
+        if(res==null){
             System.out.println("Eleicao nao existe");
         }
         else{
-            System.out.println("Eleicao:"+eleicao.getTitulo());
-            System.out.println("Total de Votos:"+eleicao.getTotalVotos());
-            System.out.print("Votos:\n" + eleicao.getTotalVotosString());
-            System.out.printf("Vencedor: "+ eleicao.getVencedor());
+            System.out.println("Eleicao:"+res.getTitulo());
+            System.out.println("Total de Votos:"+res.getTotalVotos());
+            System.out.println("Votos em Branco:" + res.getBrancos());
+            System.out.println("Votos Nulo:" + res.getNulos());
+            System.out.println("Vencedores: ");
+            for(String venc:res.getVencedores()){
+                System.out.println("\t"+venc);
+            }
+
+            ArrayList<String> listas=res.getNomesListas();
+            ArrayList<Integer> results=res.getResultados();
+            System.out.println("N Votos em cada Lista: ");
+            for(int i=0;i<listas.size();i++){
+                System.out.println("\t"+listas.get(i)+":"+results.get(i));
+            }
         }
     }
 
@@ -656,9 +667,34 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }
         }
     }
+    public static void removeMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+        String nomeMesa;
+
+        System.out.print("Mesa(departamento):");
+        nomeMesa = reader.readLine();
+
+        String status="";
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                status=servidor.removeMesa(nomeMesa);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+    }
 
     public static void addMesaEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         String nomeMesa,nomeEleicao;
+
         System.out.print("Mesa(departamento):");
         nomeMesa = reader.readLine();
         System.out.print("Eleicao:");
