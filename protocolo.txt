@@ -24,3 +24,4 @@ type:free | terminalId:{id,server,all}
 type:freeStatus | terminalId:{id,server,all} | success;{yes,no}
 
 type:reset | terminalId:{all}
+type:resetStatus | terminalId:{id}

@@ -41,16 +41,25 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			Registry r = LocateRegistry.getRegistry(RMIHostIP, RMIHostPort);
 			RMI_S_Interface servidorPrincipal = (RMI_S_Interface) r.lookup("ServidorRMI");
 			int failed = 0;
+			boolean didFail = false;
 
 			System.out.println("Servidor RMI Secundario em execucao.");
 			while (failed < totalTries) {
 				sleep(frequency);
 				try {
+					servidorPrincipal = (RMI_S_Interface) r.lookup("ServidorRMI");
 					servidorPrincipal.ping();
+					failed = 0;
 				} catch (RemoteException e) {
 					failed++;
 					System.out.println("Heartbeat falhou." + failed + "/" + totalTries);
+					didFail = true;
 				}
+				if(didFail && failed == 0){
+					didFail = false;
+					System.out.println("Heartbeat recuperado.");
+				}
+
 			}
 			servidorPrincipal();
 
@@ -236,6 +245,10 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		boolean hasVoted = ele.addVoto(voto, nomeLista, tipo);
 
 		if (hasVoted) {
+			save("eleicoes");
+			String update =  "Alguem votou na Eleicao " + ele.getTitulo() + " a "
+					+ printGregorianCalendar(new GregorianCalendar())+".";
+			sendToAll(update);
 			return "true | Voto com Sucesso";
 		}
 		return "false | Voto não aceite (Duplicado)";
@@ -332,10 +345,19 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	public void turnMesa(MesaVoto mesa, Boolean flag) throws java.rmi.RemoteException {
 		MesaVoto mesavoto = this.getMesaByDepartamento(mesa.getDepartamento().toString());
 
-		if(flag)
+		if(flag){
 			mesavoto.turnOn();
-		else
+			String update =  "Mesa " +  mesavoto.getDepartamento()  +" foi aberta a "
+					+ printGregorianCalendar(new GregorianCalendar())+".";
+			sendToAll(update);
+		}
+		else{
 			mesavoto.turnOff();
+			String update =   "Mesa " +  mesavoto.getDepartamento()  +" foi fechada a "
+					+ printGregorianCalendar(new GregorianCalendar())+".";
+			sendToAll(update);
+		}
+
 	}
 
 	public MesaVoto getMesaByMulticastGroup(String ip, String port) throws java.rmi.RemoteException {

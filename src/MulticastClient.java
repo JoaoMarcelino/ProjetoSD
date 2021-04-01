@@ -5,6 +5,7 @@ import java.util.*;
 public class MulticastClient extends Thread {
     private final String address;
     private final int port;
+    private int timeoutM =1000;
     private MulticastSocket socket = null;
     private String id = "-1";
     private boolean free = true;
@@ -97,7 +98,14 @@ public class MulticastClient extends Thread {
         do {
             byte[] buffer = new byte[256];
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-            socket.receive(packet);
+            socket.setSoTimeout(this.timeoutM);
+            try {
+                socket.receive(packet);
+            }
+            catch (SocketTimeoutException e){
+                //System.out.println("Timeout Reached");
+                return new Message("type:null");
+            }
 
             String message = new String(packet.getData(), 0, packet.getLength());
             msg = new Message(message);
@@ -110,6 +118,7 @@ public class MulticastClient extends Thread {
 class MulticastUser extends Thread {
     private final String address;
     private final int port;
+    private int timeoutM = 1000;
     private final String id;
     private InetAddress group;
     private DatagramPacket packet;
@@ -310,7 +319,14 @@ class MulticastUser extends Thread {
         do {
             byte[] buffer = new byte[256];
             packet = new DatagramPacket(buffer, buffer.length);
-            socket.receive(packet);
+            socket.setSoTimeout(this.timeoutM);
+            try {
+                socket.receive(packet);
+            }
+            catch (SocketTimeoutException e){
+                //System.out.println("Timeout Reached");
+                return new Message("type:null");
+            }
 
             String message = new String(packet.getData(), 0, packet.getLength());
             msg = new Message(message);
