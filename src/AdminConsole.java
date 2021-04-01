@@ -249,7 +249,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
     }
 
     public static void addEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        String nome, descricao,type;
+        String nome, descricao,type, dep;
         ArrayList<Profissao> profs=new ArrayList<Profissao>();
         ArrayList<Departamento> deps=new ArrayList<Departamento>(Arrays.asList(Departamento.values()));
         GregorianCalendar dataInicio = new GregorianCalendar(), dataTermino = new GregorianCalendar();

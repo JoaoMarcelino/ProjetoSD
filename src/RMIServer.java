@@ -195,12 +195,18 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		eleicao.removeLista(nome);
 	}
 
-	public String adicionarVoto(String nomeEleicao, Voto voto, String nomeLista) throws RemoteException {
-		Eleicao ele = getEleicaoByName(nomeEleicao);
+	public String adicionarVoto(String nomeEleicao, Voto voto, String nomeLista, Departamento dep) throws RemoteException {
+		Eleicao ele = getEleicaoByName(nomeEleicao, dep);
+
+		if (ele == null){
+			return "false | Voto não aceite (getElecao)";
+		}
 
 		String tipo = "";
 
 		Lista candidato = ele.getListaByName(nomeLista);
+
+
 		if (candidato != null) {
 			tipo = "Valido";
 		} else if (nomeLista.equals("Branco")) {
@@ -214,7 +220,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		if (hasVoted) {
 			return "true | Voto com Sucesso";
 		}
-		return "false | Voto não aceite";
+		return "false | Voto não aceite (Duplicado)";
 	}
 
 	public String addVotoAntecipado(String numeroCC, String password, String nomeEleicao, String nomeLista)
@@ -288,6 +294,14 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
+	public Eleicao getEleicaoByName(String nome, Departamento dep) throws java.rmi.RemoteException {
+		for (Eleicao eleicao : eleicoes) {
+			if (eleicao.getTitulo().equals(nome) && eleicao.getMesaVotoByDepartamento(dep) != null)
+				return eleicao;
+		}
+		return null;
+	}
+
 	public MesaVoto getMesaByDepartamento(String dep) throws java.rmi.RemoteException{
 		for(MesaVoto mesa: mesas){
 			if(mesa.getDepartamento().name().equals(dep)){
@@ -295,6 +309,15 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			}
 		}
 		return null;
+	}
+
+	public void turnMesa(MesaVoto mesa, Boolean flag) throws java.rmi.RemoteException {
+		MesaVoto mesavoto = this.getMesaByDepartamento(mesa.getDepartamento().toString());
+
+		if(flag)
+			mesavoto.turnOn();
+		else
+			mesavoto.turnOff();
 	}
 
 	public MesaVoto getMesaByMulticastGroup(String ip, String port) throws java.rmi.RemoteException {
@@ -373,11 +396,13 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	}
 
 	public ArrayList<Lista> listListas(String nomeEleicao) throws RemoteException {
+		ArrayList<Lista> lista = new ArrayList<>();
+
 		Eleicao escolhida = getEleicaoByName(nomeEleicao);
 		if (escolhida != null) {
-			return escolhida.getListas();
+			lista = escolhida.getListas();
 		}
-		return null;
+		return lista;
 	}
 
 	public ArrayList<MesaVoto> listMesas() throws RemoteException {

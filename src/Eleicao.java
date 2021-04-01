@@ -202,9 +202,9 @@ public class Eleicao implements Serializable {
 	}
 
 	public String addMesa(MesaVoto mesa) {
-		if(this.checkStart()){
+		/*if(this.checkStart()){
 			return "Eleicao em progresso.";
-		}
+		}*/
 		if(mesas.contains(mesa)){
 			return "Mesa ja associada a eleicao.";
 		}
