@@ -1,5 +1,6 @@
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MesaVoto implements Serializable {
 
@@ -7,9 +8,9 @@ public class MesaVoto implements Serializable {
 	private String port;
 	private boolean status;
 	private Departamento departamento;
-	protected ArrayList<Pessoa> membros;
+	protected CopyOnWriteArrayList<Pessoa> membros;
 
-	public MesaVoto(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port) {
+	public MesaVoto(Departamento departamento, CopyOnWriteArrayList<Pessoa> membros, String ip, String port) {
 		this.ip = ip;
 		this.port = port;
 		this.departamento = departamento;
@@ -17,7 +18,7 @@ public class MesaVoto implements Serializable {
 		this.status = false;
 	}
 
-	public void setMembros(ArrayList<Pessoa> membros) {
+	public void setMembros(CopyOnWriteArrayList<Pessoa> membros) {
 		this.membros = membros;
 	}
 
@@ -25,7 +26,7 @@ public class MesaVoto implements Serializable {
 		return departamento;
 	}
 
-	public ArrayList<Pessoa> getMembros() {
+	public CopyOnWriteArrayList<Pessoa> getMembros() {
 		return membros;
 	}
 

@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Eleicao implements Serializable {
 	private GregorianCalendar dataInicio;
@@ -10,13 +11,13 @@ public class Eleicao implements Serializable {
 	private String descricao;
 	private int brancos;
 	private int nulos;
-	protected ArrayList<Lista> listas;
-	protected ArrayList<Voto> votos;
-	protected ArrayList<MesaVoto> mesas;
-	protected ArrayList<Profissao> profissoesPermitidas;
-	protected ArrayList<Departamento> departamentosPermitidos;
+	protected CopyOnWriteArrayList<Lista> listas;
+	protected CopyOnWriteArrayList<Voto> votos;
+	protected CopyOnWriteArrayList<MesaVoto> mesas;
+	protected CopyOnWriteArrayList<Profissao> profissoesPermitidas;
+	protected CopyOnWriteArrayList<Departamento> departamentosPermitidos;
 
-	public Eleicao(GregorianCalendar dataInicio, GregorianCalendar dataFim, String titulo, String descricao, ArrayList<Profissao> profissoesPermitidas,ArrayList<Departamento> departamentosPermitidos) {
+	public Eleicao(GregorianCalendar dataInicio, GregorianCalendar dataFim, String titulo, String descricao, CopyOnWriteArrayList<Profissao> profissoesPermitidas,CopyOnWriteArrayList<Departamento> departamentosPermitidos) {
 		this.dataInicio = dataInicio;
 		this.dataFim = dataFim;
 		this.titulo = titulo;
@@ -24,10 +25,10 @@ public class Eleicao implements Serializable {
 		this.brancos = 0;
 		this.nulos = 0;
 
-		this.votos = new ArrayList<Voto>();
-		this.listas = new ArrayList<Lista>();
+		this.votos = new CopyOnWriteArrayList<Voto>();
+		this.listas = new CopyOnWriteArrayList<Lista>();
 
-		this.mesas = new ArrayList<MesaVoto>();
+		this.mesas = new CopyOnWriteArrayList<MesaVoto>();
 		this.profissoesPermitidas = profissoesPermitidas;
 		this.departamentosPermitidos = departamentosPermitidos;
 	}
@@ -69,7 +70,7 @@ public class Eleicao implements Serializable {
 		return descricao;
 	}
 
-	public ArrayList<Lista> getListas() {
+	public CopyOnWriteArrayList<Lista> getListas() {
 		return listas;
 	}
 
@@ -260,9 +261,9 @@ public class Eleicao implements Serializable {
 			this.departamentosPermitidos.remove(departamento);
 	}
 
-	public ArrayList<Lista> getListasByProfissao(Profissao profissao) {
+	public CopyOnWriteArrayList<Lista> getListasByProfissao(Profissao profissao) {
 
-		ArrayList<Lista> aux = new ArrayList<>();
+		CopyOnWriteArrayList<Lista> aux = new CopyOnWriteArrayList<>();
 
 		for (Lista lista : this.listas) {
 			if (lista.getTipoLista() == profissao)
@@ -279,7 +280,7 @@ public class Eleicao implements Serializable {
 		return null;
 	}
 
-	public ArrayList<Voto> getVotos() {
+	public CopyOnWriteArrayList<Voto> getVotos() {
 		return votos;
 	}
 
@@ -299,7 +300,7 @@ public class Eleicao implements Serializable {
 		return null;
 	}
 
-	public ArrayList<MesaVoto> getMesas() {
+	public CopyOnWriteArrayList<MesaVoto> getMesas() {
 		return mesas;
 	}
 
@@ -311,11 +312,11 @@ public class Eleicao implements Serializable {
 		return null;
 	}
 
-	public ArrayList<Profissao> getProfissoesPermitidas() {
+	public CopyOnWriteArrayList<Profissao> getProfissoesPermitidas() {
 		return profissoesPermitidas;
 	}
 
-	public ArrayList<Departamento> getDepartamentosPermitidos() {
+	public CopyOnWriteArrayList<Departamento> getDepartamentosPermitidos() {
 		return departamentosPermitidos;
 	}
 
@@ -395,9 +396,9 @@ public class Eleicao implements Serializable {
 
 	public Resultado getResultados() {
 
-		ArrayList<String> nomesListas = new ArrayList<>();
-		ArrayList<Integer> resultadosListas = new ArrayList<>();
-		ArrayList<String> nomeVencedores=new ArrayList<>();
+		CopyOnWriteArrayList<String> nomesListas = new CopyOnWriteArrayList<>();
+		CopyOnWriteArrayList<Integer> resultadosListas = new CopyOnWriteArrayList<>();
+		CopyOnWriteArrayList<String> nomeVencedores=new CopyOnWriteArrayList<>();
 		for (Lista lista : this.listas) {
 			nomesListas.add(lista.getNome());
 			resultadosListas.add(lista.getVotos());

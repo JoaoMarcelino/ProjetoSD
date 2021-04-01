@@ -5,6 +5,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.rmi.registry.LocateRegistry;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MulticastServer extends Thread {
     private String address;
@@ -121,7 +122,7 @@ public class MulticastServer extends Thread {
 
     public void listMembers() {
         if (this.mesa != null) {
-            ArrayList<Pessoa> membros = this.mesa.getMembros();
+            CopyOnWriteArrayList<Pessoa> membros = this.mesa.getMembros();
             System.out.println("Membros:");
             for (Pessoa membro : membros) {
                 System.out.println("- " + membro);
@@ -250,7 +251,7 @@ class MulticastReader extends Thread {
     private void listElections(Message message) throws Exception {
         String id = message.pares.get("terminalId");
         // get all elections para esta mesa de voto
-        ArrayList<Eleicao> eleicoes = servidor.listEleicoes(this.mesa);
+        CopyOnWriteArrayList<Eleicao> eleicoes = servidor.listEleicoes(this.mesa);
         // length de eleicoes
         int length = eleicoes.size();
 
@@ -270,7 +271,7 @@ class MulticastReader extends Thread {
         String id = message.pares.get("terminalId");
         String electionName = message.pares.get("election");
         // get all candidates para esta eleicao
-        ArrayList<Lista> candidaturas = servidor.listListas(electionName);
+        CopyOnWriteArrayList<Lista> candidaturas = servidor.listListas(electionName);
 
         if (candidaturas != null){
 
