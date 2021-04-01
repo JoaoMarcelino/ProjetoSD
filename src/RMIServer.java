@@ -542,16 +542,13 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
 			switch (aux) {
 			case "eleicoes":
-				List<Eleicao> listEleicao = (List<Eleicao>) ois.readObject();
-				eleicoes = (CopyOnWriteArrayList<Eleicao>) listEleicao;
+				eleicoes = (CopyOnWriteArrayList<Eleicao>)  ois.readObject();
 				break;
 			case "pessoas":
-				List<Pessoa> listPessoa = (List<Pessoa>) ois.readObject();
-				pessoas = (CopyOnWriteArrayList<Pessoa>) listPessoa;
+				pessoas = (CopyOnWriteArrayList<Pessoa>)  ois.readObject();
 				break;
 			case "mesas":
-				List<MesaVoto> listMesas = (List<MesaVoto>) ois.readObject();
-				mesas = (CopyOnWriteArrayList<MesaVoto>) listMesas;
+				mesas = (CopyOnWriteArrayList<MesaVoto>)  ois.readObject();
 				break;
 			}
 			ois.close();
