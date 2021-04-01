@@ -137,6 +137,23 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			return departamento + " ou grupo Multicast ja existe.";
 		}
 	}
+	public String removeMesa(String nomeMesa) throws java.rmi.RemoteException{
+		MesaVoto mesa = getMesaByDepartamento(nomeMesa);
+		if (mesa == null) {
+			return "Mesa nao existe.";
+		}
+		if(mesa.isStatus()){
+			return "Mesa ligada ao servidor. Desligue mesa primeiro.";
+		}
+		for(Eleicao ele: eleicoes){
+			ele.removeMesa(mesa);
+		}
+		mesas.remove(mesa);
+		save("eleicoes");
+		save("mesas");
+		return "Mesa removida.";
+	}
+
 
 	public String addMesaEleicao(String nomeMesa, String nomeEleicao) throws RemoteException {
 		MesaVoto mesa = getMesaByDepartamento(nomeMesa);
@@ -149,6 +166,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		}
 		String status = ele.addMesa(mesa);
 		save("eleicoes");
+		save("mesas");
 		return status;
 	}
 
@@ -257,8 +275,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		String status = ele.addVotoAntecipado(v, nomeLista, tipo);
 		if (status.equals("Voto realizado com sucesso.")) {
 			save("eleicoes");
-			String update = p.getNome() + " votou na Eleicao " + ele.getTitulo() + " a "
-					+ printGregorianCalendar(new GregorianCalendar()) + " na mesa " + v.getMesa();
+			String update = p.getNome() + " votou antecipadamente na Eleicao " + ele.getTitulo() + " a "
+					+ printGregorianCalendar(new GregorianCalendar())+".";
 			sendToAll(update);
 		}
 

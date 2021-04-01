@@ -9,14 +9,16 @@ public class Resultado implements Serializable {
 	private int nulos;
 	protected ArrayList<String> nomesListas;
 	protected ArrayList<Integer> resultados;
+	protected ArrayList<String> vencedores;
 
-	public Resultado(String titulo, int totalVotos, int brancos, int nulos, ArrayList<String> nomesListas, ArrayList<Integer> resultados) {
+	public Resultado(String titulo, int totalVotos, int brancos, int nulos, ArrayList<String> nomesListas, ArrayList<Integer> resultados,ArrayList<String> vencedores) {
 		this.titulo = titulo;
 		this.totalVotos = totalVotos;
 		this.brancos = brancos;
 		this.nulos = nulos;
 		this.nomesListas = nomesListas;
 		this.resultados = resultados;
+		this.vencedores=vencedores;
 	}
 
 	public String getTitulo() {
@@ -41,5 +43,9 @@ public class Resultado implements Serializable {
 
 	public ArrayList<Integer> getResultados() {
 		return resultados;
+	}
+
+	public ArrayList<String> getVencedores() {
+		return vencedores;
 	}
 }
