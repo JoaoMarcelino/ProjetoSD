@@ -1,14 +1,10 @@
 import java.net.*;
 import java.io.*;
-import java.sql.SQLOutput;
 import java.util.*;
 
 public class MulticastClient extends Thread {
-    private String address;
-    private int port;
-    private long sleepTime = 5000;
-    private InetAddress group;
-    private DatagramPacket packet;
+    private final String address;
+    private final int port;
     private MulticastSocket socket = null;
     private String id = "-1";
     private boolean free = true;
@@ -32,7 +28,7 @@ public class MulticastClient extends Thread {
     public void run() {
         try {
             socket = new MulticastSocket(port); // create socket and bind it
-            group = InetAddress.getByName(address);
+            InetAddress group = InetAddress.getByName(address);
             socket.joinGroup(group);
 
             sendMessage("type:joinGroup | terminalId:-1");// send joinGroup msg to server
@@ -45,36 +41,34 @@ public class MulticastClient extends Thread {
                         joinGroup(msg);
                         break;
                     case ("free"):
-                        free(msg);
+                        free();
                         break;
                     case ("unlock"):
-                        unlock(msg);
+                        unlock();
                         break;
                     case ("reset"):
                         resetId(msg);
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
         } finally {
             socket.close();
         }
     }
 
-    private void joinGroup(Message msg) throws Exception {
+    private void joinGroup(Message msg){
         setId(msg);
         System.out.println("Joined multicast group successfully. Id:" + id);
     }
 
-    private void free(Message msg) throws Exception {
+    private void free() throws Exception {
         if (this.free) {
             sendMessage("type:freeStatus | terminalId:" + id + " | success:yes");
         }
     }
 
-    private void unlock(Message msg) throws Exception{
+    private void unlock() throws Exception{
         MulticastUser user = new MulticastUser(address, port, id,120);
         Watcher watcher=new Watcher(user);
         user.start();
@@ -84,7 +78,7 @@ public class MulticastClient extends Thread {
     }
 
     private void resetId(Message msg) throws Exception{
-        sendMessage("type:reset | terminalId:" + id);
+        sendMessage("type:resetStatus | terminalId:" + id);
     }
 
     private void setId(Message msg) {
@@ -102,7 +96,7 @@ public class MulticastClient extends Thread {
         Message msg = new Message("type:inutil");
         do {
             byte[] buffer = new byte[256];
-            packet = new DatagramPacket(buffer, buffer.length);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
 
             String message = new String(packet.getData(), 0, packet.getLength());
@@ -114,12 +108,9 @@ public class MulticastClient extends Thread {
 }
 
 class MulticastUser extends Thread {
-    private String address;
-    private int port;
-    private String id;
-    private long sleepTime = 5000;
-    private String nome = "";
-    private String password = "";
+    private final String address;
+    private final int port;
+    private final String id;
     private InetAddress group;
     private DatagramPacket packet;
     private MulticastSocket socket = null;
@@ -149,9 +140,9 @@ class MulticastUser extends Thread {
 
             //BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String escolha = "";
-            boolean voted = false;
+            boolean session = true;
 
-            while (!voted) {
+            while (true) {
                 System.out.print(printMenu());
                 System.out.print("Opcao: ");
                 escolha = reader.readLine();
@@ -171,6 +162,10 @@ class MulticastUser extends Thread {
                         if (isLogged)
                             vote(reader);
                         break;
+                    case "0":
+                        isLogged = false;
+                        break;
+
                     default:
                         System.out.println("Escolha invalida.Tente 1, por exemplo.");
                         break;
@@ -193,6 +188,8 @@ class MulticastUser extends Thread {
                         "3.Listar Listas Candidatas\n";
         if (this.isLogged)
             menu += "4.Votar\n";
+
+        menu+= "0.Sair\n";
         return menu;
     }
 
@@ -273,7 +270,7 @@ class MulticastUser extends Thread {
         String sucess = message.pares.get("sucess");
         String msg = message.pares.get("msg");
 
-        System.out.println("Vote Status: "+ sucess + " ->" + msg);
+        System.out.println("Vote Status: " + msg);
 
     }
 

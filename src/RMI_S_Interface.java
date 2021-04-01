@@ -3,67 +3,58 @@ import java.util.*;
 
 
 public interface RMI_S_Interface extends Remote {
-	public String sayHello() throws java.rmi.RemoteException;
 
-	public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, GregorianCalendar expireCCDate, Profissao profissao) throws RemoteException;
+	String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, GregorianCalendar expireCCDate, Profissao profissao) throws RemoteException;
 
-	public String addEleicao(String titulo, String descricao,GregorianCalendar dataInicio, GregorianCalendar dataFim, ArrayList<Profissao> profissoes, ArrayList<Departamento> departamentos) throws RemoteException;
+	String addEleicao(String titulo, String descricao,GregorianCalendar dataInicio, GregorianCalendar dataFim, ArrayList<Profissao> profissoes, ArrayList<Departamento> departamentos) throws RemoteException;
 
-	public String editEleicao(String tituloAntigo,String tituloNovo, String descricaoNova,GregorianCalendar dataInicio,GregorianCalendar dataFim) throws java.rmi.RemoteException;
+	String editEleicao(String tituloAntigo,String tituloNovo, String descricaoNova,GregorianCalendar dataInicio,GregorianCalendar dataFim) throws java.rmi.RemoteException;
 
-	public String addMesa(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port) throws java.rmi.RemoteException;
+	String addMesa(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port) throws java.rmi.RemoteException;
 
 	public String removeMesa(String nomeMesa) throws java.rmi.RemoteException;
 
 	public String addMesaEleicao(String nomeMesa,String nomeEleicao) throws java.rmi.RemoteException;
 
-	public String removeMesaEleicao(String nomeMesa,String nomeEleicao) throws  RemoteException;
+	String removeMesaEleicao(String nomeMesa,String nomeEleicao) throws  RemoteException;
 
-	public String editMesa(String nomeMesa,String membro1,String membro2,String membro3) throws RemoteException;
+	String editMesa(String nomeMesa,String membro1,String membro2,String membro3) throws RemoteException;
 
-	public String addLista(String nomeEleicao,String nomeLista, ArrayList<Pessoa> listaPessoas, Profissao tipoLista) throws java.rmi.RemoteException;
+	String addLista(String nomeEleicao,String nomeLista, ArrayList<Pessoa> listaPessoas, Profissao tipoLista) throws java.rmi.RemoteException;
 
-	public void removeLista(Eleicao eleicao, String nome) throws java.rmi.RemoteException;
+	String addVotoAntecipado(String numeroCC,String password,String nomeEleicao,String nomeLista) throws java.rmi.RemoteException;
 
-	public String addVotoAntecipado(String numeroCC,String password,String nomeEleicao,String nomeLista) throws java.rmi.RemoteException;
+	Voto getVoto(String numeroCC, String nomeEleicao) throws java.rmi.RemoteException;
 
-	public Resultado getResultados(String nomeEleicao) throws java.rmi.RemoteException;
+	ArrayList<Pessoa> listPessoas() throws  java.rmi.RemoteException;
 
-	public Voto getVoto(String numeroCC, String nomeEleicao) throws java.rmi.RemoteException;
+	Pessoa getPessoaByCC(String numberCC) throws java.rmi.RemoteException;
 
-	public ArrayList<Pessoa> listPessoas() throws  java.rmi.RemoteException;
+	ArrayList<Eleicao> listEleicoes() throws  java.rmi.RemoteException;
 
-	public Pessoa getPessoaByCC(String numberCC) throws java.rmi.RemoteException;;
+	ArrayList<Eleicao> listEleicoes(MesaVoto mesaVoto) throws  RemoteException;
 
-	public ArrayList<Eleicao> listEleicoes() throws  java.rmi.RemoteException;
+	ArrayList<Lista> listListas(String nomeEleicao) throws  java.rmi.RemoteException;
 
-	public ArrayList<Eleicao> listEleicoes(MesaVoto mesaVoto) throws  RemoteException;
+	ArrayList<MesaVoto> listMesas() throws  java.rmi.RemoteException;
 
-	public ArrayList<Lista> listListas(String nomeEleicao) throws  java.rmi.RemoteException;
+	String login(String cc, String password) throws java.rmi.RemoteException;
 
-	public ArrayList<MesaVoto> listMesas() throws  java.rmi.RemoteException;
+	String accessNovidades(boolean flagPublish,String update) throws RemoteException;
 
-	public void setDataInicio(String nomeEleicao, GregorianCalendar dataInicio) throws java.rmi.RemoteException;
+	void ping() throws java.rmi.RemoteException;
 
-	public void setDataFim(String nomeEleicao, GregorianCalendar dataFim) throws java.rmi.RemoteException;
+	MesaVoto getMesaByMulticastGroup(String ip,String port) throws java.rmi.RemoteException;
 
-	public String login(String cc, String password) throws java.rmi.RemoteException;
+	MesaVoto getMesaByDepartamento(String dep) throws java.rmi.RemoteException;
 
-	public Pessoa identificar(String cc) throws java.rmi.RemoteException;
+	String adicionarVoto(String eleicao, Voto voto, String lista, Departamento dep) throws RemoteException;
 
-	public String accessNovidades(boolean flagPublish,String update) throws RemoteException;
+	Eleicao getEleicaoByName(String nome)  throws java.rmi.RemoteException;
 
-	public void ping() throws java.rmi.RemoteException;
+	void subscribe(RMI_C_Interface c) throws java.rmi.RemoteException;
 
-	public MesaVoto getMesaByMulticastGroup(String ip,String port) throws java.rmi.RemoteException;
+	void sendToAll(String s) throws java.rmi.RemoteException;
 
-	public MesaVoto getMesaByDepartamento(String dep) throws java.rmi.RemoteException;
-
-	public String adicionarVoto(String eleicao, Voto voto, String lista) throws RemoteException;
-
-	public Eleicao getEleicaoByName(String nome)  throws java.rmi.RemoteException;
-
-	public void subscribe(RMI_C_Interface c) throws java.rmi.RemoteException;
-
-	public void sendToAll(String s) throws java.rmi.RemoteException;
+	void turnMesa(MesaVoto mesa, Boolean flag) throws java.rmi.RemoteException;
 }

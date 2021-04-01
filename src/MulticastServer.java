@@ -26,16 +26,16 @@ public class MulticastServer extends Thread {
     }
 
     public static void main(String[] args) {
-        if (args.length != 2) {
-            System.out.println("Bad Arguments.Run java MulticastServer {departamento} {rmi_adress}");
+        if (args.length != 3) {
+            System.out.println("Bad Arguments.Run java MulticastServer {departamento} {rmi_adress} {rmi_port}");
             System.exit(1);
         }
         RMI_S_Interface servidor = null;
         MesaVoto mesa = null;
         try {
-            servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[1], 7040).lookup("ServidorRMI");
+            servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[1], Integer.parseInt(args[2])).lookup("ServidorRMI");
             mesa = servidor.getMesaByDepartamento(args[0]);
-            mesa.turnOn();
+            servidor.turnMesa( mesa, true);
 
         } catch (Exception e) {
             System.out.println("Exception in main: " + e);
@@ -72,13 +72,20 @@ public class MulticastServer extends Thread {
                     break;
                 }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            mesa.turnOff();
             socket.close();
+        }
+
+        try{
+            servidor.turnMesa( mesa, false);
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -203,7 +210,7 @@ class MulticastReader extends Thread {
         Message message = getMessage(); // own
 
         message = getMessage();
-        while (message.tipo.equals("reset")) {
+        while (message.tipo.equals("resetStatus")) {
             String value = message.pares.get("terminalId");
             int count = Integer.parseInt(value);
             if (count > counterID) {
@@ -233,7 +240,7 @@ class MulticastReader extends Thread {
         Voto voto = new Voto(pessoa, data, this.mesa);
 
         // create String
-        String mensagem = servidor.adicionarVoto(eleicao, voto, escolha);
+        String mensagem = servidor.adicionarVoto(eleicao, voto, escolha, mesa.getDepartamento());
         String[] msg = mensagem.split("\\|");
 
         sendMessage("type:voteStatus | terminalId:" + id + " | success:" + msg[0].trim() + " | msg:" + msg[1].trim());
@@ -265,6 +272,9 @@ class MulticastReader extends Thread {
         // get all candidates para esta eleicao
         ArrayList<Lista> candidaturas = servidor.listListas(electionName);
 
+        if (candidaturas != null){
+
+        }
         // length de candidatos
         int length = candidaturas.size();
         sendMessage("type:itemList | terminalId:" + id + " | item_count:" + length);
