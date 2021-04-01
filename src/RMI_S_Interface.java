@@ -57,4 +57,6 @@ public interface RMI_S_Interface extends Remote {
 	void sendToAll(String s) throws java.rmi.RemoteException;
 
 	void turnMesa(MesaVoto mesa, Boolean flag) throws java.rmi.RemoteException;
+
+	Resultado getResultados(String nomeEleicao) throws RemoteException;
 }
