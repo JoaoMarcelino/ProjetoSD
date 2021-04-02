@@ -5,15 +5,20 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.rmi.registry.LocateRegistry;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 
 public class MulticastServer extends Thread {
     private String address;
     private int port;
+    private int timeout = 1000;
     private DatagramPacket packet;
     private MulticastSocket socket = null;
     private InetAddress group;
     private RMI_S_Interface servidor;
     private MesaVoto mesa = null;
+
+    private boolean isActive = true;
 
     public MulticastServer(MesaVoto mesa, RMI_S_Interface servidor) {
         super("Server " + (long) (Math.random() * 1000));
@@ -26,27 +31,34 @@ public class MulticastServer extends Thread {
     }
 
     public static void main(String[] args) {
-        if (args.length != 2) {
-            System.out.println("Bad Arguments.Run java MulticastServer {departamento} {rmi_adress}");
+        if (args.length != 3) {
+            System.out.println("Bad Arguments.Run java MulticastServer {departamento} {rmi_adress} {rmi_port}");
             System.exit(1);
         }
         RMI_S_Interface servidor = null;
         MesaVoto mesa = null;
         try {
-            servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[1], 7040).lookup("ServidorRMI");
+            servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[1], Integer.parseInt(args[2])).lookup("ServidorRMI");
             mesa = servidor.getMesaByDepartamento(args[0]);
-            mesa.turnOn();
+            if(mesa != null)
+            servidor.turnMesa( mesa, true);
 
         } catch (Exception e) {
             System.out.println("Exception in main: " + e);
             e.printStackTrace();
         }
 
-        MulticastServer server = new MulticastServer(mesa, servidor);
-        MulticastReader reader = new MulticastReader(mesa, servidor);
 
-        server.start();
-        reader.start();
+        if(mesa != null) {
+            MulticastServer server = new MulticastServer(mesa, servidor);
+            MulticastReader reader = new MulticastReader(mesa, servidor, server);
+
+            server.start();
+            reader.start();
+        }
+        else{
+            System.out.print("Mesa Não Existente");
+        }
     }
 
     public void run() {
@@ -58,7 +70,8 @@ public class MulticastServer extends Thread {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String escolha = "";
 
-            while (true) {
+
+            while (isActive) {
                 System.out.print(printMenu());
                 System.out.print("Opcao: ");
                 escolha = reader.readLine();
@@ -70,28 +83,40 @@ public class MulticastServer extends Thread {
                 case "2":
                     listMembers();
                     break;
+                case "3":
+                    isActive= false;
+
+                    break;
                 }
+
+
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            mesa.turnOff();
             socket.close();
+        }
+
+        try{
+            servidor.turnMesa( mesa, false);
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     private String printMenu() {
         String menu = "OPCOES DISPONIVEIS. Digite 1 por exemplo.\n" + "___________________________________________\n"
-                + "1.Identificar e Votar\n" + "2.Membros da Mesa\n";
+                + "1.Identificar e Votar\n" + "2.Membros da Mesa\n" + "3.Desativar Mesa\n";
         return menu;
     }
 
     private void identify(BufferedReader reader) throws Exception {
         System.out.print("NumeroCC:");
         String numeroCC = reader.readLine();
-
         Pessoa pessoa = servidor.getPessoaByCC(numeroCC);
 
         if (pessoa != null) {
@@ -99,6 +124,10 @@ public class MulticastServer extends Thread {
             Message resposta = getMessage();
             while (!resposta.tipo.equals("freeStatus")) {// descartar mensagens nao importantes
                 resposta = getMessage();
+                if (resposta.tipo.equals("null")){
+                    System.out.println("Terminais cheios. Aguarde mensagem de terminal.");
+                    return ;
+                }
             }
 
             String freeTerminal = resposta.pares.get("terminalId");
@@ -114,10 +143,10 @@ public class MulticastServer extends Thread {
 
     public void listMembers() {
         if (this.mesa != null) {
-            ArrayList<Pessoa> membros = this.mesa.getMembros();
+            CopyOnWriteArrayList<Pessoa> membros = this.mesa.getMembros();
             System.out.println("Membros:");
             for (Pessoa membro : membros) {
-                System.out.println("- " + membro);
+                System.out.println("- " + membro.getNome());
             }
         }
     }
@@ -132,17 +161,32 @@ public class MulticastServer extends Thread {
 
         byte[] buffer = new byte[256];
         packet = new DatagramPacket(buffer, buffer.length);
-        socket.receive(packet);
+
+        socket.setSoTimeout(this.timeout);
+        try {
+            socket.receive(packet);
+        }
+        catch (SocketTimeoutException e){
+            //System.out.println("Timeout Reached");
+
+            return new Message("type:null");
+        }
 
         String message = new String(packet.getData(), 0, packet.getLength());
         Message msg = new Message(message);
         return msg;
+    }
+
+
+    public boolean isActive() {
+        return isActive;
     }
 }
 
 class MulticastReader extends Thread {
     private String address;
     private int port;
+    private int timeout = 1000;
     private int counterID = 0;
     private DatagramPacket packet;
     private MulticastSocket socket = null;
@@ -150,13 +194,18 @@ class MulticastReader extends Thread {
     private RMI_S_Interface servidor;
     private MesaVoto mesa;
 
-    public MulticastReader(MesaVoto mesa, RMI_S_Interface servidor) {
+    private MulticastServer server;
+
+    public MulticastReader(MesaVoto mesa, RMI_S_Interface servidor, MulticastServer server) {
         super("User " + (long) (Math.random() * 1000));
         this.address = mesa.getIp();
         this.port = Integer.parseInt(mesa.getPort());
         this.servidor = servidor;
         this.mesa = mesa;
+        this.server = server;
     }
+
+
 
     public void run() {
         try {
@@ -166,7 +215,7 @@ class MulticastReader extends Thread {
 
             Message msg = verifyIds();
 
-            while (true) {
+            while (server.isActive()) {
                 switch (msg.tipo) {
                 case "joinGroup":
                     startConnection();
@@ -182,6 +231,9 @@ class MulticastReader extends Thread {
                     break;
                 case "login":
                     login(msg);
+                    break;
+                case "open":
+                    System.out.println("Terminal " + msg.pares.get("terminalId") + " esta aberto");
                     break;
                 }
 
@@ -203,7 +255,7 @@ class MulticastReader extends Thread {
         Message message = getMessage(); // own
 
         message = getMessage();
-        while (message.tipo.equals("reset")) {
+        while (message.tipo.equals("resetStatus")) {
             String value = message.pares.get("terminalId");
             int count = Integer.parseInt(value);
             if (count > counterID) {
@@ -233,7 +285,7 @@ class MulticastReader extends Thread {
         Voto voto = new Voto(pessoa, data, this.mesa);
 
         // create String
-        String mensagem = servidor.adicionarVoto(eleicao, voto, escolha);
+        String mensagem = servidor.adicionarVoto(eleicao, voto, escolha, mesa.getDepartamento());
         String[] msg = mensagem.split("\\|");
 
         sendMessage("type:voteStatus | terminalId:" + id + " | success:" + msg[0].trim() + " | msg:" + msg[1].trim());
@@ -243,7 +295,7 @@ class MulticastReader extends Thread {
     private void listElections(Message message) throws Exception {
         String id = message.pares.get("terminalId");
         // get all elections para esta mesa de voto
-        ArrayList<Eleicao> eleicoes = servidor.listEleicoes(this.mesa);
+        CopyOnWriteArrayList<Eleicao> eleicoes = servidor.listEleicoes(this.mesa);
         // length de eleicoes
         int length = eleicoes.size();
 
@@ -263,8 +315,11 @@ class MulticastReader extends Thread {
         String id = message.pares.get("terminalId");
         String electionName = message.pares.get("election");
         // get all candidates para esta eleicao
-        ArrayList<Lista> candidaturas = servidor.listListas(electionName);
+        CopyOnWriteArrayList<Lista> candidaturas = servidor.listListas(electionName);
 
+        if (candidaturas != null){
+
+        }
         // length de candidatos
         int length = candidaturas.size();
         sendMessage("type:itemList | terminalId:" + id + " | item_count:" + length);
@@ -288,6 +343,7 @@ class MulticastReader extends Thread {
         sendMessage("type:loginStatus | terminalId:" + id + " | success:" + msg[0].trim() + " | msg:" + msg[1].trim());
     }
 
+
     private void sendMessage(String message) throws Exception {
         byte[] buffer = message.getBytes();
         packet = new DatagramPacket(buffer, buffer.length, group, port);
@@ -297,8 +353,14 @@ class MulticastReader extends Thread {
     private Message getMessage() throws Exception {
         byte[] buffer = new byte[256];
         packet = new DatagramPacket(buffer, buffer.length);
-        socket.receive(packet);
-
+        socket.setSoTimeout(this.timeout);
+        try {
+            socket.receive(packet);
+        }
+        catch (SocketTimeoutException e){
+            //System.out.println("Timeout Reached");
+            return new Message("type:null");
+        }
         String message = new String(packet.getData(), 0, packet.getLength());
         Message msg = new Message(message);
         return msg;

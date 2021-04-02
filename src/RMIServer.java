@@ -5,6 +5,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.*;
 import java.util.*;
 import java.net.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.Thread.sleep;
 
@@ -14,12 +15,11 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	public static int frequency = 1000; // frequencia de pings entre servidores (milisegundos)
 	public static int totalTries = 3;// n tentativas ate assumir papel de servidor principal
 
-	public ArrayList<RMI_C_Interface> consolas = new ArrayList<>();
-	public ArrayList<Eleicao> eleicoes = new ArrayList<>();
-	public ArrayList<Pessoa> pessoas = new ArrayList<>();
-	public ArrayList<MesaVoto> mesas = new ArrayList<>();
-	public ArrayList<Resultado> resultados = new ArrayList<>();
-	public Stack<String> novidades = new Stack<>();
+	public CopyOnWriteArrayList<RMI_C_Interface> consolas = new CopyOnWriteArrayList<RMI_C_Interface>();
+	public CopyOnWriteArrayList<Eleicao> eleicoes = new CopyOnWriteArrayList<Eleicao>();
+	public CopyOnWriteArrayList<Pessoa> pessoas = new CopyOnWriteArrayList<Pessoa>();
+	public CopyOnWriteArrayList<MesaVoto> mesas = new CopyOnWriteArrayList<MesaVoto>();
+
 
 	public RMIServer() throws RemoteException {
 		super();
@@ -41,16 +41,25 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			Registry r = LocateRegistry.getRegistry(RMIHostIP, RMIHostPort);
 			RMI_S_Interface servidorPrincipal = (RMI_S_Interface) r.lookup("ServidorRMI");
 			int failed = 0;
+			boolean didFail = false;
 
 			System.out.println("Servidor RMI Secundario em execucao.");
 			while (failed < totalTries) {
 				sleep(frequency);
 				try {
+					servidorPrincipal = (RMI_S_Interface) r.lookup("ServidorRMI");
 					servidorPrincipal.ping();
+					failed = 0;
 				} catch (RemoteException e) {
 					failed++;
 					System.out.println("Heartbeat falhou." + failed + "/" + totalTries);
+					didFail = true;
 				}
+				if(didFail && failed == 0){
+					didFail = false;
+					System.out.println("Heartbeat recuperado.");
+				}
+
 			}
 			servidorPrincipal();
 
@@ -95,7 +104,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	}
 
 	public String addEleicao(String titulo, String descricao, GregorianCalendar dataInicio, GregorianCalendar dataFim,
-			ArrayList<Profissao> profissoes, ArrayList<Departamento> departamentos) throws RemoteException {
+							 CopyOnWriteArrayList<Profissao> profissoes, CopyOnWriteArrayList<Departamento> departamentos) throws RemoteException {
 		if (getEleicaoByName(titulo) == null) {
 			Eleicao eleicao = new Eleicao(dataInicio, dataFim, titulo, descricao, profissoes, departamentos);
 			this.eleicoes.add(eleicao);
@@ -117,7 +126,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return status;
 	}
 
-	public String addMesa(Departamento departamento, ArrayList<Pessoa> membros, String ip, String port)
+	public String addMesa(Departamento departamento, CopyOnWriteArrayList<Pessoa> membros, String ip, String port)
 			throws RemoteException {
 		if (getMesaByDepartamento(departamento.name()) == null && getMesaByMulticastGroup(ip, port) == null) {
 			MesaVoto mesa = new MesaVoto(departamento, membros, ip, port);
@@ -128,6 +137,23 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			return departamento + " ou grupo Multicast ja existe.";
 		}
 	}
+	public String removeMesa(String nomeMesa) throws java.rmi.RemoteException{
+		MesaVoto mesa = getMesaByDepartamento(nomeMesa);
+		if (mesa == null) {
+			return "Mesa nao existe.";
+		}
+		if(mesa.isStatus()){
+			return "Mesa ligada ao servidor. Desligue mesa primeiro.";
+		}
+		for(Eleicao ele: eleicoes){
+			ele.removeMesa(mesa);
+		}
+		mesas.remove(mesa);
+		save("eleicoes");
+		save("mesas");
+		return "Mesa removida.";
+	}
+
 
 	public String addMesaEleicao(String nomeMesa, String nomeEleicao) throws RemoteException {
 		MesaVoto mesa = getMesaByDepartamento(nomeMesa);
@@ -140,6 +166,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		}
 		String status = ele.addMesa(mesa);
 		save("eleicoes");
+		save("mesas");
 		return status;
 	}
 
@@ -162,7 +189,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		if(mesa==null){
 			return "Mesa nao existe.";
 		}
-		ArrayList<Pessoa> membros = new ArrayList<Pessoa>();
+		CopyOnWriteArrayList<Pessoa> membros = new CopyOnWriteArrayList<Pessoa>();
 		Pessoa p1 = new Pessoa(membro1, membro1, Departamento.DA, "-1", "-1", "-1", new GregorianCalendar(),
 				Profissao.Estudante);
 		Pessoa p2 = new Pessoa(membro2, membro2, Departamento.DA, "-1", "-1", "-1", new GregorianCalendar(),
@@ -177,7 +204,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return "Membros de Mesa alterados.";
 	}
 
-	public String addLista(String nomeEleicao, String nomeLista, ArrayList<Pessoa> listaPessoas, Profissao tipoLista)
+	public String addLista(String nomeEleicao, String nomeLista, CopyOnWriteArrayList<Pessoa> listaPessoas, Profissao tipoLista)
 			throws RemoteException {
 		Eleicao election = getEleicaoByName(nomeEleicao);
 		if (election == null) {
@@ -195,12 +222,18 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		eleicao.removeLista(nome);
 	}
 
-	public String adicionarVoto(String nomeEleicao, Voto voto, String nomeLista) throws RemoteException {
-		Eleicao ele = getEleicaoByName(nomeEleicao);
+	public String adicionarVoto(String nomeEleicao, Voto voto, String nomeLista, Departamento dep) throws RemoteException {
+		Eleicao ele = getEleicaoByName(nomeEleicao, dep);
+
+		if (ele == null){
+			return "false | Voto não aceite (getElecao)";
+		}
 
 		String tipo = "";
 
 		Lista candidato = ele.getListaByName(nomeLista);
+
+
 		if (candidato != null) {
 			tipo = "Valido";
 		} else if (nomeLista.equals("Branco")) {
@@ -212,9 +245,13 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		boolean hasVoted = ele.addVoto(voto, nomeLista, tipo);
 
 		if (hasVoted) {
+			save("eleicoes");
+			String update =  "Alguem votou na Eleicao " + ele.getTitulo() + " a "
+					+ printGregorianCalendar(new GregorianCalendar())+".";
+			sendToAll(update);
 			return "true | Voto com Sucesso";
 		}
-		return "false | Voto não aceite";
+		return "false | Voto não aceite (Duplicado)";
 	}
 
 	public String addVotoAntecipado(String numeroCC, String password, String nomeEleicao, String nomeLista)
@@ -242,8 +279,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		String status = ele.addVotoAntecipado(v, nomeLista, tipo);
 		if (status.equals("Voto realizado com sucesso.")) {
 			save("eleicoes");
-			String update = p.getNome() + " votou na Eleicao " + ele.getTitulo() + " a "
-					+ printGregorianCalendar(new GregorianCalendar()) + " na mesa " + v.getMesa();
+			String update = p.getNome() + " votou antecipadamente na Eleicao " + ele.getTitulo() + " a "
+					+ printGregorianCalendar(new GregorianCalendar())+".";
 			sendToAll(update);
 		}
 
@@ -288,6 +325,14 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
+	public Eleicao getEleicaoByName(String nome, Departamento dep) throws java.rmi.RemoteException {
+		for (Eleicao eleicao : eleicoes) {
+			if (eleicao.getTitulo().equals(nome) && eleicao.getMesaVotoByDepartamento(dep) != null)
+				return eleicao;
+		}
+		return null;
+	}
+
 	public MesaVoto getMesaByDepartamento(String dep) throws java.rmi.RemoteException{
 		for(MesaVoto mesa: mesas){
 			if(mesa.getDepartamento().name().equals(dep)){
@@ -295,6 +340,24 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			}
 		}
 		return null;
+	}
+
+	public void turnMesa(MesaVoto mesa, Boolean flag) throws java.rmi.RemoteException {
+		MesaVoto mesavoto = this.getMesaByDepartamento(mesa.getDepartamento().toString());
+
+		if(flag){
+			mesavoto.turnOn();
+			String update =  "Mesa " +  mesavoto.getDepartamento()  +" foi aberta a "
+					+ printGregorianCalendar(new GregorianCalendar())+".";
+			sendToAll(update);
+		}
+		else{
+			mesavoto.turnOff();
+			String update =   "Mesa " +  mesavoto.getDepartamento()  +" foi fechada a "
+					+ printGregorianCalendar(new GregorianCalendar())+".";
+			sendToAll(update);
+		}
+
 	}
 
 	public MesaVoto getMesaByMulticastGroup(String ip, String port) throws java.rmi.RemoteException {
@@ -319,11 +382,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
-	public ArrayList<Resultado> getResultados() throws RemoteException {
-		return this.resultados;
-	}
-
-	public ArrayList<Pessoa> getMembrosMesa(Departamento departamento) throws RemoteException {
+	public CopyOnWriteArrayList<Pessoa> getMembrosMesa(Departamento departamento) throws RemoteException {
 
 		for (MesaVoto mesa : mesas) {
 			if (mesa.getDepartamento() == departamento) {
@@ -333,9 +392,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
-	public ArrayList<MesaVoto> getMesasByStatus(boolean status) {
+	public CopyOnWriteArrayList<MesaVoto> getMesasByStatus(boolean status) {
 
-		ArrayList<MesaVoto> aux = new ArrayList<>();
+		CopyOnWriteArrayList<MesaVoto> aux = new CopyOnWriteArrayList<>();
 
 		for (MesaVoto mesa : mesas) {
 			if (mesa.isStatus() == status)
@@ -344,7 +403,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return aux;
 	}
 
-	public void setMembrosMesa(Departamento departamento, ArrayList<Pessoa> membros) throws RemoteException {
+	public void setMembrosMesa(Departamento departamento, CopyOnWriteArrayList<Pessoa> membros) throws RemoteException {
 
 		for (MesaVoto mesa : mesas) {
 			if (mesa.getDepartamento() == departamento) {
@@ -354,16 +413,16 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		}
 	}
 
-	public ArrayList<Pessoa> listPessoas() throws RemoteException {
+	public CopyOnWriteArrayList<Pessoa> listPessoas() throws RemoteException {
 		return pessoas;
 	}
 
-	public ArrayList<Eleicao> listEleicoes() throws RemoteException {
+	public CopyOnWriteArrayList<Eleicao> listEleicoes() throws RemoteException {
 		return eleicoes;
 	}
 
-	public ArrayList<Eleicao> listEleicoes(MesaVoto mesa) throws RemoteException {
-		ArrayList<Eleicao> lista = new ArrayList<>();
+	public CopyOnWriteArrayList<Eleicao> listEleicoes(MesaVoto mesa) throws RemoteException {
+		CopyOnWriteArrayList<Eleicao> lista = new CopyOnWriteArrayList<>();
 		Departamento departamento = mesa.getDepartamento();
 		for (Eleicao eleicao : this.eleicoes) {
 			if (eleicao.getMesaVotoByDepartamento(departamento) != null)
@@ -372,15 +431,17 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return lista;
 	}
 
-	public ArrayList<Lista> listListas(String nomeEleicao) throws RemoteException {
+	public CopyOnWriteArrayList<Lista> listListas(String nomeEleicao) throws RemoteException {
+		CopyOnWriteArrayList<Lista> lista = new CopyOnWriteArrayList<>();
+
 		Eleicao escolhida = getEleicaoByName(nomeEleicao);
 		if (escolhida != null) {
-			return escolhida.getListas();
+			lista = escolhida.getListas();
 		}
-		return null;
+		return lista;
 	}
 
-	public ArrayList<MesaVoto> listMesas() throws RemoteException {
+	public CopyOnWriteArrayList<MesaVoto> listMesas() throws RemoteException {
 		return mesas;
 	}
 
@@ -417,25 +478,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
-	synchronized public String accessNovidades(boolean flagPublish, String update) throws RemoteException {
-		if (flagPublish) {
-			novidades.push(update); // publicar novidade na stack e acordar consumidores
-			notifyAll();
-			return "";
-		} else {
-			int tam = novidades.size();
-			while (tam == novidades.size()) { // verificar se foram publicadas novidades na stack
-				try {
-					wait();
-				} catch (InterruptedException e) {
-					System.out.println(e.getMessage());
-				}
-			}
-			return novidades.peek(); // aceder à ultima novidade publicada, sem a remover(outros consumidores podem
-										// necessitar tambem dela
-		}
-	}
-
 	public void save(String arrayName) {
 		File file = new File("./ObjectFiles/" + arrayName + ".obj");
 		writeObjects(arrayName, file);
@@ -452,7 +494,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		writeObjects("mesas", mesas);
 	}
 
-	public void writeObjects(String aux, File f) {
+	synchronized public void writeObjects(String aux, File f) {
 
 		try {
 			f.getParentFile().mkdirs();
@@ -492,7 +534,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		readObjects("mesas", mesas);
 	}
 
-	public void readObjects(String aux, File f) {
+	synchronized public void readObjects(String aux, File f) {
 
 		try {
 			FileInputStream fis = new FileInputStream(f);
@@ -500,16 +542,13 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
 			switch (aux) {
 			case "eleicoes":
-				List<Eleicao> listEleicao = (List<Eleicao>) ois.readObject();
-				eleicoes = (ArrayList<Eleicao>) listEleicao;
+				eleicoes = (CopyOnWriteArrayList<Eleicao>)  ois.readObject();
 				break;
 			case "pessoas":
-				List<Pessoa> listPessoa = (List<Pessoa>) ois.readObject();
-				pessoas = (ArrayList<Pessoa>) listPessoa;
+				pessoas = (CopyOnWriteArrayList<Pessoa>)  ois.readObject();
 				break;
 			case "mesas":
-				List<MesaVoto> listMesas = (List<MesaVoto>) ois.readObject();
-				mesas = (ArrayList<MesaVoto>) listMesas;
+				mesas = (CopyOnWriteArrayList<MesaVoto>)  ois.readObject();
 				break;
 			}
 			ois.close();
@@ -533,6 +572,10 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
 	public void subscribe(RMI_C_Interface c) throws RemoteException {
 		consolas.add(c);
+	}
+
+	public void unsubscribe(RMI_C_Interface c) throws RemoteException {
+		consolas.remove(c);
 	}
 
 	public void sendToAll(String s) throws RemoteException {

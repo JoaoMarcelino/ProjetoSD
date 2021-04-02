@@ -1,20 +1,21 @@
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Lista implements Serializable {
 
-	protected ArrayList<Pessoa> listaPessoas;
+	protected CopyOnWriteArrayList<Pessoa> listaPessoas;
 	private String nome;
 	private Profissao tipoLista;
 	private int votos = 0;
 
-	public Lista(ArrayList<Pessoa> listaPessoas, Profissao tipoLista, String nome) {
+	public Lista(CopyOnWriteArrayList<Pessoa> listaPessoas, Profissao tipoLista, String nome) {
 		this.listaPessoas = listaPessoas;
 		this.tipoLista = tipoLista;
 		this.nome = nome;
 	}
 
-	public ArrayList<Pessoa> getListaPessoas() {
+	public CopyOnWriteArrayList<Pessoa> getListaPessoas() {
 		return listaPessoas;
 	}
 

@@ -7,6 +7,7 @@ import java.rmi.*;
 import java.time.*;
 
 import java.rmi.server.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface {
     public static String RMIHostIP;
@@ -80,37 +81,36 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                             addMesa(reader, servidor);
                             break;
                         case "4.2":
-                            addMesaEleicao(reader, servidor);
+                            removeMesa(reader, servidor);
                             break;
                         case "4.3":
-                            removeMesaEleicao(reader, servidor);
+                            addMesaEleicao(reader, servidor);
                             break;
                         case "4.4":
-                            editMesa(reader, servidor);
+                            removeMesaEleicao(reader, servidor);
                             break;
                         case "4.5":
+                            editMesa(reader, servidor);
+                            break;
+                        case "4.6":
                             listMesas(reader, servidor);
                             break;
                         case "5":
-                            modoMonitor(reader,servidor);
-                        case "6":
-                            Exception e = new Exception("Consola encerrada.");
-                            throw e;
-
+                             servidor.unsubscribe((RMI_C_Interface) consola);
+                             System.exit(0);
                         default:
                             System.out.println("Escolha invalida.Tente 1.1, por exemplo.");
                             break;
                     }
                 }catch ( RemoteException e){
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");
                     System.out.println("Falha de ligacao ao servidor. Tente Novamente");
-                    servidor=(RMI_S_Interface) r.lookup("ServidorRMI");
                 }
                 System.out.println("Pressione Enter para continuar.");
                 reader.readLine();
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -132,12 +132,12 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                 "   3.2.Listar Listas de Eleicao\n"+
                 "4.Gerir Mesas de Voto\n" +
                 "   4.1.Adicionar Mesa\n" +
-                "   4.2.Associar Mesa a Eleicao\n" +
-                "   4.3.Desassociar Mesa a Eleicao\n" +
-                "   4.4.Alterar Membros de Mesa\n" +
-                "   4.5.Listar Mesas existentes\n" +
-                "5.Entrar em Modo de Monitorizacao\n"+
-                "6.Sair.\n";
+                "   4.2.Remover Mesa\n" +
+                "   4.3.Associar Mesa a Eleicao\n" +
+                "   4.4.Desassociar Mesa a Eleicao\n" +
+                "   4.5.Alterar Membros de Mesa\n" +
+                "   4.6.Listar Mesas existentes\n" +
+                "5.Sair\n";
         return menu;
     }
 
@@ -226,7 +226,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
 
     public static void listPessoas(BufferedReader reader,RMI_S_Interface servidor)throws NotBoundException {
-        ArrayList<Pessoa> pessoas=new ArrayList<>();
+        CopyOnWriteArrayList<Pessoa> pessoas=new CopyOnWriteArrayList<>();
         for(int i=0;i<totalTries;i++){
             try{
                 pessoas=servidor.listPessoas(); //metodo RMI que se quer chamar
@@ -249,9 +249,9 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
     }
 
     public static void addEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        String nome, descricao,type;
-        ArrayList<Profissao> profs=new ArrayList<Profissao>();
-        ArrayList<Departamento> deps=new ArrayList<Departamento>(Arrays.asList(Departamento.values()));
+        String nome, descricao,type, dep;
+        CopyOnWriteArrayList<Profissao> profs=new CopyOnWriteArrayList<Profissao>();
+        CopyOnWriteArrayList<Departamento> deps=new CopyOnWriteArrayList<Departamento>(Arrays.asList(Departamento.values()));
         GregorianCalendar dataInicio = new GregorianCalendar(), dataTermino = new GregorianCalendar();
         boolean notValid = true;
 
@@ -314,11 +314,11 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         System.out.print("Nome da eleicao:");
         nomeEleicao = reader.readLine();
 
-        Eleicao eleicao=null;
+        Resultado res=null;
         //RMI Method call
         for(int i=0;i<totalTries;i++){
             try{
-                eleicao=servidor.getEleicaoByName(nomeEleicao);
+                res=servidor.getResultados(nomeEleicao);
                 break;
             }catch (RemoteException e){
                 try {
@@ -330,15 +330,26 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                 }
             }
         }
-        
-        if(eleicao==null){
+
+        if(res==null){
             System.out.println("Eleicao nao existe");
         }
         else{
-            System.out.println("Eleicao:"+eleicao.getTitulo());
-            System.out.println("Total de Votos:"+eleicao.getTotalVotos());
-            System.out.print("Votos:\n" + eleicao.getTotalVotosString());
-            System.out.printf("Vencedor: "+ eleicao.getVencedor());
+            System.out.println("Eleicao:"+res.getTitulo());
+            System.out.println("Total de Votos:"+res.getTotalVotos());
+            System.out.println("Votos em Branco:" + res.getBrancos());
+            System.out.println("Votos Nulo:" + res.getNulos());
+            System.out.println("Vencedores: ");
+            for(String venc:res.getVencedores()){
+                System.out.println("\t"+venc);
+            }
+
+            CopyOnWriteArrayList<String> listas=res.getNomesListas();
+            CopyOnWriteArrayList<Integer> results=res.getResultados();
+            System.out.println("N Votos em cada Lista: ");
+            for(int i=0;i<listas.size();i++){
+                System.out.println("\t"+listas.get(i)+":"+results.get(i));
+            }
         }
     }
 
@@ -414,7 +425,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
     }
 
     public static void listEleicoes(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        ArrayList<Eleicao> eleicoes=null;
+        CopyOnWriteArrayList<Eleicao> eleicoes=null;
         //RMI Method call
         for(int i=0;i<totalTries;i++){
             try{
@@ -483,7 +494,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
     }
 
     public static void addLista(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
-        ArrayList<Pessoa> membros=new ArrayList<Pessoa>();
+        CopyOnWriteArrayList<Pessoa> membros=new CopyOnWriteArrayList<Pessoa>();
         String  eleicao,nome, aux,type;
         Profissao prof=Profissao.Estudante;
         int i = 1;
@@ -538,7 +549,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         System.out.print("Nome da eleicao:");
         eleicao=reader.readLine();
 
-        ArrayList<Lista> listas=null;
+        CopyOnWriteArrayList<Lista> listas=null;
         //RMI Method call
         for(int i=0;i<totalTries;i++){
             try{
@@ -576,7 +587,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         String departamento;
         String membro1, membro2, membro3,ip,port;
         Departamento dep=Departamento.DA;
-        ArrayList<Pessoa> membros=new ArrayList<Pessoa>();
+        CopyOnWriteArrayList<Pessoa> membros=new CopyOnWriteArrayList<Pessoa>();
 
         System.out.println("Preencha todos os campos.");
         departamento = readInteger(reader, "\"Departamento: DA (1), DCT (2), DCV (3), DEC (4), DEEC (5), DEI (6), DEM (7), DEQ (8), DF(9), DM (10), DQ (11)?", 11);
@@ -656,9 +667,34 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }
         }
     }
+    public static void removeMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+        String nomeMesa;
+
+        System.out.print("Mesa(departamento):");
+        nomeMesa = reader.readLine();
+
+        String status="";
+        //RMI Method call
+        for(int i=0;i<totalTries;i++){
+            try{
+                status=servidor.removeMesa(nomeMesa);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+    }
 
     public static void addMesaEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
         String nomeMesa,nomeEleicao;
+
         System.out.print("Mesa(departamento):");
         nomeMesa = reader.readLine();
         System.out.print("Eleicao:");
@@ -741,7 +777,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
     public static void listMesas(BufferedReader reader,RMI_S_Interface servidor) throws Exception{
 
-        ArrayList<MesaVoto> mesas=null;
+        CopyOnWriteArrayList<MesaVoto> mesas=null;
         //RMI Method call
         for(int i=0;i<totalTries;i++){
             try{
@@ -777,12 +813,6 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
     }
 
-    public static void modoMonitor(BufferedReader reader,RMI_S_Interface servidor) throws Exception{
-        while(true){
-            String status=servidor.accessNovidades(false,"");
-            System.out.println(status);
-        }
-    }
 
     public static String printGregorianCalendar(GregorianCalendar data){
         int hora=data.get(Calendar.HOUR);
