@@ -219,8 +219,23 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         System.out.print("Password:");
         password = reader.readLine();
 
-        String status=servidor.addPessoa(nome,password,dep,telefone,morada,cc,validadeCC,prof);
+        String status="";
         System.out.println(status);
+        for(int i=0;i<totalTries;i++){
+            try{
+                status=servidor.addPessoa(nome,password,dep,telefone,morada,cc,validadeCC,prof);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
 
     }
 
