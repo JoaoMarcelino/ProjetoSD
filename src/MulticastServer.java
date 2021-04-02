@@ -117,7 +117,6 @@ public class MulticastServer extends Thread {
     private void identify(BufferedReader reader) throws Exception {
         System.out.print("NumeroCC:");
         String numeroCC = reader.readLine();
-
         Pessoa pessoa = servidor.getPessoaByCC(numeroCC);
 
         if (pessoa != null) {
@@ -125,6 +124,10 @@ public class MulticastServer extends Thread {
             Message resposta = getMessage();
             while (!resposta.tipo.equals("freeStatus")) {// descartar mensagens nao importantes
                 resposta = getMessage();
+                if (resposta.tipo.equals("null")){
+                    System.out.println("Terminais cheios. Aguarde mensagem de terminal.");
+                    return ;
+                }
             }
 
             String freeTerminal = resposta.pares.get("terminalId");
@@ -228,6 +231,9 @@ class MulticastReader extends Thread {
                     break;
                 case "login":
                     login(msg);
+                    break;
+                case "open":
+                    System.out.println("Terminal " + msg.pares.get("terminalId") + " esta aberto");
                     break;
                 }
 
@@ -336,6 +342,7 @@ class MulticastReader extends Thread {
 
         sendMessage("type:loginStatus | terminalId:" + id + " | success:" + msg[0].trim() + " | msg:" + msg[1].trim());
     }
+
 
     private void sendMessage(String message) throws Exception {
         byte[] buffer = message.getBytes();

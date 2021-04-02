@@ -22,6 +22,7 @@ type:unlockStatus | terminalId:{id} | success;{yes,no}
 
 type:free | terminalId:{id,server,all}
 type:freeStatus | terminalId:{id,server,all} | success;{yes,no}
+type:open | terminalId: {id}
 
 type:reset | terminalId:{all}
 type:resetStatus | terminalId:{id}

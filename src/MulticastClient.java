@@ -32,7 +32,16 @@ public class MulticastClient extends Thread {
             InetAddress group = InetAddress.getByName(address);
             socket.joinGroup(group);
 
-            sendMessage("type:joinGroup | terminalId:-1");// send joinGroup msg to server
+            while(this.id.equals("-1")){
+                sendMessage("type:joinGroup | terminalId:-1");// send joinGroup msg to server
+                Message msg = getMessage();
+                msg = getMessage();
+                if (msg.tipo.equals("set")){
+                    joinGroup(msg);
+                }
+            }
+
+            sendMessage("type:open | terminalId:" + this.id);
 
             while (true) {
                 Message msg = getMessage(); //id={id,all}
@@ -76,6 +85,8 @@ public class MulticastClient extends Thread {
         watcher.start();
         watcher.join();
         System.out.println("\nLocked");
+
+        sendMessage("type:open | terminalId:" + this.id);
     }
 
     private void resetId(Message msg) throws Exception{
@@ -173,6 +184,8 @@ class MulticastUser extends Thread {
                         break;
                     case "0":
                         isLogged = false;
+                        // assim que alguem sair dar lock e enviar esta mensagem
+                        // sendMessage("type:open | terminalId:" + this.id);
                         break;
 
                     default:
@@ -214,7 +227,10 @@ class MulticastUser extends Thread {
         Message message = getMessage(); // own message
 
         message = getMessage();
-
+        if (message.tipo.equals("null")){
+            System.out.println("Erro a dar login, tente outra vez");
+            return ;
+        }
         this.isLogged =  Boolean.parseBoolean(message.pares.get("success"));
         if(this.isLogged) this.numeroCC = numeroCC;
 
@@ -230,6 +246,10 @@ class MulticastUser extends Thread {
         Message message;
         do{
             message = getMessage();
+            if (message.tipo.equals("null")){
+                System.out.println("Erro a dar listar Eleicoes, tente outra vez");
+                return ;
+            }
         }while(!message.tipo.equals("itemList"));
 
         String value = message.pares.get("item_count");
@@ -238,6 +258,10 @@ class MulticastUser extends Thread {
         System.out.println("Lista de Eleicoes");
         for (int i = 0; i < countItems ; i++){
             message = getMessage();
+            if (message.tipo.equals("null")){
+                System.out.println("Erro a dar listar Eleicoes, tente outra vez");
+                return ;
+            }
             String name = message.pares.get("item_name");
             String description = message.pares.get("item_description");
             System.out.println("Item " + i + ": "+ name + " -> " + description);
@@ -254,12 +278,23 @@ class MulticastUser extends Thread {
         Message message = getMessage(); //own message
 
         message = getMessage();
+        if (message.tipo.equals("null")){
+            System.out.println("Erro a lista candidatos, tente outra vez");
+            return ;
+        }
+
         String value = message.pares.get("item_count");
         countItems =  Integer.parseInt(value);
 
         System.out.println("Lista de Candidatos");
         for (int i = 0; i < countItems ; i++){
             message = getMessage();
+
+            if (message.tipo.equals("null")){
+                System.out.println("Erro a lista candidatos, tente outra vez");
+                return ;
+            }
+
             String name = message.pares.get("item_name");
             System.out.println("Item " + i + ": "+ name);
         }
@@ -276,6 +311,10 @@ class MulticastUser extends Thread {
         Message message = getMessage(); // own message
 
         message = getMessage();
+        if (message.tipo.equals("null")){
+            System.out.println("Erro a votar, tente outra vez");
+            return ;
+        }
         String sucess = message.pares.get("sucess");
         String msg = message.pares.get("msg");
 
