@@ -185,6 +185,7 @@ class MulticastUser extends Thread {
                         isLogged = false;
                         sendMessage("type:open | terminalId:" + this.id);
                         waitTimeout(true,true);
+                        session=false;
                         break;
 
                     default:
@@ -321,11 +322,11 @@ class MulticastUser extends Thread {
 
     }
 
-    synchronized public void waitTimeout(boolean flagNotify,boolean closeWathcer){
+    synchronized public void waitTimeout(boolean flagNotify,boolean closeWatcher){
         //MulticastUser executa isto depois de cada readline();
         //Dá reset ao timer c/ o notifyAll()
         if(flagNotify){
-            if(closeWathcer){
+            if(closeWatcher){
                 lastTime=(new Date()).getTime()-timeout-1;
             }
             else{
