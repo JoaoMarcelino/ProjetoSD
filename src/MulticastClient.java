@@ -21,7 +21,6 @@ public class MulticastClient extends Thread {
             System.out.println("Bad Arguments.Run java MulticastClient {address} {port}");
             System.exit(1);
         }
-
         MulticastClient client = new MulticastClient(args[0], args[1]);
         client.start();
     }
@@ -162,11 +161,11 @@ class MulticastUser extends Thread {
             String escolha = "";
             boolean session = true;
 
-            while (true) {
+            while (session) {
                 System.out.print(printMenu());
                 System.out.print("Opcao: ");
                 escolha = reader.readLine();
-                waitTimeout(1);
+                waitTimeout(true,false);
 
                 switch (escolha) {
                     case "1":
@@ -184,8 +183,8 @@ class MulticastUser extends Thread {
                         break;
                     case "0":
                         isLogged = false;
-                        // assim que alguem sair dar lock e enviar esta mensagem
-                        // sendMessage("type:open | terminalId:" + this.id);
+                        sendMessage("type:open | terminalId:" + this.id);
+                        waitTimeout(true,true);
                         break;
 
                     default:
@@ -322,13 +321,17 @@ class MulticastUser extends Thread {
 
     }
 
-    synchronized public void waitTimeout(int flag){
+    synchronized public void waitTimeout(boolean flagNotify,boolean closeWathcer){
         //MulticastUser executa isto depois de cada readline();
         //Dá reset ao timer c/ o notifyAll()
-        if(flag==1){
-            lastTime=(new Date()).getTime();
+        if(flagNotify){
+            if(closeWathcer){
+                lastTime=(new Date()).getTime()-timeout-1;
+            }
+            else{
+                lastTime=(new Date()).getTime();
+            }
             notifyAll();
-            return;
         }
         //Thread auxiliar criada ao mesmo tempo que MulticastUser executa isto
         //Depois disto, faz Thread.stop() ao MulticastUser e termina também
@@ -384,7 +387,7 @@ class Watcher extends Thread{
     }
 
     public void run() {
-        watched.waitTimeout(0);
+        watched.waitTimeout(false,false);
         watched.stop();
     }
 }
