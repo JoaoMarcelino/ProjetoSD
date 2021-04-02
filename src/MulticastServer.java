@@ -46,13 +46,18 @@ public class MulticastServer extends Thread {
         try {
             servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
 
-
             for(int i=0;i<totalTries;i++){
                 try{
                     mesa = servidor.getMesaByDepartamento(args[0]);
-                    if(mesa != null)
+                    if(mesa != null){
                         servidor.turnMesa( mesa, true);
-                    break;
+                        System.out.println("Mesa conectada ao servidor.");
+                        break;
+                    }
+                    else{
+                        System.out.println("Mesa nao prevista pelo servidor.");
+                        return;
+                    }
                 }catch (RemoteException e){
                     try {
                         servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
