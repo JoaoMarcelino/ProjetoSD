@@ -18,6 +18,9 @@ public class MulticastServer extends Thread {
     private RMI_S_Interface servidor;
     private MesaVoto mesa = null;
 
+    static int totalTries=10;
+    static String RMIHostIP;
+    static int RMIHostPort;
     private boolean isActive = true;
 
     public MulticastServer(MesaVoto mesa, RMI_S_Interface servidor) {
@@ -35,13 +38,33 @@ public class MulticastServer extends Thread {
             System.out.println("Bad Arguments.Run java MulticastServer {departamento} {rmi_adress} {rmi_port}");
             System.exit(1);
         }
+        RMIHostIP=args[1];
+        RMIHostPort=Integer.parseInt(args[2]);
+
         RMI_S_Interface servidor = null;
         MesaVoto mesa = null;
         try {
-            servidor = (RMI_S_Interface) LocateRegistry.getRegistry(args[1], Integer.parseInt(args[2])).lookup("ServidorRMI");
-            mesa = servidor.getMesaByDepartamento(args[0]);
-            if(mesa != null)
-            servidor.turnMesa( mesa, true);
+            servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+
+
+            for(int i=0;i<totalTries;i++){
+                try{
+                    mesa = servidor.getMesaByDepartamento(args[0]);
+                    if(mesa != null)
+                        servidor.turnMesa( mesa, true);
+                    break;
+                }catch (RemoteException e){
+                    try {
+                        servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                    }catch (RemoteException ignored){}
+                    if(i==totalTries-1){
+                        System.out.println("Servidor RMI indisponivel.");
+                        return;
+                    }
+                }
+            }
+
+
 
         } catch (Exception e) {
             System.out.println("Exception in main: " + e);
@@ -51,7 +74,7 @@ public class MulticastServer extends Thread {
 
         if(mesa != null) {
             MulticastServer server = new MulticastServer(mesa, servidor);
-            MulticastReader reader = new MulticastReader(mesa, servidor, server);
+            MulticastReader reader = new MulticastReader(mesa, servidor, server,RMIHostIP,RMIHostPort,totalTries);
 
             server.start();
             reader.start();
@@ -117,7 +140,23 @@ public class MulticastServer extends Thread {
     private void identify(BufferedReader reader) throws Exception {
         System.out.print("NumeroCC:");
         String numeroCC = reader.readLine();
-        Pessoa pessoa = servidor.getPessoaByCC(numeroCC);
+
+        Pessoa pessoa = null;
+        for(int i=0;i<totalTries;i++){
+            try{
+                pessoa = servidor.getPessoaByCC(numeroCC);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
 
         if (pessoa != null) {
             sendMessage("type:free | terminalId:all");
@@ -194,15 +233,22 @@ class MulticastReader extends Thread {
     private RMI_S_Interface servidor;
     private MesaVoto mesa;
 
+    private String RMIHostIP;
+    private int RMIHostPort;
+    private int totalTries;
     private MulticastServer server;
 
-    public MulticastReader(MesaVoto mesa, RMI_S_Interface servidor, MulticastServer server) {
+
+    public MulticastReader(MesaVoto mesa, RMI_S_Interface servidor, MulticastServer server,String RMIHostIP,int RMIHostPort,int totalTries) {
         super("User " + (long) (Math.random() * 1000));
         this.address = mesa.getIp();
         this.port = Integer.parseInt(mesa.getPort());
         this.servidor = servidor;
         this.mesa = mesa;
         this.server = server;
+        this.RMIHostIP=RMIHostIP;
+        this.RMIHostPort=RMIHostPort;
+        this.totalTries=totalTries;
     }
 
 
@@ -280,12 +326,42 @@ class MulticastReader extends Thread {
         String escolha = message.pares.get("candidate");
 
         // Create Voto
-        Pessoa pessoa = servidor.getPessoaByCC(numeroCC);
+        Pessoa pessoa = null;
+        for(int i=0;i<totalTries;i++){
+            try{
+                pessoa = servidor.getPessoaByCC(numeroCC);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
         GregorianCalendar data = new GregorianCalendar();
         Voto voto = new Voto(pessoa, data, this.mesa);
 
         // create String
-        String mensagem = servidor.adicionarVoto(eleicao, voto, escolha, mesa.getDepartamento());
+        String mensagem = "";
+        for(int i=0;i<totalTries;i++){
+            try{
+                mensagem= servidor.adicionarVoto(eleicao, voto, escolha, mesa.getDepartamento());
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
         String[] msg = mensagem.split("\\|");
 
         sendMessage("type:voteStatus | terminalId:" + id + " | success:" + msg[0].trim() + " | msg:" + msg[1].trim());
@@ -295,7 +371,22 @@ class MulticastReader extends Thread {
     private void listElections(Message message) throws Exception {
         String id = message.pares.get("terminalId");
         // get all elections para esta mesa de voto
-        CopyOnWriteArrayList<Eleicao> eleicoes = servidor.listEleicoes(this.mesa);
+        CopyOnWriteArrayList<Eleicao> eleicoes = null;
+        for(int i=0;i<totalTries;i++){
+            try{
+                eleicoes = servidor.listEleicoes(this.mesa);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
         // length de eleicoes
         int length = eleicoes.size();
 
@@ -315,7 +406,21 @@ class MulticastReader extends Thread {
         String id = message.pares.get("terminalId");
         String electionName = message.pares.get("election");
         // get all candidates para esta eleicao
-        CopyOnWriteArrayList<Lista> candidaturas = servidor.listListas(electionName);
+        CopyOnWriteArrayList<Lista> candidaturas = null;
+        for(int i=0;i<totalTries;i++){
+            try{
+                candidaturas = servidor.listListas(electionName);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
 
         if (candidaturas != null){
 
@@ -337,7 +442,23 @@ class MulticastReader extends Thread {
         String password = message.pares.get("password");
 
         // verify login status
-        String mensagem = servidor.login(numeroCC, password);
+        String mensagem = "";
+        for(int i=0;i<totalTries;i++){
+            try{
+                mensagem = servidor.login(numeroCC, password);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                }catch (RemoteException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
+
+
         String[] msg = mensagem.split("\\|");
 
         sendMessage("type:loginStatus | terminalId:" + id + " | success:" + msg[0].trim() + " | msg:" + msg[1].trim());

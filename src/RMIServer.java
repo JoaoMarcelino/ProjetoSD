@@ -91,7 +91,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	}
 
 	public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada,
-			String numberCC, GregorianCalendar expireCCDate, Profissao profissao) throws RemoteException {
+		String numberCC, GregorianCalendar expireCCDate, Profissao profissao) throws RemoteException {
 		if (getPessoaByCC(numberCC) == null) {
 			Pessoa pessoa = new Pessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate,
 					profissao);
@@ -101,6 +101,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		} else {
 			return nome + "(" + numberCC + ") jA existe.";
 		}
+
 	}
 
 	public String addEleicao(String titulo, String descricao, GregorianCalendar dataInicio, GregorianCalendar dataFim,
@@ -232,7 +233,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		String tipo = "";
 
 		Lista candidato = ele.getListaByName(nomeLista);
-
 
 		if (candidato != null) {
 			tipo = "Valido";
