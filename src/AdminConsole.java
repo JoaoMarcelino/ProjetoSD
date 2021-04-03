@@ -21,7 +21,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
     }
 
     public static void main(String[] args) {
-        if(args.length!=3){
+        if(args.length!=2){
             System.out.println("Bad arguments. run java AdminConsole {RMIHostIP} {RMIHostPort}");
             System.exit(1);
         }

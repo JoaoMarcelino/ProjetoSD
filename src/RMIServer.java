@@ -579,8 +579,15 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	}
 
 	public void sendToAll(String s) throws RemoteException {
-		for (RMI_C_Interface consola : consolas)
-			consola.printOnClient(s);
+
+			for (RMI_C_Interface consola : consolas){
+				try {
+					consola.printOnClient(s);
+				}catch (RemoteException e){
+					consolas.remove(consola);
+				}
+			}
+
 	}
 
 	public String sayHello() throws RemoteException {
