@@ -21,19 +21,23 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
     }
 
     public static void main(String[] args) {
-        if(args.length!=2){
+        if(args.length!=3){
             System.out.println("Bad arguments. run java AdminConsole {RMIHostIP} {RMIHostPort}");
             System.exit(1);
         }
         RMIHostIP=args[0];
         RMIHostPort=Integer.parseInt(args[1]);
-
         //System.getProperties().put("java.security.policy", "policy.all");
         //System.setSecurityManager(new RMISecurityManager());
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha = "";
 
         try {
+            DatagramSocket socket = new DatagramSocket();
+            socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+            String ip = socket.getLocalAddress().getHostAddress();
+            System.out.println(ip);
+            System.setProperty("java.rmi.server.hostname",ip);
             r = LocateRegistry.getRegistry(RMIHostIP,RMIHostPort);
             servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
 
