@@ -83,9 +83,9 @@ public class MulticastClient extends Thread {
         user.start();
         watcher.start();
         watcher.join();
+        sendMessage("type:open | terminalId:" + this.id);
         System.out.println("\nLocked");
 
-        sendMessage("type:open | terminalId:" + this.id);
     }
 
     private void resetId(Message msg) throws Exception{
@@ -137,7 +137,7 @@ class MulticastUser extends Thread {
     private String numeroCC;
     BufferedReader reader;
 
-    public long lastTime;
+    volatile public long lastTime;
     public long timeout;
 
 
@@ -183,7 +183,6 @@ class MulticastUser extends Thread {
                         break;
                     case "0":
                         isLogged = false;
-                        sendMessage("type:open | terminalId:" + this.id);
                         waitTimeout(true,true);
                         session=false;
                         break;
@@ -303,7 +302,7 @@ class MulticastUser extends Thread {
     public void vote(BufferedReader reader) throws Exception{
         System.out.print("Eleicao: ");
         String eleicao = reader.readLine();
-        System.out.print("voto: ");
+        System.out.print("Lista( ou Nulo/Branco): ");
         String candidato = reader.readLine();
 
         sendMessage("type:vote | terminalId:"+ this.id +" | numeroCC:"+ this.numeroCC +" | election:"+ eleicao +" | candidate:" + candidato);
@@ -345,7 +344,7 @@ class MulticastUser extends Thread {
                     System.out.println("interruptedException caught");
                 }
                 long thisTime = (new Date()).getTime();
-                dif = (thisTime - lastTime) / 1000;
+                dif = (thisTime - lastTime);
             }
         }
     }

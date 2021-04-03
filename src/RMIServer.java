@@ -227,7 +227,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		Eleicao ele = getEleicaoByName(nomeEleicao, dep);
 
 		if (ele == null){
-			return "false | Voto não aceite (getElecao)";
+			return "false | Voto nao aceite (getElecao)";
 		}
 
 		String tipo = "";
