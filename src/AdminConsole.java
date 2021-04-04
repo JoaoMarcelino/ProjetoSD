@@ -4,17 +4,16 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.*;
 import java.rmi.*;
-import java.time.*;
-
 import java.rmi.server.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface {
     public static String RMIHostIP;
     public static int RMIHostPort;
-    public static int totalTries=10;//n tentativas de invocacao de metodo RMI ate desistir
+    public static int totalTries=5;//n tentativas de invocacao de metodo RMI ate desistir
     public static Registry r=null;
     public static RMI_S_Interface servidor;
+    public static AdminConsole consola;
 
     public AdminConsole() throws RemoteException {
         super();
@@ -27,21 +26,20 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         }
         RMIHostIP=args[0];
         RMIHostPort=Integer.parseInt(args[1]);
+
         //System.getProperties().put("java.security.policy", "policy.all");
         //System.setSecurityManager(new RMISecurityManager());
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String escolha = "";
-
+        String escolha;
         try {
             DatagramSocket socket = new DatagramSocket();
             socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
             String ip = socket.getLocalAddress().getHostAddress();
-            System.out.println(ip);
             System.setProperty("java.rmi.server.hostname",ip);
             r = LocateRegistry.getRegistry(RMIHostIP,RMIHostPort);
             servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
 
-            AdminConsole consola = new AdminConsole();
+            consola = new AdminConsole();
             servidor.subscribe((RMI_C_Interface) consola);
 
             while (true) {
@@ -49,71 +47,70 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                 System.out.print("Opcao: ");
                 escolha = reader.readLine();
 
-                try {
-                    switch (escolha) {
-                        case "1.1":
-                            addPessoa(reader, servidor);
-                            break;
-                        case "1.2":
-                            listPessoas(reader, servidor);
-                            break;
-                        case "2.1":
-                            addEleicao(reader, servidor);
-                            break;
-                        case "2.2":
-                            getResultados(reader, servidor);
-                            break;
-                        case "2.3":
-                            getVoto(reader, servidor);
-                            break;
-                        case "2.4":
-                            votar(reader, servidor);
-                            break;
-                        case "2.5":
-                            listEleicoes(reader, servidor);
-                            break;
-                        case "2.6":
-                            editEleicao(reader, servidor);
-                            break;
-                        case "3.1":
-                            addLista(reader, servidor);
-                            break;
-                        case "3.2":
-                            listListas(reader, servidor);
-                            break;
-                        case "4.1":
-                            addMesa(reader, servidor);
-                            break;
-                        case "4.2":
-                            removeMesa(reader, servidor);
-                            break;
-                        case "4.3":
-                            addMesaEleicao(reader, servidor);
-                            break;
-                        case "4.4":
-                            removeMesaEleicao(reader, servidor);
-                            break;
-                        case "4.5":
-                            editMesa(reader, servidor);
-                            break;
-                        case "4.6":
-                            listMesas(reader, servidor);
-                            break;
-                        case "5":
-                             servidor.unsubscribe((RMI_C_Interface) consola);
-                             System.exit(0);
-                        default:
-                            System.out.println("Escolha invalida.Tente 1.1, por exemplo.");
-                            break;
-                    }
-                }catch ( RemoteException e){
-                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");
-                    System.out.println("Falha de ligacao ao servidor. Tente Novamente");
+                switch (escolha) {
+                    case "1.1":
+                        addPessoa(reader);
+                        break;
+                    case "1.2":
+                        listPessoas(reader);
+                        break;
+                    case "2.1":
+                        addEleicao(reader);
+                        break;
+                    case "2.2":
+                        getResultados(reader);
+                        break;
+                    case "2.3":
+                        getVoto(reader);
+                        break;
+                    case "2.4":
+                        votar(reader);
+                        break;
+                    case "2.5":
+                        listEleicoes(reader);
+                        break;
+                    case "2.6":
+                        editEleicao(reader);
+                        break;
+                    case "3.1":
+                        addLista(reader);
+                        break;
+                    case "3.2":
+                        listListas(reader);
+                        break;
+                    case "4.1":
+                        addMesa(reader);
+                        break;
+                    case "4.2":
+                        removeMesa(reader);
+                        break;
+                    case "4.3":
+                        addMesaEleicao(reader);
+                        break;
+                    case "4.4":
+                        removeMesaEleicao(reader);
+                        break;
+                    case "4.5":
+                        editMesa(reader);
+                        break;
+                    case "4.6":
+                        listMesas(reader);
+                        break;
+                    case "5":
+                         servidor.unsubscribe((RMI_C_Interface) consola);
+                         System.exit(0);
+                    default:
+                        System.out.println("Escolha invalida.Tente 1.1, por exemplo.");
+                        break;
                 }
+
                 System.out.println("Pressione Enter para continuar.");
                 reader.readLine();
             }
-        } catch (Exception e) {
+        }catch (RemoteException | NotBoundException e) {
+            System.out.println("Servidor RMI indisponivel");
+            System.exit(1);
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
@@ -146,7 +143,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
     }
 
 
-    public static void addPessoa(BufferedReader reader, RMI_S_Interface servidor) throws Exception {
+    public static void addPessoa(BufferedReader reader) throws IOException {
 
         String nome,password;
         String  telefone, morada, cc, departamento, type;
@@ -233,7 +230,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -244,7 +241,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
     }
 
 
-    public static void listPessoas(BufferedReader reader,RMI_S_Interface servidor)throws NotBoundException {
+    public static void listPessoas(BufferedReader reader){
         CopyOnWriteArrayList<Pessoa> pessoas=new CopyOnWriteArrayList<>();
         for(int i=0;i<totalTries;i++){
             try{
@@ -253,7 +250,8 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
+
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -267,7 +265,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         }
     }
 
-    public static void addEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    public static void addEleicao(BufferedReader reader) throws IOException {
         String nome, descricao,type, dep;
         CopyOnWriteArrayList<Profissao> profs=new CopyOnWriteArrayList<Profissao>();
         CopyOnWriteArrayList<Departamento> deps=new CopyOnWriteArrayList<Departamento>(Arrays.asList(Departamento.values()));
@@ -317,7 +315,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -327,7 +325,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
     }
 
-    public static void getResultados(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    public static void getResultados(BufferedReader reader) throws IOException {
         String nomeEleicao;
 
         System.out.print("Nome da eleicao:");
@@ -342,7 +340,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -372,7 +370,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         }
     }
 
-    public static void getVoto(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    public static void getVoto(BufferedReader reader) throws IOException {
         String numeroCC,nomeEleicao;
 
         System.out.print("Numero CC:");
@@ -389,7 +387,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -412,7 +410,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         }
     }
 
-    public static void votar(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    public static void votar(BufferedReader reader) throws IOException {
         String numeroCC, password, nomeEleicao, nomeLista;
         System.out.print("Numero CC:");
         numeroCC = reader.readLine();
@@ -432,7 +430,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -443,7 +441,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
     }
 
-    public static void listEleicoes(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    public static void listEleicoes(BufferedReader reader){
         CopyOnWriteArrayList<Eleicao> eleicoes=null;
         //RMI Method call
         for(int i=0;i<totalTries;i++){
@@ -453,7 +451,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -467,7 +465,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         }
     }
 
-    public static void editEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception{
+    public static void editEleicao(BufferedReader reader) throws IOException{
         String nomeAntigo,nomeNovo, descricaoNova;
         String hora, dia, mes, ano;
         boolean notValid = true;
@@ -502,7 +500,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -512,7 +510,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
     }
 
-    public static void addLista(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    public static void addLista(BufferedReader reader) throws IOException {
         CopyOnWriteArrayList<Pessoa> membros=new CopyOnWriteArrayList<Pessoa>();
         String  eleicao,nome, aux,type;
         Profissao prof=Profissao.Estudante;
@@ -553,7 +551,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(j==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -563,7 +561,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
     }
 
 
-    public static void listListas(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    public static void listListas(BufferedReader reader) throws IOException {
         String eleicao;
         System.out.print("Nome da eleicao:");
         eleicao=reader.readLine();
@@ -577,7 +575,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -602,7 +600,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
     }
 
-    public static void addMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    public static void addMesa(BufferedReader reader) throws IOException {
         String departamento;
         String membro1, membro2, membro3,ip,port;
         Departamento dep=Departamento.DA;
@@ -678,7 +676,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -686,7 +684,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }
         }
     }
-    public static void removeMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    public static void removeMesa(BufferedReader reader) throws IOException {
         String nomeMesa;
 
         System.out.print("Mesa(departamento):");
@@ -702,7 +700,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -711,7 +709,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         }
     }
 
-    public static void addMesaEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    public static void addMesaEleicao(BufferedReader reader) throws IOException {
         String nomeMesa,nomeEleicao;
 
         System.out.print("Mesa(departamento):");
@@ -729,7 +727,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -738,7 +736,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         }
     }
 
-    public static void removeMesaEleicao(BufferedReader reader,RMI_S_Interface servidor) throws Exception{
+    public static void removeMesaEleicao(BufferedReader reader) throws IOException{
         String nomeMesa,nomeEleicao;
         System.out.print("Mesa(departamento):");
         nomeMesa = reader.readLine();
@@ -755,7 +753,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -764,7 +762,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         }
     }
 
-    public static void editMesa(BufferedReader reader,RMI_S_Interface servidor) throws Exception {
+    public static void editMesa(BufferedReader reader) throws IOException {
         String nomeMesa,membro1,membro2,membro3;
         System.out.print("Mesa(departamento):");
         nomeMesa = reader.readLine();
@@ -785,7 +783,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -794,7 +792,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         }
     }
 
-    public static void listMesas(BufferedReader reader,RMI_S_Interface servidor) throws Exception{
+    public static void listMesas(BufferedReader reader){
 
         CopyOnWriteArrayList<MesaVoto> mesas=null;
         //RMI Method call
@@ -805,7 +803,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }catch (RemoteException e){
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
-                }catch (RemoteException ignored){}
+                }catch (RemoteException | NotBoundException ignored){}
                 if(i==totalTries-1){
                     System.out.println("Servidor RMI indisponivel.");
                     return;
@@ -842,7 +840,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         return hora+"h "+dia+" "+mes+" "+ano;
     }
 
-    public static String readInteger(BufferedReader reader, String info) throws Exception{
+    public static String readInteger(BufferedReader reader, String info) throws IOException{
         String input = "";
         int intInputValue = 0;
         boolean isValid = false;
@@ -863,7 +861,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         return input;
     }
 
-    public static String readInteger(BufferedReader reader, String info, int max) throws Exception{
+    public static String readInteger(BufferedReader reader, String info, int max) throws IOException{
         String input = "";
         int intInputValue = 0;
         boolean isValid = false;
@@ -883,7 +881,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         return input;
     }
 
-    public static GregorianCalendar readDate(BufferedReader reader, String info, boolean flagHora) throws Exception{
+    public static GregorianCalendar readDate(BufferedReader reader, String info, boolean flagHora) throws IOException{
         GregorianCalendar calendar = new GregorianCalendar();
         String ano, mes, dia, hora;
         boolean isValid = false;

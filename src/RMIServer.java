@@ -279,7 +279,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		String status = ele.addVotoAntecipado(v, nomeLista, tipo);
 		if (status.equals("Voto realizado com sucesso.")) {
 			save("eleicoes");
-			String update = p.getNome() + " votou antecipadamente na Eleicao " + ele.getTitulo() + " a "
+			String update =p.getNome() + " votou antecipadamente na Eleicao " + ele.getTitulo() + " a "
 					+ printGregorianCalendar(new GregorianCalendar())+".";
 			sendToAll(update);
 		}
@@ -488,10 +488,12 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		File eleicoes = new File("./ObjectFiles/eleicoes.obj");
 		File pessoas = new File("./ObjectFiles/pessoas.obj");
 		File mesas = new File("./ObjectFiles/mesas.obj");
+		File consolas = new File("./ObjectFiles/consolas.obj");
 
 		writeObjects("eleicoes", eleicoes);
 		writeObjects("pessoas", pessoas);
 		writeObjects("mesas", mesas);
+		writeObjects("consolas", consolas);
 	}
 
 	synchronized public void writeObjects(String aux, File f) {
@@ -512,6 +514,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			case "mesas":
 				oos.writeObject(mesas);
 				break;
+			case "consolas":
+				oos.writeObject(consolas);
+				break;
 			default:
 				System.out.println("Erro: Array nao existente.");
 			}
@@ -528,10 +533,12 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		File eleicoes = new File("./ObjectFiles/eleicoes.obj");
 		File pessoas = new File("./ObjectFiles/pessoas.obj");
 		File mesas = new File("./ObjectFiles/mesas.obj");
+		File consolas = new File("./ObjectFiles/consolas.obj");
 
 		readObjects("eleicoes", eleicoes);
 		readObjects("pessoas", pessoas);
 		readObjects("mesas", mesas);
+		readObjects("consolas", consolas);
 	}
 
 	synchronized public void readObjects(String aux, File f) {
@@ -549,6 +556,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 				break;
 			case "mesas":
 				mesas = (CopyOnWriteArrayList<MesaVoto>)  ois.readObject();
+				break;
+			case "consolas":
+				consolas = (CopyOnWriteArrayList<RMI_C_Interface>)  ois.readObject();
 				break;
 			}
 			ois.close();
@@ -572,10 +582,12 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
 	public void subscribe(RMI_C_Interface c) throws RemoteException {
 		consolas.add(c);
+		save("consolas");
 	}
 
 	public void unsubscribe(RMI_C_Interface c) throws RemoteException {
 		consolas.remove(c);
+		save("consolas");
 	}
 
 	public void sendToAll(String s) throws RemoteException {
@@ -585,6 +597,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 					consola.printOnClient(s);
 				}catch (RemoteException e){
 					consolas.remove(consola);
+					save("consolas");
 				}
 			}
 

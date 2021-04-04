@@ -1,6 +1,7 @@
 import java.lang.reflect.Array;
 import java.net.*;
 import java.io.*;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -18,7 +19,7 @@ public class MulticastServer extends Thread {
     private RMI_S_Interface servidor;
     private MesaVoto mesa = null;
 
-    static int totalTries=10;
+    static int totalTries=5;
     static String RMIHostIP;
     static int RMIHostPort;
     private boolean isActive = true;
@@ -43,38 +44,30 @@ public class MulticastServer extends Thread {
 
         RMI_S_Interface servidor = null;
         MesaVoto mesa = null;
-        try {
-            servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
-
-            for(int i=0;i<totalTries;i++){
-                try{
-                    mesa = servidor.getMesaByDepartamento(args[0]);
-                    if(mesa != null){
-                        servidor.turnMesa( mesa, true);
-                        System.out.println("Mesa conectada ao servidor.");
-                        break;
-                    }
-                    else{
-                        System.out.println("Mesa nao prevista pelo servidor.");
-                        return;
-                    }
-                }catch (RemoteException e){
-                    try {
-                        servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
-                    }catch (RemoteException ignored){}
-                    if(i==totalTries-1){
-                        System.out.println("Servidor RMI indisponivel.");
-                        return;
-                    }
+        for(int i=0;i<totalTries;i++){
+            try{
+                servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                mesa = servidor.getMesaByDepartamento(args[0]);
+                if(mesa != null){
+                    servidor.turnMesa( mesa, true);
+                    System.out.println("Mesa conectada ao servidor.");
+                    break;
+                }
+                else{
+                    System.out.println("Mesa nao prevista pelo servidor.");
+                    return;
+                }
+            }catch (RemoteException | NotBoundException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                }catch (RemoteException | NotBoundException ignored){}
+                if(i==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
                 }
             }
-
-
-
-        } catch (Exception e) {
-            System.out.println("Exception in main: " + e);
-            e.printStackTrace();
         }
+
 
 
         if(mesa != null) {
@@ -105,34 +98,41 @@ public class MulticastServer extends Thread {
                 escolha = reader.readLine();
 
                 switch (escolha) {
-                case "1":
-                    identify(reader);
-                    break;
-                case "2":
-                    listMembers();
-                    break;
-                case "3":
-                    isActive= false;
+                    case "1":
+                        identify(reader);
+                        break;
+                    case "2":
+                        listMembers();
+                        break;
+                    case "3":
+                        isActive = false;
 
-                    break;
+                        break;
                 }
 
 
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         } finally {
             socket.close();
         }
 
-        try{
-            servidor.turnMesa( mesa, false);
-        }
-        catch (Exception e){
-            e.printStackTrace();
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                servidor.turnMesa(mesa, false);
+                break;
+            } catch (RemoteException e) {
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                    if (i == totalTries - 1) {
+                        System.out.println("Servidor RMI indisponivel.");
+                        return;
+                    }
+                }
+            }
         }
     }
 
