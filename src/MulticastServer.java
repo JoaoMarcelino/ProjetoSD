@@ -85,6 +85,7 @@ public class MulticastServer extends Thread {
     public void run() {
         try {
             socket = new MulticastSocket(port); // create socket and bind it
+            socket.setTimeToLive(4);
             group = InetAddress.getByName(address);
             socket.joinGroup(group);
 
@@ -106,7 +107,6 @@ public class MulticastServer extends Thread {
                         break;
                     case "3":
                         isActive = false;
-
                         break;
                 }
 
@@ -261,6 +261,7 @@ class MulticastReader extends Thread {
     public void run() {
         try {
             socket = new MulticastSocket(port); // create socket and bind it
+            socket.setTimeToLive(4);
             group = InetAddress.getByName(address);
             socket.joinGroup(group);
 

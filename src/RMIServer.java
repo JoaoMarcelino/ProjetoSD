@@ -245,9 +245,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			String update =  "Alguem votou na Eleicao " + ele.getTitulo() + " a "
 					+ printGregorianCalendar(new GregorianCalendar())+".";
 			sendToAll(update);
-			return "true | Voto com Sucesso";
+			return "true | Voto com Sucesso.";
 		}
-		return "false | Voto não aceite (Duplicado)";
+		return "false | Voto nao aceite.";
 	}
 
 	public String addVotoAntecipado(String numeroCC, String password, String nomeEleicao, String nomeLista)

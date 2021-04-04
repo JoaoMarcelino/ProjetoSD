@@ -100,7 +100,7 @@ public class Eleicao implements Serializable {
 	}
 
 	public String editDados(String tituloNovo,String descricaoNova,GregorianCalendar dataInicio,GregorianCalendar dataFim){
-		if(this.checkStart()){
+		if(this.checkStart() ){
 			return "Eleicao a decorrer ou encerrada.";
 		}
 		if(dataInicio.before(new GregorianCalendar())){
@@ -115,8 +115,7 @@ public class Eleicao implements Serializable {
 	}
 
 	public boolean addVoto(Voto voto, String nomeLista, String tipo) {
-
-		if (checkStart() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())) {
+		if (checkStart() && !checkEnd() && !hasVoted(voto.getPessoa()) && canVote(voto.getPessoa())) {
 
 			switch (tipo) {
 			case "Valido":

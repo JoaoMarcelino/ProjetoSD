@@ -28,6 +28,7 @@ public class MulticastClient extends Thread {
     public void run() {
         try {
             socket = new MulticastSocket(port); // create socket and bind it
+            socket.setTimeToLive(4);
             InetAddress group = InetAddress.getByName(address);
             socket.joinGroup(group);
 
@@ -154,6 +155,7 @@ class MulticastUser extends Thread {
      public void run() {
         try {
             socket = new MulticastSocket(port); // create socket and bind it
+            socket.setTimeToLive(4);
             group = InetAddress.getByName(address);
             socket.joinGroup(group);
 
