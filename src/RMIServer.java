@@ -219,10 +219,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
 	}
 
-	public void removeLista(Eleicao eleicao, String nome) throws RemoteException {
-		eleicao.removeLista(nome);
-	}
-
 	public String adicionarVoto(String nomeEleicao, Voto voto, String nomeLista, Departamento dep) throws RemoteException {
 		Eleicao ele = getEleicaoByName(nomeEleicao, dep);
 
@@ -369,50 +365,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return null;
 	}
 
-	public Lista getListaByName(String eleicao, String nome) throws java.rmi.RemoteException {
-		Eleicao election = getEleicaoByName(eleicao);
-		if (election == null) {
-			return null;
-		}
-		for (Lista lista : election.getListas()) {
-			if (lista.getNome().equals(nome)) {
-				return lista;
-			}
-		}
-		return null;
-	}
-
-	public CopyOnWriteArrayList<Pessoa> getMembrosMesa(Departamento departamento) throws RemoteException {
-
-		for (MesaVoto mesa : mesas) {
-			if (mesa.getDepartamento() == departamento) {
-				return mesa.getMembros();
-			}
-		}
-		return null;
-	}
-
-	public CopyOnWriteArrayList<MesaVoto> getMesasByStatus(boolean status) {
-
-		CopyOnWriteArrayList<MesaVoto> aux = new CopyOnWriteArrayList<>();
-
-		for (MesaVoto mesa : mesas) {
-			if (mesa.isStatus() == status)
-				aux.add(mesa);
-		}
-		return aux;
-	}
-
-	public void setMembrosMesa(Departamento departamento, CopyOnWriteArrayList<Pessoa> membros) throws RemoteException {
-
-		for (MesaVoto mesa : mesas) {
-			if (mesa.getDepartamento() == departamento) {
-				mesa.setMembros(membros);
-				return;
-			}
-		}
-	}
-
 	public CopyOnWriteArrayList<Pessoa> listPessoas() throws RemoteException {
 		return pessoas;
 	}
@@ -445,18 +397,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return mesas;
 	}
 
-	public void setDataInicio(String nomeEleicao, GregorianCalendar dataInicio) throws RemoteException {
-		Eleicao eleicao = getEleicaoByName(nomeEleicao);
-		if (eleicao != null)
-			eleicao.setDataInicio(dataInicio);
-	}
-
-	public void setDataFim(String nomeEleicao, GregorianCalendar dataFim) throws RemoteException {
-		Eleicao eleicao = getEleicaoByName(nomeEleicao);
-		if (eleicao != null)
-			eleicao.setDataFim(dataFim);
-	}
-
 	public String login(String cc, String password) throws RemoteException {
 
 		for (Pessoa pessoa : pessoas) {
@@ -469,14 +409,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 	public void ping() throws RemoteException {
 	}
 
-	public Pessoa identificar(String cc) throws RemoteException {
-
-		for (Pessoa pessoa : pessoas) {
-			if (pessoa.getNumberCC().equals(cc))
-				return pessoa;
-		}
-		return null;
-	}
 
 	public void save(String arrayName) {
 		File file = new File("./ObjectFiles/" + arrayName + ".obj");
@@ -601,9 +533,5 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 				}
 			}
 
-	}
-
-	public String sayHello() throws RemoteException {
-		return "¡Hola mundo, soy el servidor y he establecido contacto con el cliente!";
 	}
 }
