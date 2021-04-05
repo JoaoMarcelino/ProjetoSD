@@ -19,9 +19,11 @@ public class MulticastServer extends Thread {
     private RMI_S_Interface servidor;
     private MesaVoto mesa = null;
 
-    static int totalTries=5;
     static String RMIHostIP;
+    static String departamento;
     static int RMIHostPort;
+    static int totalTries=5;
+
     private boolean isActive = true;
 
     public MulticastServer(MesaVoto mesa, RMI_S_Interface servidor) {
@@ -39,6 +41,7 @@ public class MulticastServer extends Thread {
             System.out.println("Bad Arguments.Run java MulticastServer {departamento} {rmi_adress} {rmi_port}");
             System.exit(1);
         }
+        departamento=args[0];
         RMIHostIP=args[1];
         RMIHostPort=Integer.parseInt(args[2]);
 
@@ -47,7 +50,7 @@ public class MulticastServer extends Thread {
         for(int i=0;i<totalTries;i++){
             try{
                 servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
-                mesa = servidor.getMesaByDepartamento(args[0]);
+                mesa = servidor.getMesaByDepartamento(departamento);
                 if(mesa != null){
                     servidor.turnMesa( mesa, true);
                     System.out.println("Mesa conectada ao servidor.");
@@ -186,12 +189,28 @@ public class MulticastServer extends Thread {
     }
 
     public void listMembers() {
-        if (this.mesa != null) {
-            CopyOnWriteArrayList<Pessoa> membros = this.mesa.getMembros();
-            System.out.println("Membros:");
-            for (Pessoa membro : membros) {
-                System.out.println("- " + membro.getNome());
+        MesaVoto mesaV = null;
+
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                mesaV = servidor.getMesaByDepartamento(departamento);
+                break;
+            } catch (RemoteException e) {
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                }
+                if (i == totalTries - 1) {
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
             }
+        }
+
+        CopyOnWriteArrayList<Pessoa> membros = mesaV.getMembros();
+        System.out.println("Membros:");
+        for (Pessoa membro : membros) {
+            System.out.println("- " + membro.getNome());
         }
     }
 

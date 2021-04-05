@@ -218,6 +218,16 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		return status;
 
 	}
+	public String removeLista(String nomeEleicao,String nomeLista) throws java.rmi.RemoteException{
+		Eleicao election = getEleicaoByName(nomeEleicao);
+		if (election == null) {
+			return nomeEleicao + " nao existe.";
+		}
+		String status = election.removeLista(nomeLista);
+		save("eleicoes");
+		return status;
+	}
+
 
 	public String adicionarVoto(String nomeEleicao, Voto voto, String nomeLista, Departamento dep) throws RemoteException {
 		Eleicao ele = getEleicaoByName(nomeEleicao, dep);
@@ -287,6 +297,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 		Eleicao ele = getEleicaoByName(nomeEleicao);
 
 		if (ele == null) {
+			return null;
+		}
+		if(!ele.checkEnd()){
 			return null;
 		}
 		return ele.getResultados();

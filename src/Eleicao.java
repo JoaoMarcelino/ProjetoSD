@@ -1,4 +1,3 @@
-import javax.swing.*;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -201,6 +200,8 @@ public class Eleicao implements Serializable {
 
 	}
 
+
+
 	public String addMesa(MesaVoto mesa) {
 		/*if(this.checkStart()){
 			return "Eleicao em progresso.";
@@ -223,15 +224,18 @@ public class Eleicao implements Serializable {
 			this.departamentosPermitidos.add(departamento);
 	}
 
-	public void removeLista(String nome) {
-		if (!this.checkStart()) {
-			for (Lista lista : this.listas) {
-				if (lista.getNome().equals(nome)) {
-					this.listas.remove(lista);
-					return;
-				}
+	public String removeLista(String nome) {
+		if (this.checkStart()){
+			return "Eleicao em progresso ou encerrada.";
+		}
+		for (Lista lista : this.listas) {
+			if (lista.getNome().equals(nome)) {
+				this.listas.remove(lista);
+				return "Lista removida com sucesso.";
 			}
 		}
+
+		return "Lista nao existe.";
 	}
 
 	public String removeMesa(MesaVoto mesa) {

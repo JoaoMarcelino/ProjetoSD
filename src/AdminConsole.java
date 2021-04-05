@@ -33,9 +33,10 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         String escolha;
         try {
             DatagramSocket socket = new DatagramSocket();
-            socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+            socket.connect(InetAddress.getByName("8.8.8.8"), 5050);
             String ip = socket.getLocalAddress().getHostAddress();
             System.setProperty("java.rmi.server.hostname",ip);
+
             r = LocateRegistry.getRegistry(RMIHostIP,RMIHostPort);
             servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
 
@@ -77,6 +78,9 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                         break;
                     case "3.2":
                         listListas(reader);
+                        break;
+                    case "3.3":
+                        removeLista(reader);
                         break;
                     case "4.1":
                         addMesa(reader);
@@ -131,6 +135,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                 "3.Gerir Candidatos\n" +
                 "   3.1.Adicionar Lista\n" +
                 "   3.2.Listar Listas de Eleicao\n"+
+                "   3.3.Remover Lista\n"+
                 "4.Gerir Mesas de Voto\n" +
                 "   4.1.Adicionar Mesa\n" +
                 "   4.2.Remover Mesa\n" +
@@ -221,7 +226,6 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         password = reader.readLine();
 
         String status="";
-        System.out.println(status);
         for(int i=0;i<totalTries;i++){
             try{
                 status=servidor.addPessoa(nome,password,dep,telefone,morada,cc,validadeCC,prof);
@@ -349,7 +353,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         }
 
         if(res==null){
-            System.out.println("Eleicao nao existe");
+            System.out.println("Eleicao nao existe ou ainda nao terminou.");
         }
         else{
             System.out.println("Eleicao:"+res.getTitulo());
@@ -437,8 +441,6 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                 }
             }
         }
-
-
     }
 
     public static void listEleicoes(BufferedReader reader){
@@ -598,6 +600,33 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             }
         }
 
+    }
+
+    public static void removeLista(BufferedReader reader) throws IOException {
+        String  eleicao,nome, aux,type;
+
+        System.out.print("Nome da eleicao:");
+        eleicao = reader.readLine();
+        System.out.print("Nome da Lista:");
+        nome = reader.readLine();
+
+        String status="";
+        //RMI Method call
+        for(int j=0;j<totalTries;j++){
+            try{
+                status=servidor.removeLista(eleicao,nome);
+                System.out.println(status);
+                break;
+            }catch (RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP,RMIHostPort).lookup("ServidorRMI");   //ir a procura novamente do objeto RMI
+                }catch (RemoteException | NotBoundException ignored){}
+                if(j==totalTries-1){
+                    System.out.println("Servidor RMI indisponivel.");
+                    return;
+                }
+            }
+        }
     }
 
     public static void addMesa(BufferedReader reader) throws IOException {

@@ -23,6 +23,8 @@ public interface RMI_S_Interface extends Remote {
 
 	String addLista(String nomeEleicao,String nomeLista, CopyOnWriteArrayList<Pessoa> listaPessoas, Profissao tipoLista) throws java.rmi.RemoteException;
 
+	String removeLista(String nomeEleicao,String nomeLista) throws java.rmi.RemoteException;
+
 	String addVotoAntecipado(String numeroCC,String password,String nomeEleicao,String nomeLista) throws java.rmi.RemoteException;
 
 	Voto getVoto(String numeroCC, String nomeEleicao) throws java.rmi.RemoteException;
