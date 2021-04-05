@@ -85,7 +85,9 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 			System.out.println("Enter para encerrar servidor.");
 			reader.readLine();
 			reader.close();
-		} catch (Exception e) {
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}catch (IOException e){
 			System.out.println(e.getMessage());
 		}
 	}
