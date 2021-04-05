@@ -17,7 +17,7 @@ COMO EXECUTAR O PROJETO
 2.Executar "java -jar console.jar {RMIHostIP} {RMIHostPort}" numa consola para ligar uma consola de administracao. Os paramatros deveram ser os mesmos establecidos no comando anterior por forma a ser possivel establecer conexao com o servidor RMI.
 3.Ligar um servidor multicast (Mesa de voto)  que tenha sido previamente criado na consola de administracao: executar "java -jar server.jar {departamento} {RMIHostIP} {RMIHostPort}" numa consola.
     O departamento derá ser o mesmo a que foi associada a mesa na sua criacao(ex:DEI) e os argumentos restantes iguais aos dos comandos anteriores.
-4.Conectar um terminal de voto à mesa correspondente que tenha sido previamente criado na consola de administracao: executar "java -jar server.jar  {MulticastIP} {MulticastPort}" numa consola. 
+4.Conectar um terminal de voto à mesa correspondente que tenha sido previamente criado na consola de administracao: executar "java -jar terminal.jar  {MulticastIP} {MulticastPort}" numa consola. 
     Os argumentos deveram ser iguais aos mostrados no arranque da mesa de voto a que se pretende conectar (ex:224.0.0.1 4000).
 
 
