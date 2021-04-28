@@ -2,10 +2,13 @@ import java.net.*;
 import java.io.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.rmi.*;
 import java.rmi.server.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface {
     public static String RMIHostIP;
@@ -27,8 +30,6 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         RMIHostIP=args[0];
         RMIHostPort=Integer.parseInt(args[1]);
 
-        //System.getProperties().put("java.security.policy", "policy.all");
-        //System.setSecurityManager(new RMISecurityManager());
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         String escolha;
         try {
@@ -215,11 +216,11 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                 break;
         }
 
-        telefone = readInteger(reader, "Telefone:");
+        telefone = readInteger(reader, "Telefone:",-1);
         System.out.print("Morada:");
         morada = reader.readLine();
 
-        cc = readInteger(reader, "Numero Cartao Cidado:");
+        cc = readInteger(reader, "Numero Cartao Cidado:",-1);
 
         validadeCC = readDate(reader, "Validade Cartao Cidado:", false);
         System.out.print("Password:");
@@ -265,7 +266,11 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
         System.out.println("PESSOAS REGISTADAS:");
         for(Pessoa p:pessoas){
-            System.out.println(p.getNome()+" "+p.getNumberCC()+ " "+p.getDepartamento()+" "+p.getProfissao());
+            System.out.println("Nome: "+p.getNome());
+            System.out.println("Numero CC: "+p.getNumberCC()+" "+printGregorianCalendar(p.getExpireCCDate(),false));
+            System.out.println("Departamento: "+p.getDepartamento());
+            System.out.println("Profissao: "+p.getProfissao());
+            System.out.println();
         }
     }
 
@@ -403,14 +408,16 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             System.out.println("Pessoa ou eleicao nao existe.");
         }
         else{
-            System.out.print(v.getPessoa().getNome()+" "+nomeEleicao+" "+printGregorianCalendar(v.getData()));
+            System.out.println("Nome: "+v.getPessoa().getNome());
+            System.out.println("Eleicao: "+nomeEleicao);
+            System.out.println("Hora de Voto: "+printGregorianCalendar(v.getData(),true));
+            System.out.print("Departamento: ");
             if(v.getMesa()==null){
-                System.out.print(" Admin Console");
+                System.out.println("Admin Console");
             }
             else {
-                System.out.print(v.getMesa().getDepartamento());
+                System.out.println(v.getMesa().getDepartamento());
             }
-            System.out.print("\n");
         }
     }
 
@@ -463,7 +470,12 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
         System.out.println("ELEICOES REGISTADAS:");
         for(Eleicao ele:eleicoes){
-            System.out.println(ele.getTitulo()+" "+ele.getDescricao()+" "+ele.getProfissoesPermitidas() +" "+printGregorianCalendar(ele.getDataInicio())+" "+printGregorianCalendar(ele.getDataFim()));
+            System.out.println("Nome: "+ele.getTitulo());
+            System.out.println("Descricao: "+ele.getDescricao());
+            System.out.println("Profissoes: "+ele.getProfissoesPermitidas());
+            System.out.println("Hora de Inicio: "+printGregorianCalendar(ele.getDataInicio(),true));
+            System.out.println("Hora de Fim: "+printGregorianCalendar(ele.getDataFim(),true));
+            System.out.println();
         }
     }
 
@@ -535,13 +547,15 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                 break;
         }
 
-        do{
+        while(true) {
             System.out.print("Nome Elemento #" + i + ":");
             aux = reader.readLine();
+            if(aux.equals(""))
+                break;
             Pessoa p=new Pessoa(aux,"-1",Departamento.DA,"-1","-1","-1",new GregorianCalendar(),Profissao.Estudante);
             membros.add(p);
-            i++;
-        }while (!aux.equals(""));
+        }
+
 
         String status="";
         //RMI Method call
@@ -592,11 +606,17 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         else{
             System.out.println("LISTAS REGISTADAS:");
             for(Lista lis:listas){
-                System.out.print(lis.getNome()+" "+lis.getTipoLista()+" [ ");
-                for(Pessoa p:lis.getListaPessoas()){
-                    System.out.print(p.getNome()+" ");
+                System.out.println("Nome: "+lis.getNome());
+                System.out.println("Tipo: "+lis.getTipoLista());
+                System.out.print("Membros: ");
+                for(int i=0;i<lis.getListaPessoas().size();i++){
+                    if(i==lis.getListaPessoas().size()-1)
+                        System.out.print(lis.getListaPessoas().get(i).getNome());
+                    else
+                        System.out.print(lis.getListaPessoas().get(i).getNome()+", ");
                 }
-                System.out.println("] ");
+                System.out.println();
+                System.out.println();
             }
         }
 
@@ -843,51 +863,32 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         System.out.println("MESSAS EXISTENTES:");
         for(MesaVoto mesa:mesas){
             //{NomeDepardamento} {Desilgada/Ligada} {Membro1} {Membro2} {Membro3} {IP} {Port}
-            System.out.print(mesa.getDepartamento()+" ");
-            if(mesa.isStatus()){
-                System.out.print("Ligada ");
-            }
-            else{
-                System.out.print("Desligada ");
-            }
-            System.out.print(mesa.getMembros().get(0).getNome()+" ");
-            System.out.print(mesa.getMembros().get(1).getNome()+" ");
-            System.out.print(mesa.getMembros().get(2).getNome()+" ");
-
-            System.out.println(mesa.getIp()+" "+mesa.getPort());
+            System.out.println("Departamento: "+mesa.getDepartamento());
+            if(mesa.isStatus())
+                System.out.println("Estado: Ligada");
+            else
+                System.out.println("Estado: Desligada");
+            System.out.println("Membros: ");
+            System.out.print(mesa.getMembros().get(0).getNome()+", ");
+            System.out.print(mesa.getMembros().get(1).getNome()+", ");
+            System.out.println(mesa.getMembros().get(2).getNome());
+            System.out.println("Endereco: "+mesa.getIp()+" "+mesa.getPort());
+            System.out.println();
         }
 
     }
 
 
-    public static String printGregorianCalendar(GregorianCalendar data){
-        int hora=data.get(Calendar.HOUR);
+    public static String printGregorianCalendar(GregorianCalendar data,boolean flagHora ){
+        int minuto=data.get(Calendar.MINUTE);
+        int hora=data.get(Calendar.HOUR_OF_DAY);
         int dia=data.get(Calendar.DATE);
         int mes=data.get(Calendar.MONTH)+1;
         int ano=data.get(Calendar.YEAR);
-
-        return hora+"h "+dia+" "+mes+" "+ano;
-    }
-
-    public static String readInteger(BufferedReader reader, String info) throws IOException{
-        String input = "";
-        int intInputValue = 0;
-        boolean isValid = false;
-
-        while (!isValid){
-            System.out.print(info);
-            input = reader.readLine();
-            intInputValue = 0;
-            try {
-                intInputValue = Integer.parseInt(input);
-                if (intInputValue > 0){
-                    isValid = true;
-                }
-            } catch (NumberFormatException ne) {
-                System.out.println("Not a valid Input");
-            }
-        }
-        return input;
+        if(flagHora)
+            return dia+"/"+mes+"/"+ano+" "+hora+":"+minuto;
+        else
+            return dia+"/"+mes+"/"+ano;
     }
 
     public static String readInteger(BufferedReader reader, String info, int max) throws IOException{
@@ -901,7 +902,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             intInputValue = 0;
             try {
                 intInputValue = Integer.parseInt(input);
-                if (intInputValue <= max && intInputValue > 0) isValid = true;
+                if ((max!=-1 && intInputValue <= max && intInputValue > 0) || max==-1) isValid = true;
                 else System.out.println("Not a valid Input");
             } catch (NumberFormatException ne) {
                 System.out.println("Not a valid Input");
@@ -912,34 +913,39 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
     public static GregorianCalendar readDate(BufferedReader reader, String info, boolean flagHora) throws IOException{
         GregorianCalendar calendar = new GregorianCalendar();
-        String ano, mes, dia, hora;
+        String ano, mes, dia, hora, minuto;
         boolean isValid = false;
 
         while(!isValid){
+            System.out.print(info);
+            String data=reader.readLine();
 
-            System.out.println(info);
+            if(flagHora) {
+                Pattern p = Pattern.compile("\\d{2}(\\/)\\d{2}(\\/)\\d{2} \\d{2}(\\:)\\d{2}$");    // 01/02/22 12:30
+                Matcher m = p.matcher(data);
 
-            ano = readInteger(reader, "Ano:");
-            mes = readInteger(reader, "Mes:", 12);
-
-            if(mes.equals("4") || mes.equals("6") || mes.equals("9") || mes.equals("11"))
-                dia = readInteger(reader, "Dia:", 30);
-            else if(mes.equals("2") && Integer.parseInt(ano) % 4 ==0)
-                dia = readInteger(reader, "Dia:", 29);
-            else if (mes.equals("2"))
-                dia = readInteger(reader, "Dia:", 28);
-            else
-                dia = readInteger(reader, "Dia:", 31);
-
-            if (flagHora){
-                hora = readInteger(reader, "Hora:", 24);
-                calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia), Integer.parseInt(hora), 0);
+                if (m.find()) {
+                    dia = data.substring(0, 2);
+                    mes = data.substring(3, 5);
+                    ano = data.substring(6, 8);
+                    hora = data.substring(9, 11);
+                    minuto = data.substring(12, 14);
+                    calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia), Integer.parseInt(hora), Integer.parseInt(minuto));
+                    isValid=true;
+                }
             }
             else{
-                calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia));
+                Pattern p = Pattern.compile("\\d{2}(\\/)\\d{2}(\\/)\\d{2}$");    // 01/02/22 12:30
+                Matcher m = p.matcher(data);
 
+                if (m.find()) {
+                    dia = data.substring(0, 2);
+                    mes = data.substring(3, 5);
+                    ano = data.substring(6, 8);
+                    calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia));
+                    isValid=true;
+                }
             }
-            isValid = true;
 
         }
         return calendar;
