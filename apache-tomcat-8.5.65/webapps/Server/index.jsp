@@ -8,7 +8,7 @@
 <title>Prime Numbers</title>
 </head>
 <body>
-	<s:text name="Prime numbers needed?" />
+	Prime numbers needed?"<br>
 	<s:form action="server" method="post">
 		<s:textfield name="serverBean.number" />
 		<s:submit />

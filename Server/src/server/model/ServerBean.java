@@ -3,11 +3,33 @@
  */
 package server.model;
 
+import RMI.RMI_S_Interface;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
 import java.util.ArrayList;
+import java.util.Properties;
+import java.rmi.registry.Registry;
 
 public class ServerBean {
 	private int number;
+	private String RMIHostIP;
+	private int RMIHostPort;
+	private RMI_S_Interface servidor;
 
+
+	public ServerBean(){
+		try{
+			Registry r = LocateRegistry.getRegistry(RMIHostIP, RMIHostPort);
+			servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
+
+		}catch (RemoteException | NotBoundException e){
+			System.out.println("Servidor RMI indisponivel.");
+		}
+	}
 	public int getNumber() {
 		return this.number;
 	}
