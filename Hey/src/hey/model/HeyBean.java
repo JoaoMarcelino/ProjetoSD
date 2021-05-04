@@ -16,7 +16,7 @@ import java.rmi.RemoteException;
 
 
 public class HeyBean {
-	private RMI_S_Interface servidor;
+	public RMI_S_Interface servidor;
 	private String username; // username and password supplied by the user
 	private String password;
 	private String RMIHostIP="192.168.1.69";

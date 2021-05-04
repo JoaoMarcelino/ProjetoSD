@@ -1,5 +1,5 @@
 package com.company;
 
-enum Profissao {
+public enum Profissao {
     Estudante, Docente, Funcionario
 }

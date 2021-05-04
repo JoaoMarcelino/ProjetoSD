@@ -37,6 +37,10 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
       <result name="login">/index.jsp</result>
     </action>
 
+      <action name="addPessoa" class="hey.action.addPessoaAction" method="execute">
+          <result name="success">/hey.jsp</result>
+      </action>
+
   </package>
 
 </struts>
