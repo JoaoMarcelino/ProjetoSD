@@ -3,10 +3,16 @@
  */
 package hey.action;
 
+import com.company.Pessoa;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.struts2.interceptor.SessionAware;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Map;
 import hey.model.HeyBean;
+
+import static com.company.AdminConsole.servidor;
 
 public class LoginAction extends ActionSupport implements SessionAware {
 	private static final long serialVersionUID = 4L;
@@ -32,6 +38,9 @@ public class LoginAction extends ActionSupport implements SessionAware {
 		return (HeyBean) session.get("heyBean");
 	}
 
+	public ArrayList<Pessoa> getAllUsers() throws RemoteException {
+		return new ArrayList<>(getHeyBean().getAllUsers()); // are you going to throw all exceptions?
+	}
 	public void setHeyBean(HeyBean heyBean) {
 		this.session.put("heyBean", heyBean);
 	}

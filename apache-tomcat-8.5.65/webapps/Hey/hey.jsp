@@ -12,10 +12,12 @@
 
 	<h1>Pessoas Registadas</h1>
 
-	<c:forEach items="${heyBean.allUsers}" var="value">
-		<s:property value = "value.nome"/><br/>
-	</c:forEach>
-
+	<s:iterator value="allUsers">
+		<s:property value="nome" /><br>
+		<s:property value="numberCC" /> <s:date name="expireCCDate" format="dd/MM/yy" /><br>
+		<s:property value="departamento" /><br>
+		<s:property value="profissao" /><br>
+	</s:iterator>
 
 </body>
 </html>

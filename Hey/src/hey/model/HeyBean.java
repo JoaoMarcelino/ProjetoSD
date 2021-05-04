@@ -34,7 +34,6 @@ public class HeyBean {
 	}
 
 	public ArrayList<Pessoa> getAllUsers() throws RemoteException {
-		System.out.println(servidor.listPessoas());
 		return new ArrayList<>(servidor.listPessoas()); // are you going to throw all exceptions?
 	}
 
