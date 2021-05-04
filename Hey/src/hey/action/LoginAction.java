@@ -25,11 +25,13 @@ public class LoginAction extends ActionSupport implements SessionAware {
 	}
 	
 	public void setUsername(String username) {
+		System.out.println(username);
 		this.username = username; // will you sanitize this input? maybe use a prepared statement?
 	}
 
 	public void setPassword(String password) {
-		this.password = password; // what about this input? 
+		System.out.println(password);
+		this.password = password; // what about this input?
 	}
 	
 	public HeyBean getHeyBean() {
@@ -38,9 +40,6 @@ public class LoginAction extends ActionSupport implements SessionAware {
 		return (HeyBean) session.get("heyBean");
 	}
 
-	public ArrayList<Pessoa> getAllUsers() throws RemoteException {
-		return new ArrayList<>(getHeyBean().getAllUsers()); // are you going to throw all exceptions?
-	}
 	public void setHeyBean(HeyBean heyBean) {
 		this.session.put("heyBean", heyBean);
 	}

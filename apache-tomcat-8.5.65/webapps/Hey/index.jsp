@@ -8,10 +8,15 @@
 <title>Hey!</title>
 </head>
 <body>
+	<h1><b>e-Voting UC</b></h1>
 	<s:form action="login" method="post">
-		<s:text name="Username:" />
-		<s:textfield name="username" /><br>
-		<s:submit />
+		<input placeholder="Número CC" name="username" /><br>
+		<input placeholder="Password" name="password" /><br>
+		<s:submit value="Login"/>
+		<s:url action="login.action" var="urlTag">
+			<s:param name="username">Admin</s:param>
+		</s:url>
+		<s:a href="%{urlTag}">I'm an Admin</s:a>
 	</s:form>
 </body>
 </html>
