@@ -25,7 +25,6 @@ public class LoginAction extends ActionSupport implements SessionAware {
 	}
 	
 	public void setUsername(String username) {
-		System.out.println(username);
 		this.username = username; // will you sanitize this input? maybe use a prepared statement?
 	}
 

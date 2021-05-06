@@ -34,15 +34,14 @@ public class addPessoaAction extends ActionSupport implements SessionAware {
 	public String execute(){
 		try{
 			if(nome!=null && password!=null && departamento!=null && numberCC!=null && expireCCDate!=null && profissao!=null){
-
 				String status = getHeyBean().servidor.addPessoa(nome,password,departamento,telefone,morada,numberCC,expireCCDate,profissao);
-				System.out.println(status);
+				getHeyBean().setMessage(status);
 			}
 			else{
-				System.out.println("Falta informacao para o registo da pessoa.");
+				getHeyBean().setMessage("Falta informacao para o registo da pessoa.");
 			}
 		}catch (RemoteException ignored){
-			System.out.println("Erro RMI no registo da pessoa.");
+			getHeyBean().setMessage("Erro RMI no registo da pessoa.");
 		}
 		return SUCCESS;
 	}

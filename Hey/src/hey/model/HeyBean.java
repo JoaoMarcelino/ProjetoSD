@@ -19,6 +19,7 @@ public class HeyBean {
 	public RMI_S_Interface servidor;
 	private String username; // username and password supplied by the user
 	private String password;
+	private String message;
 	private String RMIHostIP="192.168.1.69";
 	private int RMIHostPort=4000;
 
@@ -37,6 +38,13 @@ public class HeyBean {
 		return new ArrayList<>(servidor.listPessoas()); // are you going to throw all exceptions?
 	}
 
+	public void setMessage(String message){
+		this.message=message;
+	}
+
+	public String getMessage(){
+		return this.message;
+	}
 	public void setUsername(String username) {
 		this.username = username;
 	}
