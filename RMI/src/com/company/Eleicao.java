@@ -75,6 +75,17 @@ public class Eleicao implements Serializable {
         return listas;
     }
 
+    public CopyOnWriteArrayList<Profissao> getProfissoesPermitidas() {
+        return profissoesPermitidas;
+    }
+
+    public CopyOnWriteArrayList<Departamento> getDepartamentosPermitidos() {
+        return departamentosPermitidos;
+    }
+
+    public CopyOnWriteArrayList<MesaVoto> getMesas() {
+        return mesas;
+    }
 
     public boolean checkStart() {
         GregorianCalendar dataAtual = new GregorianCalendar();
@@ -303,10 +314,6 @@ public class Eleicao implements Serializable {
         return null;
     }
 
-    public CopyOnWriteArrayList<MesaVoto> getMesas() {
-        return mesas;
-    }
-
     public MesaVoto getMesaVotoByDepartamento(Departamento departamento) {
         for (MesaVoto mesa : this.mesas) {
             if (mesa.getDepartamento() == departamento)
@@ -315,13 +322,7 @@ public class Eleicao implements Serializable {
         return null;
     }
 
-    public CopyOnWriteArrayList<Profissao> getProfissoesPermitidas() {
-        return profissoesPermitidas;
-    }
 
-    public CopyOnWriteArrayList<Departamento> getDepartamentosPermitidos() {
-        return departamentosPermitidos;
-    }
 
     public boolean isProfissaoPermitida(Profissao profissao) {
         for (Profissao aux : this.profissoesPermitidas) {

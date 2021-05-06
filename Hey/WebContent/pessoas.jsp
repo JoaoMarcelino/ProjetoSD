@@ -9,7 +9,15 @@
 <title>Hey!</title>
 </head>
 <body>
-	<h1>Pessoas Registadas</h1>
+	<s:url action="listPessoas.action" var="urlTag">
+	</s:url>
+	<s:a href="%{urlTag}">Votantes</s:a>
+
+	<s:url action="listEleicoes.action" var="urlTag">
+	</s:url>
+	<s:a href="%{urlTag}">Eleições</s:a>
+
+	<h1>Votantes Registadas</h1>
 
 	<s:iterator value="heyBean.allUsers">
 		<s:property value="nome" /><br>
@@ -30,25 +38,17 @@
 		<br>
 	</s:if>
 
-	<s:form action="addPessoa" method="post">
+	<s:form action="addPessoas" method="post">
 		<s:label value="Nome:" /> <s:textfield name="nome" /><br>
 		<s:label value="Password:" /> <s:textfield type="password" name="password" /><br>
 		<s:label value="Numero Cartão Cidadão:" /> <s:textfield name="numberCC" /><br>
 		<s:label value="Data de Validade CC:" /> <s:textfield type="date" name="expireCCDate" /><br>
-		<s:label value="Departamento:" /> <s:textfield name="departamento" /><br>
-		<s:label value="Profissão:" /> <s:textfield name="profissao" /><br>
+		<s:label value="Profissão:" /><s:select  list="heyBean.profs" name="heyBean.yourProf"/><br>
+		<s:label value="Departamento:" /><s:select label="Departamento:" list="heyBean.deps" name="heyBean.yourDep"/><br>
 		<s:label value="Morada:" /> <s:textfield name="morada" /><br>
 		<s:label value="Telefone:" /> <s:textfield name="telefone" /><br>
 		<s:submit value="Registar Votante"/>
 	</s:form>
 
-
-	<s:url action="pessoas.action" var="urlTag">
-	</s:url>
-	<s:a href="%{urlTag}">Pessoas</s:a>
-
-	<s:url action="eleicoes.action" var="urlTag">
-	</s:url>
-	<s:a href="%{urlTag}">Eleições</s:a>
 </body>
 </html>
