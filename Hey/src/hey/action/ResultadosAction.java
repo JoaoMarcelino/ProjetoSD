@@ -6,6 +6,7 @@ package hey.action;
 import com.company.Departamento;
 import com.company.Profissao;
 import com.company.Resultado;
+import com.company.Voto;
 import com.opensymphony.xwork2.ActionSupport;
 import hey.model.HeyBean;
 import org.apache.struts2.interceptor.SessionAware;
@@ -22,6 +23,9 @@ public class ResultadosAction extends ActionSupport implements SessionAware {
 	private Map<String, Object> session;
 	private String titulo;
 	private Resultado res;
+	private Voto v;
+	private String numeroCC;
+
 	public String get(){
 		return SUCCESS;
 	}
@@ -43,6 +47,22 @@ public class ResultadosAction extends ActionSupport implements SessionAware {
 		return res;
 	}
 
+	public String getVoto(){
+		try{
+			v= getHeyBean().getVoto(this.numeroCC,this.titulo);
+			if(v==null){
+				getHeyBean().setMessage("Pessoa nao existe oun não votou.");
+			}
+		}catch (RemoteException e){
+			v=null;
+			getHeyBean().setMessage("Erro RMI na consulta de voto.");
+		}
+		return SUCCESS;
+	}
+
+	public Voto getV(){
+		return this.v;
+	}
 	public HeyBean getHeyBean() {
 		if(!session.containsKey("heyBean"))
 			this.setHeyBean(new HeyBean());

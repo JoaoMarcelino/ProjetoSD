@@ -716,7 +716,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         for (MesaVoto mesa : mesas) {
             //{NomeDepardamento} {Desilgada/Ligada} {Membro1} {Membro2} {Membro3} {IP} {Port}
             System.out.println("Departamento: " + mesa.getDepartamento());
-            if (mesa.isStatus())
+            if (mesa.getStatus())
                 System.out.println("Estado: Ligada");
             else
                 System.out.println("Estado: Desligada");

@@ -1,6 +1,7 @@
 package com.company;
 
 import java.io.Serializable;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MesaVoto implements Serializable {
@@ -39,7 +40,7 @@ public class MesaVoto implements Serializable {
         return port;
     }
 
-    public boolean isStatus() {
+    public boolean getStatus() {
         return status;
     }
 

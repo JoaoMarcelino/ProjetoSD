@@ -1,15 +1,12 @@
 package com.company;
 
 import java.io.*;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
+import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.rmi.server.*;
+import java.util.*;
+import java.net.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.Thread.sleep;
@@ -155,7 +152,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         if (mesa == null) {
             return "Mesa nao existe.";
         }
-        if (mesa.isStatus()) {
+        if (mesa.getStatus()) {
             return "Mesa ligada ao servidor. Desligue mesa primeiro.";
         }
         for (Eleicao ele : eleicoes) {

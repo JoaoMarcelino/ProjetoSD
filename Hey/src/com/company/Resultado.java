@@ -1,6 +1,7 @@
 package com.company;
 
 import java.io.Serializable;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Resultado implements Serializable {

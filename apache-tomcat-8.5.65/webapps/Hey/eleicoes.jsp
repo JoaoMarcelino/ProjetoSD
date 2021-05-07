@@ -11,11 +11,15 @@
 <body>
 	<s:url action="listPessoas.action" var="urlTag">
 	</s:url>
-	<s:a href="%{urlTag}">Pessoas</s:a>
+	<s:a href="%{urlTag}">Votantes</s:a>
 
 	<s:url action="listEleicoes.action" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Eleições</s:a>
+
+	<s:url action="listMesas.action" var="urlTag">
+	</s:url>
+	<s:a href="%{urlTag}">Mesas de Voto</s:a>
 
 	<h1>Eleições Registadas</h1>
 

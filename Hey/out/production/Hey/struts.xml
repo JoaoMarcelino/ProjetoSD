@@ -57,6 +57,17 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
           <result name="success">/resultados.jsp</result>
       </action>
 
+      <action name="getVoto" class="hey.action.ResultadosAction" method="getVoto">
+          <result name="success">/resultados.jsp</result>
+      </action>
+
+      <action name="listMesas" class="hey.action.MesasAction" method="get">
+          <result name="success">/mesas.jsp</result>
+      </action>
+
+      <action name="addMesas" class="hey.action.MesasAction" method="post">
+          <result name="success">/mesas.jsp</result>
+      </action>
 
   </package>
 

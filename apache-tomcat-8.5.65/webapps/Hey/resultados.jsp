@@ -11,11 +11,15 @@
 <body>
 	<s:url action="listPessoas.action" var="urlTag">
 	</s:url>
-	<s:a href="%{urlTag}">Pessoas</s:a>
+	<s:a href="%{urlTag}">Votantes</s:a>
 
 	<s:url action="listEleicoes.action" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Eleições</s:a>
+
+	<s:url action="listMesas.action" var="urlTag">
+	</s:url>
+	<s:a href="%{urlTag}">Mesas de Voto</s:a>
 
 	<h1>Resultados de <s:property value="titulo"/></h1>
 
@@ -36,8 +40,21 @@
 		</s:iterator><br>
 	</s:if>
 	<s:else>
-		<b><i>Eleicao não existe ou ainda não terminou.</i></b>
+		<b><i>Eleicao ainda não terminou.</i></b>
 	</s:else>
+
+	<s:if test="v!=null">
+		<s:label value="Nome:" /><s:property value="v.pessoa.nome" /><br>
+		<s:label value="Eleicao:" /><s:property value="titulo" /><br>
+		<s:label value="Hora de Voto:" /><s:property value="v.data"/><br>
+		<s:label value="Departamento:" />
+		<c:if test="v.mesa==null">
+			<s:label value="Departamento:Admin Console" />
+		</c:if>
+		<s:else>
+			<s:label value="Departamento:" /><s:property value="v.mesa.departamento"/><br>
+		</s:else>
+	</s:if>
 
 </body>
 </html>

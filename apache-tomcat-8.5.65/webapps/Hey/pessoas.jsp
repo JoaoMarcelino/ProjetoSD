@@ -17,6 +17,10 @@
 	</s:url>
 	<s:a href="%{urlTag}">Eleições</s:a>
 
+	<s:url action="listMesas.action" var="urlTag">
+	</s:url>
+	<s:a href="%{urlTag}">Mesas de Voto</s:a>
+
 	<h1>Votantes Registados</h1>
 
 	<s:iterator value="heyBean.allUsers">

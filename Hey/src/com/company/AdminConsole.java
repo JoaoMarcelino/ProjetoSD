@@ -1,18 +1,13 @@
 package com.company;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
+import java.net.*;
+import java.io.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.rmi.*;
+import java.rmi.server.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -721,7 +716,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         for (MesaVoto mesa : mesas) {
             //{NomeDepardamento} {Desilgada/Ligada} {Membro1} {Membro2} {Membro3} {IP} {Port}
             System.out.println("Departamento: " + mesa.getDepartamento());
-            if (mesa.isStatus())
+            if (mesa.getStatus())
                 System.out.println("Estado: Ligada");
             else
                 System.out.println("Estado: Desligada");

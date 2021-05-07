@@ -45,8 +45,16 @@ public class HeyBean {
 		return new ArrayList<>(servidor.listEleicoes());
 	}
 
+	public ArrayList<MesaVoto> getAllMesas() throws RemoteException {
+		return new ArrayList<>(servidor.listMesas());
+	}
+
 	public Resultado getResultados(String nomEleicao) throws RemoteException {
 		return servidor.getResultados(nomEleicao);
+	}
+
+	public Voto getVoto(String nomEleicao,String numeroCC) throws RemoteException {
+		return servidor.getVoto(numeroCC,nomEleicao);
 	}
 
 	public void setMessage(String message){

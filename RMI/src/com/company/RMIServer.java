@@ -152,7 +152,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         if (mesa == null) {
             return "Mesa nao existe.";
         }
-        if (mesa.isStatus()) {
+        if (mesa.getStatus()) {
             return "Mesa ligada ao servidor. Desligue mesa primeiro.";
         }
         for (Eleicao ele : eleicoes) {

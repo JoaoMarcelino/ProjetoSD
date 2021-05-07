@@ -40,7 +40,7 @@ public class MesaVoto implements Serializable {
         return port;
     }
 
-    public boolean isStatus() {
+    public boolean getStatus() {
         return status;
     }
 
