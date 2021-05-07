@@ -9,6 +9,7 @@
 <title>Hey!</title>
 </head>
 <body>
+<s:if test="heyBean.username=='Admin'">
 	<s:url action="listPessoas.action" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Votantes</s:a>
@@ -67,7 +68,10 @@
 		<s:label value="Tipo:" /><s:select  list="profs" name="yourProf"/><br>
 		<s:submit value="Criar Eleicao"/>
 	</s:form>
+</s:if>
+<s:else>
 
+</s:else>
 
 </body>
 </html>

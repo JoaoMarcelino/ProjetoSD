@@ -50,7 +50,6 @@ public class MesasAction extends ActionSupport implements SessionAware {
 		return SUCCESS;
 	}
 
-
 	public String getIp() {
 		return ip;
 	}

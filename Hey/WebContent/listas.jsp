@@ -28,7 +28,7 @@
 		<s:property value="nome" /><br>
 		<s:property value="tipoLista" /><br>
 		<s:iterator value="listaPessoas">
-			<s:param value="nome"/>
+			<s:property value="nome"/>
 		</s:iterator>
 		<br>
 		<br>
@@ -42,15 +42,46 @@
 		<br>
 	</s:if>
 
-	<s:form action="addListas" method="post">
+	<s:form action="addListas" method="post" id="form">
+		<s:hidden name="titulo" /><br>
 		<s:label value="Nome:" /> <s:textfield name="nome" /><br>
 		<s:label value="Tipo:" /><s:select  list="profs" name="yourProf"/><br>
-		<s:submit value="Registar Votante"/>
+		<s:label value="Número de Membros:" /> <s:textfield id="numero" /><br>
+		<s:label value="Membro #1:" /> <s:textfield placeholder="membros#1" name="membros[0]" id="membros[0]" /><br>
+		<s:submit value="Registar Votante" id="botao"/>
 	</s:form>
 </s:if>
 
 <s:else>
 		<s:property value="heyBean.username"/>
 </s:else>
+
+<script type="text/javascript">
+
+	const input = document.getElementById('numero');
+
+	input.addEventListener('change', updateValue);
+
+	function updateValue(e) {
+		var dc=document.getElementById('membros[0]');
+		for(var i=0;i<input.value-1;i++){
+			var itm = document.getElementById('membros[0]');
+			var cln = itm.cloneNode(true);
+			cln.placeholder="membros#"+parseInt(i+2);
+			cln.name="membros["+parseInt(i+1)+"]";
+			cln.id="membros["+parseInt(i+1)+"]";
+
+			var tempDiv = document.createElement('br');
+			var lbl = document.createElement('label');
+			lbl.innerHTML = "Membro #"+parseInt(i+2)+":";
+			dc.insertAdjacentElement('afterend', tempDiv);
+			tempDiv.insertAdjacentElement('afterend', lbl);
+			lbl.insertAdjacentElement('afterend', cln);
+			dc=cln;
+		}
+
+	}
+
+</script>
 </body>
 </html>

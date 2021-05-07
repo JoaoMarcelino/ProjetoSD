@@ -4,6 +4,7 @@
 package hey.action;
 
 import com.company.Departamento;
+import com.company.Lista;
 import com.company.Pessoa;
 import com.company.Profissao;
 import com.opensymphony.xwork2.ActionSupport;
@@ -50,19 +51,31 @@ public class ListasAction extends ActionSupport implements SessionAware {
 		return SUCCESS;
 	}
 
+	public ArrayList<Lista> getListas(){
+		try{
+			return new ArrayList<>(getHeyBean().servidor.listListas(titulo));
+		}catch (RemoteException e){
+			getHeyBean().setMessage("Erro RMI na listagem de listas.");
+			return null;
+		}
+
+	}
 	public String getTitulo() {
 		return titulo;
 	}
 
 	public void setTitulo(String titulo) {
+		System.out.println(titulo);
 		this.titulo = titulo;
 	}
 
 	public ArrayList<Pessoa> getYourMembros(){
 		ArrayList<Pessoa> aux=new ArrayList<>();
-		for(int i=0;i<nMembros && i<20;i++){
+		int i=0;
+		while(membros.get(i)!=null){
 			Pessoa p=new Pessoa(membros.get(i),"",Departamento.DA,"","","",new GregorianCalendar(), Profissao.Estudante);
 			aux.add(p);
+			i++;
 		}
 		return aux;
 	}
@@ -93,6 +106,22 @@ public class ListasAction extends ActionSupport implements SessionAware {
 			aux.add(prof.name());
 		}
 		return aux;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public void setMembros(List<String> membros) {
+		this.membros = membros;
+	}
+
+	public List<String> getMembros(){
+		return membros;
 	}
 
 	public HeyBean getHeyBean() {

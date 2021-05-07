@@ -69,6 +69,14 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
           <result name="success">/mesas.jsp</result>
       </action>
 
+      <action name="listListas" class="hey.action.ListasAction" method="get">
+          <result name="success">/listas.jsp</result>
+      </action>
+
+      <action name="addListas" class="hey.action.ListasAction" method="post">
+          <result name="success">/listas.jsp</result>
+      </action>
+
   </package>
 
 </struts>
