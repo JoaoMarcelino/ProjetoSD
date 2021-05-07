@@ -50,6 +50,16 @@ public class MesasAction extends ActionSupport implements SessionAware {
 		return SUCCESS;
 	}
 
+	public String delete(){
+		try{
+			String status = getHeyBean().servidor.removeMesa(yourDep);
+			getHeyBean().setMessage(status);
+		}catch (RemoteException ignored){
+			getHeyBean().setMessage("Erro RMI na remoção da mesa.");
+		}
+		return SUCCESS;
+	}
+
 	public String getIp() {
 		return ip;
 	}

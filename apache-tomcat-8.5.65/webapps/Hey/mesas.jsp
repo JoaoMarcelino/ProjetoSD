@@ -21,6 +21,10 @@
 	</s:url>
 	<s:a href="%{urlTag}">Mesas de Voto</s:a>
 
+	<s:url action="votePage.action" var="urlTag">
+	</s:url>
+	<s:a href="%{urlTag}">Votar</s:a>
+
 	<h1>Mesas de Voto</h1>
 	<s:iterator value="heyBean.allMesas">
 		<s:property value="departamento" /><br>
@@ -36,6 +40,10 @@
 		<s:iterator value="membros">
 			<s:property value="nome" />
 		</s:iterator>
+		<s:form action="deleteMesas" method="delete">
+			<s:hidden name="yourDep" value="%{departamento}" />
+			<s:submit  value="Remover"/>
+		</s:form>
 		<br>
 		<br>
 	</s:iterator>

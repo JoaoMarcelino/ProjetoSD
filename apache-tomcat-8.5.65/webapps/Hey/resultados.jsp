@@ -21,6 +21,10 @@
 	</s:url>
 	<s:a href="%{urlTag}">Mesas de Voto</s:a>
 
+	<s:url action="votePage.action" var="urlTag">
+	</s:url>
+	<s:a href="%{urlTag}">Votar</s:a>
+
 	<h1>Resultados de <s:property value="titulo"/></h1>
 
 	<s:if test="resultados!=null">

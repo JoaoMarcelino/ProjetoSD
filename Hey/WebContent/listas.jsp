@@ -22,6 +22,10 @@
 	</s:url>
 	<s:a href="%{urlTag}">Mesas de Voto</s:a>
 
+	<s:url action="votePage.action" var="urlTag">
+	</s:url>
+	<s:a href="%{urlTag}">Votar</s:a>
+
 	<h1>Listas de <s:param value="titulo"/> </h1>
 
 	<s:iterator value="listas">
@@ -30,6 +34,11 @@
 		<s:iterator value="listaPessoas">
 			<s:property value="nome"/>
 		</s:iterator>
+		<s:form action="deleteListas" method="delete">
+			<s:hidden name="nome" value="%{nome}" />
+			<s:hidden name="titulo" value="%{titulo}" />
+			<s:submit  value="Remover"/>
+		</s:form>
 		<br>
 		<br>
 	</s:iterator>

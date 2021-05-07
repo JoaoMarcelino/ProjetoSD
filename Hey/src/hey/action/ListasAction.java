@@ -47,9 +47,20 @@ public class ListasAction extends ActionSupport implements SessionAware {
 		return SUCCESS;
 	}
 
+	public String delete(){
+		try{
+			String status = getHeyBean().servidor.removeLista(titulo,nome);
+			getHeyBean().setMessage(status);
+		}catch (RemoteException e){
+			getHeyBean().setMessage("Erro RMI no registo na remoção da lista.");
+		}
+		return SUCCESS;
+	}
+
 	public String get(){
 		return SUCCESS;
 	}
+
 
 	public ArrayList<Lista> getListas(){
 		try{
@@ -65,7 +76,6 @@ public class ListasAction extends ActionSupport implements SessionAware {
 	}
 
 	public void setTitulo(String titulo) {
-		System.out.println(titulo);
 		this.titulo = titulo;
 	}
 

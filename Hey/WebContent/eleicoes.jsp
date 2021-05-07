@@ -22,10 +22,13 @@
 	</s:url>
 	<s:a href="%{urlTag}">Mesas de Voto</s:a>
 
+	<s:url action="votePage.action" var="urlTag">
+	</s:url>
+	<s:a href="%{urlTag}">Votar</s:a>
+
 	<h1>Eleições Registadas</h1>
 
 	<s:iterator value="heyBean.allElections">
-
 		<s:property value="titulo" /><br>
 		<s:property value="descricao" /><br>
 		<s:date name="dataInicio" format="dd/MM/yy HH:mm" /><br>
