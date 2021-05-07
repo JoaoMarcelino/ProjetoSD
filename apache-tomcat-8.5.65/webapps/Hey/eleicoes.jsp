@@ -39,6 +39,10 @@
 			<s:property value="status"/>
 			<br>
 		</s:iterator>
+		<s:form action="listListas" method="get">
+			<s:hidden name="titulo" value="%{titulo}" />
+			<s:submit  value="Listas"/>
+		</s:form>
 		<s:form action="listResultados" method="get">
 			<s:hidden name="titulo" value="%{titulo}" />
 			<s:submit  value="Consultar Resultados"/>

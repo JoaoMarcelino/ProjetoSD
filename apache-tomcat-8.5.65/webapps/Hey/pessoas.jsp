@@ -9,50 +9,55 @@
 <title>Hey!</title>
 </head>
 <body>
-	<s:url action="listPessoas.action" var="urlTag">
-	</s:url>
-	<s:a href="%{urlTag}">Votantes</s:a>
+	<s:if test="heyBean.username=='Admin'">
+		<s:url action="listPessoas.action" var="urlTag">
+		</s:url>
+		<s:a href="%{urlTag}">Votantes</s:a>
 
-	<s:url action="listEleicoes.action" var="urlTag">
-	</s:url>
-	<s:a href="%{urlTag}">Eleições</s:a>
+		<s:url action="listEleicoes.action" var="urlTag">
+		</s:url>
+		<s:a href="%{urlTag}">Eleições</s:a>
 
-	<s:url action="listMesas.action" var="urlTag">
-	</s:url>
-	<s:a href="%{urlTag}">Mesas de Voto</s:a>
+		<s:url action="listMesas.action" var="urlTag">
+		</s:url>
+		<s:a href="%{urlTag}">Mesas de Voto</s:a>
 
-	<h1>Votantes Registados</h1>
+		<h1>Votantes Registados</h1>
 
-	<s:iterator value="heyBean.allUsers">
-		<s:property value="nome" /><br>
-		<s:property value="numberCC" /> <s:date name="expireCCDate" format="dd/MM/yy" /><br>
-		<s:property value="departamento" /><br>
-		<s:property value="profissao" /><br>
-		<s:property value="morada" /><br>
-		<s:property value="telefone" /><br>
+		<s:iterator value="heyBean.allUsers">
+			<s:property value="nome" /><br>
+			<s:property value="numberCC" /> <s:date name="expireCCDate" format="dd/MM/yy" /><br>
+			<s:property value="departamento" /><br>
+			<s:property value="profissao" /><br>
+			<s:property value="morada" /><br>
+			<s:property value="telefone" /><br>
+			<br>
+			<br>
+		</s:iterator>
 		<br>
 		<br>
-	</s:iterator>
-	<br>
-	<br>
 
-	<h2>Registar Votante</h2>
-	<s:if test="heyBean.message!=null">
-		<b><i><s:label name="heyBean.message"> </s:label></i></b>
-		<br>
+		<h2>Registar Votante</h2>
+		<s:if test="heyBean.message!=null">
+			<b><i><s:label name="heyBean.message"> </s:label></i></b>
+			<br>
+		</s:if>
+
+		<s:form action="addPessoas" method="post">
+			<s:label value="Nome:" /> <s:textfield name="nome" /><br>
+			<s:label value="Password:" /> <s:textfield type="password" name="password" /><br>
+			<s:label value="Numero Cartão Cidadão:" /> <s:textfield name="numberCC" /><br>
+			<s:label value="Data de Validade CC:" /> <s:textfield type="date" name="expireCCDate" /><br>
+			<s:label value="Profissão:" /><s:select  list="profs" name="yourProf"/><br>
+			<s:label value="Departamento:" /><s:select label="Departamento:" list="deps" name="yourDep"/><br>
+			<s:label value="Morada:" /> <s:textfield name="morada" /><br>
+			<s:label value="Telefone:" /> <s:textfield name="telefone" /><br>
+			<s:submit value="Registar Votante"/>
+		</s:form>
 	</s:if>
 
-	<s:form action="addPessoas" method="post">
-		<s:label value="Nome:" /> <s:textfield name="nome" /><br>
-		<s:label value="Password:" /> <s:textfield type="password" name="password" /><br>
-		<s:label value="Numero Cartão Cidadão:" /> <s:textfield name="numberCC" /><br>
-		<s:label value="Data de Validade CC:" /> <s:textfield type="date" name="expireCCDate" /><br>
-		<s:label value="Profissão:" /><s:select  list="profs" name="yourProf"/><br>
-		<s:label value="Departamento:" /><s:select label="Departamento:" list="deps" name="yourDep"/><br>
-		<s:label value="Morada:" /> <s:textfield name="morada" /><br>
-		<s:label value="Telefone:" /> <s:textfield name="telefone" /><br>
-		<s:submit value="Registar Votante"/>
-	</s:form>
-
+	<s:else>
+			<s:property value="heyBean.username"/>
+	</s:else>
 </body>
 </html>
