@@ -25,16 +25,17 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
 	private String descricao;
 	private GregorianCalendar dataInicio;
 	private GregorianCalendar dataFim;
-	private final CopyOnWriteArrayList<Departamento> departamentosPermitidos = new CopyOnWriteArrayList<Departamento>(Arrays.asList(Departamento.values()));
+
+	private List<String> profs;
+	private String yourProf="";
+
 	public String post(){
+		ArrayList<Profissao> profissoes=getYourProf();
+		CopyOnWriteArrayList<Departamento> departamentosPermitidos = new CopyOnWriteArrayList<Departamento>(Arrays.asList(Departamento.values()));
+
 		try{
-			ArrayList<Profissao> profissoesPermitidas=new ArrayList<>();
-			String[] aux=getHeyBean().getYourProf().split(", ");
-			for(String prof:aux){
-				profissoesPermitidas.add(Profissao.valueOf(prof));
-			}
-			if(titulo!=null && descricao!=null && !profissoesPermitidas.isEmpty() && dataInicio!=null && dataFim!=null){
-				String status = getHeyBean().servidor.addEleicao(titulo,descricao,dataInicio,dataFim,new CopyOnWriteArrayList<>(profissoesPermitidas),departamentosPermitidos);
+			if(titulo!=null && descricao!=null && profissoes!=null && dataInicio!=null && dataFim!=null){
+				String status = getHeyBean().servidor.addEleicao(titulo,descricao,dataInicio,dataFim,new CopyOnWriteArrayList<>(profissoes),departamentosPermitidos);
 				getHeyBean().setMessage(status);
 			}
 			else{
@@ -92,6 +93,42 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
 		this.dataFim = cal;
 	}
 
+	public ArrayList<Profissao> getYourProf() {
+		ArrayList<Profissao> aux=new ArrayList<>();
+		switch (this.yourProf){
+			case "Estudante":
+				aux.add(Profissao.Estudante);
+				break;
+			case "Docente":
+				aux.add(Profissao.Docente);
+				break;
+			case "Funcionario":
+				aux.add(Profissao.Funcionario);
+				break;
+			case "Geral":
+				aux.add(Profissao.Estudante);
+				aux.add(Profissao.Docente);
+				aux.add(Profissao.Funcionario);
+				break;
+		}
+		if(aux.isEmpty())
+			return null;
+		else
+			return	aux;
+	}
+
+	public void setYourProf(String yourProf) {
+		this.yourProf = yourProf;
+	}
+
+	public List<String> getProfs() {
+		List<String> aux=new ArrayList<>();
+		for(Profissao prof: Profissao.values()){
+			aux.add(prof.name());
+		}
+		aux.add("Geral");
+		return aux;
+	}
 
 	public HeyBean getHeyBean() {
 		if(!session.containsKey("heyBean"))

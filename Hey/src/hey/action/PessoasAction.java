@@ -10,6 +10,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import hey.model.HeyBean;
 import org.apache.struts2.interceptor.SessionAware;
 
+import javax.crypto.spec.DESedeKeySpec;
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -26,13 +27,20 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 	private String numberCC;
 	private GregorianCalendar expireCCDate;
 
+	private List<String> profs;
+	private String yourProf="";
+	private List<String> deps;
+	private String yourDep="";
 
+	public String login() {
+		return SUCCESS;
+	}
 
 	public String post(){
-		Profissao profissao=Profissao.valueOf(getHeyBean().getYourProf());
-		Departamento departamento=Departamento.valueOf(getHeyBean().getYourDep());
+		Profissao profissao=getYourProf();
+		Departamento departamento=getYourDep();
 		try{
-			if(nome!=null && password!=null && numberCC!=null && expireCCDate!=null ){
+			if(nome!=null && password!=null && numberCC!=null && expireCCDate!=null && profissao!=null && departamento!=null){
 				String status = getHeyBean().servidor.addPessoa(nome,password,departamento,telefone,morada,numberCC,expireCCDate,profissao);
 				getHeyBean().setMessage(status);
 			}
@@ -41,14 +49,20 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 			}
 		}catch (RemoteException ignored){
 			getHeyBean().setMessage("Erro RMI no registo do votante.");
-		}catch (IllegalArgumentException e){
-		getHeyBean().setMessage("Falta informacao para o registo do votante.");
-	}
+		}
 		return SUCCESS;
 	}
 
 	public String get(){
 		return SUCCESS;
+	}
+
+	public void setUsername(String username) {
+		getHeyBean().setUsername(username); // will you sanitize this input? maybe use a prepared statement?
+	}
+
+	public void setPass(String password) {
+		getHeyBean().setPassword(password);
 	}
 
 	public String getNome() {
@@ -103,10 +117,46 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 		this.expireCCDate = cal ;
 	}
 
+	public Profissao getYourProf() {
+		try{
+			Profissao aux=Profissao.valueOf(this.yourProf);
+			return aux;
+		}catch (IllegalArgumentException e){
+			return null;
+		}
+	}
 
+	public void setYourProf(String yourProf) {
+		this.yourProf = yourProf;
+	}
 
-	public ArrayList<Pessoa> getAllUsers() throws RemoteException {
-		return new ArrayList<>(getHeyBean().getAllUsers());
+	public List<String> getProfs() {
+		List<String> aux=new ArrayList<>();
+		for(Profissao prof: Profissao.values()){
+			aux.add(prof.name());
+		}
+		return aux;
+	}
+
+	public Departamento getYourDep() {
+		try{
+			Departamento aux= Departamento.valueOf(this.yourDep);
+			return aux;
+		}catch (IllegalArgumentException e){
+			return null;
+		}
+	}
+
+	public void setYourDep(String yourDep) {
+		this.yourDep = yourDep;
+	}
+
+	public List<String> getDeps() {
+		List<String> aux=new ArrayList<>();
+		for(Departamento dep: Departamento.values()){
+			aux.add(dep.name());
+		}
+		return aux;
 	}
 
 	public HeyBean getHeyBean() {

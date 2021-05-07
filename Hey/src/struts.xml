@@ -32,7 +32,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     </action>
 
 	<!-- 'login' action calls 'execute' in 'LoginAction' -->
-    <action name="login" class="hey.action.LoginAction" method="execute">
+    <action name="login" class="hey.action.PessoasAction" method="login">
       <result name="success">/pessoas.jsp</result>
       <result name="login">/index.jsp</result>
     </action>
@@ -51,6 +51,10 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
 
       <action name="listEleicoes" class="hey.action.EleicoesAction" method="get">
           <result name="success">/eleicoes.jsp</result>
+      </action>
+
+      <action name="listResultados" class="hey.action.ResultadosAction" method="get">
+          <result name="success">/resultados.jsp</result>
       </action>
 
 

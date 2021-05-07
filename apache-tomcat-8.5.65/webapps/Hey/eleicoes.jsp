@@ -20,6 +20,7 @@
 	<h1>Eleições Registadas</h1>
 
 	<s:iterator value="heyBean.allElections">
+
 		<s:property value="titulo" /><br>
 		<s:property value="descricao" /><br>
 		<s:date name="dataInicio" format="dd/MM/yy HH:mm" /><br>
@@ -34,6 +35,10 @@
 			<s:property value="status"/>
 			<br>
 		</s:iterator>
+		<s:form action="listResultados" method="get">
+			<s:hidden name="titulo" value="%{titulo}" />
+			<s:submit  value="Consultar Resultados"/>
+		</s:form>
 		<br>
 		<br>
 	</s:iterator>
@@ -51,7 +56,7 @@
 		<s:label value="Descrição:" /> <s:textarea name="descricao" /><br>
 		<s:label value="Data de Inicio:" /> <s:textfield type="datetime-local" name="dataInicio" /><br>
 		<s:label value="Data de Fim:" /> <s:textfield type="datetime-local" name="dataFim" /><br>
-		<s:label value="Tipo:" /><s:checkboxlist list="heyBean.profs" name="heyBean.yourProf"/><br>
+		<s:label value="Tipo:" /><s:select  list="profs" name="yourProf"/><br>
 		<s:submit value="Criar Eleicao"/>
 	</s:form>
 
