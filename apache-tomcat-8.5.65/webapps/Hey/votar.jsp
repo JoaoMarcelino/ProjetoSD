@@ -31,28 +31,37 @@
 	<br>
 </s:if>
 <s:iterator value="eleicoesDisponiveis">
+	<b><s:label value="Título:"/></b>
 	<s:property value="titulo" /><br>
+	<b><s:label value="Descrição:"/></b>
 	<s:property value="descricao" /><br>
+	<b><s:label value="Data de Início:"/></b>
 	<s:date name="dataInicio" format="dd/MM/yy HH:mm" /><br>
+	<b><s:label value="Data de Fim:"/></b>
 	<s:date name="dataFim" format="dd/MM/yy HH:mm" /><br>
+	<b><s:label value="Profissões Permititdas:"/></b>
 	<s:iterator value="profissoesPermitidas">
 		<s:property/>
 	</s:iterator><br>
+	<b><s:label value="Mesas Associadas:"/></b>
 	<s:iterator value="mesas">
 		<s:property value="departamento"/>
 		<s:property value="ip"/>
 		<s:property value="port"/>
 		<s:property value="status"/>
 		<br>
-	</s:iterator>
+	</s:iterator><br>
+	<b><s:label value="Listas:"/></b>
 	<s:iterator value="listas">
+		<s:label value="Nome:"/>
 		<s:property value="nome" /><br>
+		<s:label value="Tipo:"/>
 		<s:property value="tipoLista" /><br>
+		<s:label value="Listas:"/>
 		<s:iterator value="listaPessoas">
 			<s:property value="nome"/>
-		</s:iterator>
-		<br>
-	</s:iterator>
+		</s:iterator><br>
+	</s:iterator><br>
 	<br>
 	<br>
 </s:iterator>
@@ -60,11 +69,16 @@
 <br>
 
 <s:form action="votoAntecipado" method="votarAntecipado">
-	<s:label value="Número CC:" /> <s:textfield name="numero" /><br>
-	<s:label value="Password:" /> <s:password name="pass" /><br>
-	<s:label value="Nome da Eleicao:" /> <s:textfield name="titulo" /><br>
-	<s:label value="Tipo de Voto:" /><s:select  list="choices" name="myChoice"/><br>
-	<s:label value="Lista:" /><s:textfield name="nome" /><br>
+	<s:label value="Número CC:" />
+	<s:textfield name="numero" /><br>
+	<s:label value="Password:" />
+	<s:password name="pass" /><br>
+	<s:label value="Nome da Eleicao:" />
+	<s:textfield name="titulo" /><br>
+	<s:label value="Tipo de Voto:" />
+	<s:select  list="choices" name="myChoice"/><br>
+	<s:label value="Lista:" />
+	<s:textfield name="nome" /><br>
 	<s:submit value="Votar"/>
 </s:form>
 

@@ -53,6 +53,17 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
           <result name="success">/eleicoes.jsp</result>
       </action>
 
+      <action name="editEleicoes" class="hey.action.EleicoesAction" method="put">
+          <result name="success">/eleicoes.jsp</result>
+      </action>
+
+      <action name="addMesaEleicoes" class="hey.action.EleicoesAction" method="addMesa">
+          <result name="success">/eleicoes.jsp</result>
+      </action>
+
+      <action name="removeMesaEleicoes" class="hey.action.EleicoesAction" method="removeMesa">
+          <result name="success">/eleicoes.jsp</result>
+      </action>
 
       <action name="listResultados" class="hey.action.ResultadosAction" method="get">
           <result name="success">/resultados.jsp</result>
@@ -71,6 +82,10 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
       </action>
 
       <action name="deleteMesas" class="hey.action.MesasAction" method="delete">
+          <result name="success">/mesas.jsp</result>
+      </action>
+
+      <action name="editMesas" class="hey.action.MesasAction" method="put">
           <result name="success">/mesas.jsp</result>
       </action>
 

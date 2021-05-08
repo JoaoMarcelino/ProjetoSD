@@ -28,9 +28,12 @@
 	<h1>Resultados de <s:property value="titulo"/></h1>
 
 	<s:if test="resultados!=null">
-		<s:label value="Total de Votos:" /><s:property value="resultados.totalVotos" /><br>
-		<s:label value="Votos em Branco:" /><s:property value="resultados.brancos" /><br>
-		<s:label value="Votos em Nulo:" /><s:property value="resultados.nulos" /><br>
+		<s:label value="Total de Votos:" />
+		<s:property value="resultados.totalVotos" /><br>
+		<s:label value="Votos em Branco:" />
+		<s:property value="resultados.brancos" /><br>
+		<s:label value="Votos em Nulo:" />
+		<s:property value="resultados.nulos" /><br>
 		<b><s:label value="Vencedores" /></b><br>
 		<s:iterator value="resultados.vencedores">
 			<s:property/>
@@ -45,20 +48,32 @@
 	</s:if>
 	<s:else>
 		<b><i>Eleicao ainda não terminou.</i></b>
+		<br>
 	</s:else>
 
-	<s:if test="v!=null">
-		<s:label value="Nome:" /><s:property value="v.pessoa.nome" /><br>
-		<s:label value="Eleicao:" /><s:property value="titulo" /><br>
-		<s:label value="Hora de Voto:" /><s:property value="v.data"/><br>
-		<s:label value="Departamento:" />
-		<c:if test="v.mesa==null">
-			<s:label value="Departamento:Admin Console" />
-		</c:if>
-		<s:else>
-			<s:label value="Departamento:" /><s:property value="v.mesa.departamento"/><br>
-		</s:else>
+	<s:if test="heyBean.message!=null">
+		<b><i><s:label name="heyBean.message"/></i></b>
+		<br>
 	</s:if>
 
+	<s:if test="v!=null">
+		<br>
+		<br>
+		<b><s:label value="Nome:" /></b>
+		<s:property value="v.pessoa.nome" /><br>
+		<b><s:label value="Eleicao:" /></b>
+		<s:property value="titulo" /><br>
+		<b><s:label value="Hora de Voto:" /></b>
+		<s:date name="v.data" format="dd/MM/yyyy HH:mm"/><br>
+		<b><s:label value="Mesa de Voto:" /></b>
+		<s:property value="mesa"/><br>
+	</s:if>
+
+	<h2>Consultar Voto Indivídual</h2>
+	<s:form action="getVoto" method="getVoto">
+		<s:hidden name="titulo" value="%{titulo}" />
+		<s:textfield placeholder="Número Cartão CC" name="numeroCC"/>
+		<s:submit  value="Consultar Voto"/>
+	</s:form>
 </body>
 </html>

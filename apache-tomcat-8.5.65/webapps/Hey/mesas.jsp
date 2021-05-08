@@ -27,9 +27,13 @@
 
 	<h1>Mesas de Voto</h1>
 	<s:iterator value="heyBean.allMesas">
+		<b><s:label value="Departamento:"/></b>
 		<s:property value="departamento" /><br>
+		<b><s:label value="IP Multicast:"/></b>
 		<s:property value="ip" /><br>
+		<b><s:label value="Port Multicast:"/></b>
 		<s:property value="port" /><br>
+		<b><s:label value="Estado:"/></b>
 		<s:if test="status==true">
 			<s:label value="Ligada"/>
 		</s:if>
@@ -37,6 +41,7 @@
 			<s:label value="Desligada"/>
 		</s:else>
 		<br>
+		<b><s:label value="Membros:"/></b>
 		<s:iterator value="membros">
 			<s:property value="nome" />
 		</s:iterator>
@@ -52,18 +57,37 @@
 
 	<h2>Adicionar Mesa</h2>
 	<s:if test="heyBean.message!=null">
-		<b><i><s:label name="heyBean.message"> </s:label></i></b>
+		<b><i><s:label name="heyBean.message"/></i></b>
 		<br>
 	</s:if>
 
 	<s:form action="addMesas" method="post">
-		<s:label value="Departamento:" /><s:select label="Departamento:" list="deps" name="yourDep"/><br>
-		<s:label value="IP:" /> <s:textfield name="ip" /><br>
-		<s:label value="Port:" /> <s:textfield name="port" /><br>
-		<s:label value="Membro #1:" /> <s:textfield name="membros[0]" /><br>
-		<s:label value="Membro #2:" /> <s:textfield name="membros[1]" /><br>
-		<s:label value="Membro #2:" /> <s:textfield name="membros[2]" /><br>
+		<s:label value="Departamento:" />
+		<s:select label="Departamento:" list="deps" name="yourDep"/><br>
+		<s:label value="IP:" />
+		<s:textfield name="ip" /><br>
+		<s:label value="Port:" />
+		<s:textfield name="port" /><br>
+		<s:label value="Membro #1:" />
+		<s:textfield name="membros[0]" /><br>
+		<s:label value="Membro #2:" />
+		<s:textfield name="membros[1]" /><br>
+		<s:label value="Membro #3:" />
+		<s:textfield name="membros[2]" /><br>
 		<s:submit value="Adicionar Mesa"/>
+	</s:form>
+
+	<h2>Editar Mesa</h2>
+	<s:form action="editMesas" method="put">
+		<s:label value="Departamento:" />
+		<s:select label="Departamento:" list="deps" name="yourDep"/><br>
+		<s:label value="Novo Membro #1:" />
+		<s:textfield name="membros[0]" /><br>
+		<s:label value="Novo Membro #2:" />
+		<s:textfield name="membros[1]" /><br>
+		<s:label value="Novo Membro #3:" />
+		<s:textfield name="membros[2]" /><br>
+		<s:submit value="Editar Mesa"/>
 	</s:form>
 
 </body>

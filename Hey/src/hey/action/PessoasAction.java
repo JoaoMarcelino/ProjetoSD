@@ -40,7 +40,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 		Profissao profissao=getYourProf();
 		Departamento departamento=getYourDep();
 		try{
-			if(nome!=null && password!=null && numberCC!=null && expireCCDate!=null && profissao!=null && departamento!=null){
+			if(nome!=null && password!=null && numberCC!=null && expireCCDate!=null && profissao!=null && departamento!=null && telefone!=null && morada!=null){
 				String status = getHeyBean().servidor.addPessoa(nome,password,departamento,telefone,morada,numberCC,expireCCDate,profissao);
 				getHeyBean().setMessage(status);
 			}

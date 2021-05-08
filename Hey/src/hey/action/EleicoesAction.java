@@ -26,6 +26,13 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
 	private GregorianCalendar dataInicio;
 	private GregorianCalendar dataFim;
 
+	private String tituloNovo;
+	private String descricaoNova;
+	private GregorianCalendar dataInicioNova;
+	private GregorianCalendar dataFimNova;
+
+	private String nome;
+	private String departamento;
 	private List<String> profs;
 	private String yourProf="";
 
@@ -45,6 +52,51 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
 			getHeyBean().setMessage("Erro RMI no registo da pessoa.");
 		}catch (IllegalArgumentException e){
 			getHeyBean().setMessage("Falta informacao para a criacao da eleicao.");
+		}
+		return SUCCESS;
+	}
+
+	public String put(){
+		try{
+			if(titulo!=null && tituloNovo!=null && descricaoNova!=null  && dataInicioNova!=null && dataFimNova!=null){
+				String status = getHeyBean().servidor.editEleicao(titulo,tituloNovo,descricaoNova,dataInicioNova,dataFimNova);
+				getHeyBean().setMessage(status);
+			}
+			else{
+				getHeyBean().setMessage("Falta informacao para a edição da eleicao.");
+			}
+		}catch (RemoteException e){
+			getHeyBean().setMessage("Erro RMI na edição da eleicao.");
+		}
+		return SUCCESS;
+	}
+
+	public String addMesa(){
+		try{
+			if(titulo!=null && nome!=null){
+				String status = getHeyBean().servidor.addMesaEleicao(nome,titulo);
+				getHeyBean().setMessage(status);
+			}
+			else{
+				getHeyBean().setMessage("Falta informacao para a associação da mesa à eleicao.");
+			}
+		}catch (RemoteException e){
+			getHeyBean().setMessage("Erro RMI na asscociação da mesa.");
+		}
+		return SUCCESS;
+	}
+
+	public String removeMesa(){
+		try{
+			if(titulo!=null && departamento!=null){
+				String status = getHeyBean().servidor.removeMesaEleicao(departamento,titulo);
+				getHeyBean().setMessage(status);
+			}
+			else{
+				getHeyBean().setMessage("Falta informacao para a desassociação da mesa à eleicao.");
+			}
+		}catch (RemoteException e){
+			getHeyBean().setMessage("Erro RMI na desasscociação da mesa.");
 		}
 		return SUCCESS;
 	}
@@ -128,6 +180,62 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
 		}
 		aux.add("Geral");
 		return aux;
+	}
+
+	public String getTituloNovo() {
+		return tituloNovo;
+	}
+
+	public void setTituloNovo(String tituloNovo) {
+		this.tituloNovo = tituloNovo;
+	}
+
+	public String getDescricaoNova() {
+		return descricaoNova;
+	}
+
+	public void setDescricaoNova(String descricaoNova) {
+		this.descricaoNova = descricaoNova;
+	}
+
+	public GregorianCalendar getDataInicioNova() {
+		return dataInicioNova;
+	}
+
+	public void setDataInicioNova(String dataInicioNova)throws ParseException {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+		Date date = df.parse(dataInicioNova);
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime(date);
+		this.dataInicioNova = cal;
+	}
+
+	public GregorianCalendar getDataFimNova() {
+		return dataFimNova;
+	}
+
+	public void setDataFimNova(String dataFimNova)throws ParseException {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+		Date date = df.parse(dataFimNova);
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime(date);
+		this.dataFimNova = cal;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public String getDepartamento() {
+		return departamento;
+	}
+
+	public void setDepartamento(String departamento) {
+		this.departamento = departamento;
 	}
 
 	public HeyBean getHeyBean() {

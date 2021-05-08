@@ -10,8 +10,8 @@
 <body>
 	<h1><b>e-Voting UC</b></h1>
 	<s:form action="login" method="post">
-		<input placeholder="Número CC" name="username" /><br>
-		<input placeholder="Password" name="pass" /><br>
+		<s:textfield placeholder="Número CC" name="username" /><br>
+		<s:textfield placeholder="Password" name="pass" /><br>
 		<s:submit value="Login"/>
 		<s:url action="login.action" var="urlTag">
 			<s:param name="username">Admin</s:param>

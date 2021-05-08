@@ -29,11 +29,18 @@
 		<h1>Votantes Registados</h1>
 
 		<s:iterator value="heyBean.allUsers">
+			<b><s:label value="Nome:"/></b>
 			<s:property value="nome" /><br>
-			<s:property value="numberCC" /> <s:date name="expireCCDate" format="dd/MM/yy" /><br>
+			<b><s:label value="Número Cartão de Cidadão:"/></b>
+			<s:property value="numberCC" />
+			<s:date name="expireCCDate" format="dd/MM/yy" /><br>
+			<b><s:label value="Departamento:"/></b>
 			<s:property value="departamento" /><br>
+			<b><s:label value="Profissão:"/></b>
 			<s:property value="profissao" /><br>
+			<b><s:label value="Morada:"/></b>
 			<s:property value="morada" /><br>
+			<b><s:label value="Telefone:"/></b>
 			<s:property value="telefone" /><br>
 			<br>
 			<br>
@@ -43,19 +50,27 @@
 
 		<h2>Registar Votante</h2>
 		<s:if test="heyBean.message!=null">
-			<b><i><s:label name="heyBean.message"> </s:label></i></b>
+			<b><i><s:label name="heyBean.message"/></i></b>
 			<br>
 		</s:if>
 
 		<s:form action="addPessoas" method="post">
-			<s:label value="Nome:" /> <s:textfield name="nome" /><br>
-			<s:label value="Password:" /> <s:textfield type="password" name="password" /><br>
-			<s:label value="Numero Cartão Cidadão:" /> <s:textfield name="numberCC" /><br>
-			<s:label value="Data de Validade CC:" /> <s:textfield type="date" name="expireCCDate" /><br>
-			<s:label value="Profissão:" /><s:select  list="profs" name="yourProf"/><br>
-			<s:label value="Departamento:" /><s:select label="Departamento:" list="deps" name="yourDep"/><br>
-			<s:label value="Morada:" /> <s:textfield name="morada" /><br>
-			<s:label value="Telefone:" /> <s:textfield name="telefone" /><br>
+			<s:label value="Nome:" />
+			<s:textfield name="nome" /><br>
+			<s:label value="Password:" />
+			<s:textfield type="password" name="password" /><br>
+			<s:label value="Numero Cartão Cidadão:" />
+			<s:textfield name="numberCC" /><br>
+			<s:label value="Data de Validade CC:" />
+			<s:textfield type="date" name="expireCCDate" /><br>
+			<s:label value="Profissão:" />
+			<s:select  list="profs" name="yourProf"/><br>
+			<s:label value="Departamento:" />
+			<s:select label="Departamento:" list="deps" name="yourDep"/><br>
+			<s:label value="Morada:" />
+			<s:textfield name="morada" /><br>
+			<s:label value="Telefone:" />
+			<s:textfield name="telefone" /><br>
 			<s:submit value="Registar Votante"/>
 		</s:form>
 	</s:if>

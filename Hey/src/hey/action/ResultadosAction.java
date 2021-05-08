@@ -25,6 +25,7 @@ public class ResultadosAction extends ActionSupport implements SessionAware {
 	private Resultado res;
 	private Voto v;
 	private String numeroCC;
+	private String mesa;
 
 	public String get(){
 		return SUCCESS;
@@ -49,9 +50,9 @@ public class ResultadosAction extends ActionSupport implements SessionAware {
 
 	public String getVoto(){
 		try{
-			v= getHeyBean().getVoto(this.numeroCC,this.titulo);
+			v= getHeyBean().servidor.getVoto(this.numeroCC,this.titulo);
 			if(v==null){
-				getHeyBean().setMessage("Pessoa nao existe oun não votou.");
+				getHeyBean().setMessage("Pessoa nao existe ou não votou.");
 			}
 		}catch (RemoteException e){
 			v=null;
@@ -60,9 +61,29 @@ public class ResultadosAction extends ActionSupport implements SessionAware {
 		return SUCCESS;
 	}
 
+	public String getMesa(){
+		if(v.getMesa()==null)
+			return "Admin Console";
+		else
+			return v.getMesa().getDepartamento().name();
+	}
+
 	public Voto getV(){
 		return this.v;
 	}
+
+	public void setV(Voto v) {
+		this.v = v;
+	}
+
+	public String getNumeroCC() {
+		return numeroCC;
+	}
+
+	public void setNumeroCC(String numeroCC) {
+		this.numeroCC = numeroCC;
+	}
+
 	public HeyBean getHeyBean() {
 		if(!session.containsKey("heyBean"))
 			this.setHeyBean(new HeyBean());

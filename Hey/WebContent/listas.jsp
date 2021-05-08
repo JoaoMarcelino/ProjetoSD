@@ -29,8 +29,11 @@
 	<h1>Listas de <s:param value="titulo"/> </h1>
 
 	<s:iterator value="listas">
+		<b><s:label value="Nome:"/></b>
 		<s:property value="nome" /><br>
+		<b><s:label value="Tipo de Lista:"/></b>
 		<s:property value="tipoLista" /><br>
+		<b><s:label value="Membros:"/></b>
 		<s:iterator value="listaPessoas">
 			<s:property value="nome"/>
 		</s:iterator>
@@ -47,16 +50,20 @@
 
 	<h2>Adicionar Lista</h2>
 	<s:if test="heyBean.message!=null">
-		<b><i><s:label name="heyBean.message"> </s:label></i></b>
+		<b><i><s:label name="heyBean.message"/></i></b>
 		<br>
 	</s:if>
 
 	<s:form action="addListas" method="post" id="form">
 		<s:hidden name="titulo" /><br>
-		<s:label value="Nome:" /> <s:textfield name="nome" /><br>
-		<s:label value="Tipo:" /><s:select  list="profs" name="yourProf"/><br>
-		<s:label value="Número de Membros:" /> <s:textfield id="numero" /><br>
-		<s:label value="Membro #1:" /> <s:textfield placeholder="membros#1" name="membros[0]" id="membros[0]" /><br>
+		<s:label value="Nome:" />
+		<s:textfield name="nome" /><br>
+		<s:label value="Tipo:" />
+		<s:select  list="profs" name="yourProf"/><br>
+		<s:label value="Número de Membros:" />
+		<s:textfield id="numero" /><br>
+		<s:label value="Membro #1:" />
+		<s:textfield placeholder="membros#1" name="membros[0]" id="membros[0]" /><br>
 		<s:submit value="Registar Votante" id="botao"/>
 	</s:form>
 </s:if>

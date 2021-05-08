@@ -53,9 +53,6 @@ public class HeyBean {
 		return servidor.getResultados(nomEleicao);
 	}
 
-	public Voto getVoto(String nomEleicao,String numeroCC) throws RemoteException {
-		return servidor.getVoto(numeroCC,nomEleicao);
-	}
 
 	public void setMessage(String message){
 		this.message=message;

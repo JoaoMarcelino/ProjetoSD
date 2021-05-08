@@ -60,6 +60,27 @@ public class MesasAction extends ActionSupport implements SessionAware {
 		return SUCCESS;
 	}
 
+	public String put(){
+		Departamento departamento=getYourDep();
+		CopyOnWriteArrayList<Pessoa> aux=new CopyOnWriteArrayList<>();
+		for(String m:membros){
+			Pessoa p=new Pessoa(m,"",Departamento.DA,"","","",new GregorianCalendar(), Profissao.Estudante);
+			aux.add(p);
+		}
+		try{
+			if(departamento!=null && aux.size()==3){
+				String status = getHeyBean().servidor.editMesa(departamento.name(),aux.get(0).getNome(),aux.get(1).getNome(),aux.get(2).getNome());
+				getHeyBean().setMessage(status);
+			}
+			else{
+				getHeyBean().setMessage("Falta informacao para a edição da mesa.");
+			}
+		}catch (RemoteException ignored){
+			getHeyBean().setMessage("Erro RMI na edição da mesa.");
+		}
+		return SUCCESS;
+	}
+
 	public String getIp() {
 		return ip;
 	}
