@@ -10,166 +10,203 @@ import com.opensymphony.xwork2.ActionSupport;
 import hey.model.HeyBean;
 import org.apache.struts2.interceptor.SessionAware;
 
+import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class PessoasAction extends ActionSupport implements SessionAware {
-    private static final long serialVersionUID = 4L;
-    private Map<String, Object> session;
-    private String nome;
-    private String password;
-    private String telefone;
-    private String morada;
-    private String numberCC;
-    private GregorianCalendar expireCCDate;
 
-    private List<String> profs;
-    private String yourProf = "";
-    private List<String> deps;
-    private String yourDep = "";
+	private static final long serialVersionUID = 4L;
+	private Map<String, Object> session;
+	private String nome;
+	private String password;
+	private String telefone;
+	private String morada;
+	private String numberCC;
+	private GregorianCalendar expireCCDate;
 
-    public String login() {
-        return SUCCESS;
-    }
+	private String loginNumberCC;
+	private String loginPassword;
 
-    public String post() {
-        Profissao profissao = getYourProf();
-        Departamento departamento = getYourDep();
+	private List<String> profs;
+	private String yourProf="";
+	private List<String> deps;
+	private String yourDep="";
 
-        if (nome != null && password != null && numberCC != null && expireCCDate != null && profissao != null && departamento != null && telefone != null && morada != null) {
-            String status = getHeyBean().addPessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao);
-            getHeyBean().setMessage(status);
-        }
-        else {
-            getHeyBean().setMessage("Falta informacao para o registo do votante.");
-        }
-        return SUCCESS;
-    }
+	public String login() {
+		try {
+			if (loginNumberCC.equals("admin") && loginPassword.equals("admin")) {
+				logout();
+				getHeyBean().setUsername("Admin");
+			}
+			else{
+				logout();
+				getHeyBean().setUsername(null);
+			}
+		}catch(Exception e){
+			getHeyBean().setMessage(loginNumberCC + " - " + loginPassword);
+		}
+		return ERROR;
+	}
 
-    public ArrayList<Pessoa> getListPessoas(){
-        return new ArrayList<>(getHeyBean().listPessoas());
-    }
+	public void logout(){
+		loginNumberCC = null;
+		loginPassword = null;
+	}
 
-    public String get() {
-        return SUCCESS;
-    }
+	public String post(){
+		Profissao profissao=getYourProf();
+		Departamento departamento=getYourDep();
+		try{
+			if(nome!=null && password!=null && numberCC!=null && expireCCDate!=null && profissao!=null && departamento!=null){
+				String status = getHeyBean().servidor.addPessoa(nome,password,departamento,telefone,morada,numberCC,expireCCDate,profissao);
+				getHeyBean().setMessage(status);
+			}
+			else{
+				getHeyBean().setMessage("Falta informacao para o registo do votante.");
+			}
+		}catch (RemoteException e){
+			getHeyBean().setMessage("Erro RMI no registo do votante.");
+		}
+		return SUCCESS;
+	}
 
-    public void setUsername(String username) {
-        getHeyBean().setUsername(username); // will you sanitize this input? maybe use a prepared statement?
-    }
+	public String get(){
+		return SUCCESS;
+	}
 
-    public void setPass(String password) {
-        getHeyBean().setPassword(password);
-    }
+	public void setUsername(String username) {
+		getHeyBean().setUsername(username); // will you sanitize this input? maybe use a prepared statement?
+	}
 
-    public String getNome() {
-        return nome;
-    }
+	public void setPass(String password) {
+		getHeyBean().setPassword(password);
+	}
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
+	public String getNome() {
+		return nome;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public String getTelefone() {
-        return telefone;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
+	public String getTelefone() {
+		return telefone;
+	}
 
-    public String getMorada() {
-        return morada;
-    }
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
 
-    public void setMorada(String morada) {
-        this.morada = morada;
-    }
+	public String getMorada() {
+		return morada;
+	}
 
-    public String getNumberCC() {
-        return numberCC;
-    }
+	public void setMorada(String morada) {
+		this.morada = morada;
+	}
 
-    public void setNumberCC(String numberCC) {
-        this.numberCC = numberCC;
-    }
+	public String getNumberCC() {
+		return numberCC;
+	}
 
-    public GregorianCalendar getExpireCCDate() {
-        return expireCCDate;
-    }
+	public void setNumberCC(String numberCC) {
+		this.numberCC = numberCC;
+	}
 
-    public void setExpireCCDate(String expireCCDate) throws ParseException {
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = df.parse(expireCCDate);
-        GregorianCalendar cal = new GregorianCalendar();
-        cal.setTime(date);
-        this.expireCCDate = cal;
-    }
+	public GregorianCalendar getExpireCCDate() {
+		return expireCCDate;
+	}
 
-    public Profissao getYourProf() {
-        try {
-            Profissao aux = Profissao.valueOf(this.yourProf);
-            return aux;
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
+	public void setExpireCCDate(String expireCCDate) throws ParseException {
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = df.parse(expireCCDate);
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime(date);
+		this.expireCCDate = cal ;
+	}
 
-    public void setYourProf(String yourProf) {
-        this.yourProf = yourProf;
-    }
+	public Profissao getYourProf() {
+		try{
+			Profissao aux=Profissao.valueOf(this.yourProf);
+			return aux;
+		}catch (IllegalArgumentException e){
+			return null;
+		}
+	}
 
-    public List<String> getProfs() {
-        List<String> aux = new ArrayList<>();
-        for (Profissao prof : Profissao.values()) {
-            aux.add(prof.name());
-        }
-        return aux;
-    }
+	public void setYourProf(String yourProf) {
+		this.yourProf = yourProf;
+	}
 
-    public Departamento getYourDep() {
-        try {
-            Departamento aux = Departamento.valueOf(this.yourDep);
-            return aux;
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
+	public List<String> getProfs() {
+		List<String> aux=new ArrayList<>();
+		for(Profissao prof: Profissao.values()){
+			aux.add(prof.name());
+		}
+		return aux;
+	}
 
-    public void setYourDep(String yourDep) {
-        this.yourDep = yourDep;
-    }
+	public Departamento getYourDep() {
+		try{
+			Departamento aux= Departamento.valueOf(this.yourDep);
+			return aux;
+		}catch (IllegalArgumentException e){
+			return null;
+		}
+	}
 
-    public List<String> getDeps() {
-        List<String> aux = new ArrayList<>();
-        for (Departamento dep : Departamento.values()) {
-            aux.add(dep.name());
-        }
-        return aux;
-    }
+	public void setYourDep(String yourDep) {
+		this.yourDep = yourDep;
+	}
 
-    public HeyBean getHeyBean() {
-        if (!session.containsKey("heyBean"))
-            this.setHeyBean(new HeyBean());
-        return (HeyBean) session.get("heyBean");
-    }
+	public List<String> getDeps() {
+		List<String> aux=new ArrayList<>();
+		for(Departamento dep: Departamento.values()){
+			aux.add(dep.name());
+		}
+		return aux;
+	}
 
-    public void setHeyBean(HeyBean heyBean) {
-        this.session.put("heyBean", heyBean);
-    }
+	public String getLoginNumberCC() {
+		return loginNumberCC;
+	}
 
-    @Override
-    public void setSession(Map<String, Object> session) {
-        this.session = session;
-    }
+	public void setLoginNumberCC(String loginNumberCC) {
+		this.loginNumberCC = loginNumberCC;
+	}
+
+	public String getLoginPassword() {
+		return loginPassword;
+	}
+
+	public void setLoginPassword(String loginPassword) {
+		this.loginPassword = loginPassword;
+	}
+
+	public HeyBean getHeyBean() {
+		if(!session.containsKey("heyBean"))
+			this.setHeyBean(new HeyBean());
+		return (HeyBean) session.get("heyBean");
+	}
+
+	public void setHeyBean(HeyBean heyBean) {
+		this.session.put("heyBean", heyBean);
+	}
+
+	@Override
+	public void setSession(Map<String, Object> session) {
+		this.session = session;
+	}
 }
