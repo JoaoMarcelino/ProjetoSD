@@ -64,7 +64,7 @@
 		<s:textfield id="numero" /><br>
 		<s:label value="Membro #1:" />
 		<s:textfield placeholder="membros#1" name="membros[0]" id="membros[0]" /><br>
-		<s:submit value="Registar Votante" id="botao"/>
+		<s:submit value="Adicionar Lista" id="botao"/>
 	</s:form>
 </s:if>
 
