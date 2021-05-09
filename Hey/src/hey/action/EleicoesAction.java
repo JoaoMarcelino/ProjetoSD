@@ -4,14 +4,12 @@
 package hey.action;
 
 import com.company.Departamento;
-import com.company.Pessoa;
+import com.company.Eleicao;
 import com.company.Profissao;
 import com.opensymphony.xwork2.ActionSupport;
 import hey.model.HeyBean;
 import org.apache.struts2.interceptor.SessionAware;
 
-import javax.naming.InitialContext;
-import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -19,237 +17,223 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EleicoesAction extends ActionSupport implements SessionAware {
-	private static final long serialVersionUID = 4L;
-	private Map<String, Object> session;
-	private String titulo;
-	private String descricao;
-	private GregorianCalendar dataInicio;
-	private GregorianCalendar dataFim;
+    private static final long serialVersionUID = 4L;
+    private Map<String, Object> session;
+    private String titulo;
+    private String descricao;
+    private GregorianCalendar dataInicio;
+    private GregorianCalendar dataFim;
 
-	private String tituloNovo;
-	private String descricaoNova;
-	private GregorianCalendar dataInicioNova;
-	private GregorianCalendar dataFimNova;
+    private String tituloNovo;
+    private String descricaoNova;
+    private GregorianCalendar dataInicioNova;
+    private GregorianCalendar dataFimNova;
 
-	private String nome;
-	private String departamento;
-	private List<String> profs;
-	private String yourProf="";
+    private String nome;
+    private String departamento;
+    private List<String> profs;
+    private String yourProf = "";
 
-	public String post(){
-		ArrayList<Profissao> profissoes=getYourProf();
-		CopyOnWriteArrayList<Departamento> departamentosPermitidos = new CopyOnWriteArrayList<Departamento>(Arrays.asList(Departamento.values()));
+    public String post() {
+        ArrayList<Profissao> profissoes = getYourProf();
+        CopyOnWriteArrayList<Departamento> departamentosPermitidos = new CopyOnWriteArrayList<Departamento>(Arrays.asList(Departamento.values()));
 
-		try{
-			if(titulo!=null && descricao!=null && profissoes!=null && dataInicio!=null && dataFim!=null){
-				String status = getHeyBean().servidor.addEleicao(titulo,descricao,dataInicio,dataFim,new CopyOnWriteArrayList<>(profissoes),departamentosPermitidos);
-				getHeyBean().setMessage(status);
-			}
-			else{
-				getHeyBean().setMessage("Falta informacao para a criacao da eleicao.");
-			}
-		}catch (RemoteException e){
-			getHeyBean().setMessage("Erro RMI no registo da pessoa.");
-		}catch (IllegalArgumentException e){
-			getHeyBean().setMessage("Falta informacao para a criacao da eleicao.");
-		}
-		return SUCCESS;
-	}
+        if (titulo != null && descricao != null && profissoes != null && dataInicio != null && dataFim != null) {
+            String status = getHeyBean().addEleicao(titulo, descricao, dataInicio, dataFim, new CopyOnWriteArrayList<>(profissoes), departamentosPermitidos);
+            getHeyBean().setMessage(status);
+        }
+        else {
+            getHeyBean().setMessage("Falta informacao para a criacao da eleicao.");
+        }
+        return SUCCESS;
+    }
 
-	public String put(){
-		try{
-			if(titulo!=null && tituloNovo!=null && descricaoNova!=null  && dataInicioNova!=null && dataFimNova!=null){
-				String status = getHeyBean().servidor.editEleicao(titulo,tituloNovo,descricaoNova,dataInicioNova,dataFimNova);
-				getHeyBean().setMessage(status);
-			}
-			else{
-				getHeyBean().setMessage("Falta informacao para a edição da eleicao.");
-			}
-		}catch (RemoteException e){
-			getHeyBean().setMessage("Erro RMI na edição da eleicao.");
-		}
-		return SUCCESS;
-	}
+    public String put() {
+        if (titulo != null && tituloNovo != null && descricaoNova != null && dataInicioNova != null && dataFimNova != null) {
+            String status = getHeyBean().editEleicao(titulo, tituloNovo, descricaoNova, dataInicioNova, dataFimNova);
+            getHeyBean().setMessage(status);
+        }
+        else {
+            getHeyBean().setMessage("Falta informacao para a edição da eleicao.");
+        }
+        return SUCCESS;
+    }
 
-	public String addMesa(){
-		try{
-			if(titulo!=null && nome!=null){
-				String status = getHeyBean().servidor.addMesaEleicao(nome,titulo);
-				getHeyBean().setMessage(status);
-			}
-			else{
-				getHeyBean().setMessage("Falta informacao para a associação da mesa à eleicao.");
-			}
-		}catch (RemoteException e){
-			getHeyBean().setMessage("Erro RMI na asscociação da mesa.");
-		}
-		return SUCCESS;
-	}
+    public ArrayList<Eleicao> getListEleicoes(){
+        return new ArrayList<>(getHeyBean().listEleicoes());
+    }
 
-	public String removeMesa(){
-		try{
-			if(titulo!=null && departamento!=null){
-				String status = getHeyBean().servidor.removeMesaEleicao(departamento,titulo);
-				getHeyBean().setMessage(status);
-			}
-			else{
-				getHeyBean().setMessage("Falta informacao para a desassociação da mesa à eleicao.");
-			}
-		}catch (RemoteException e){
-			getHeyBean().setMessage("Erro RMI na desasscociação da mesa.");
-		}
-		return SUCCESS;
-	}
+    public String addMesa() {
+        if (titulo != null && nome != null) {
+            String status = getHeyBean().addMesaEleicao(nome, titulo);
+            getHeyBean().setMessage(status);
+        }
+        else {
+            getHeyBean().setMessage("Falta informacao para a associação da mesa à eleicao.");
+        }
+        return SUCCESS;
+    }
 
-	public String get(){
-		return SUCCESS;
-	}
+    public String removeMesa() {
+        if (titulo != null && departamento != null) {
+            String status = getHeyBean().removeMesaEleicao(departamento, titulo);
+            getHeyBean().setMessage(status);
+        }
+        else {
+            getHeyBean().setMessage("Falta informacao para a disossiação da mesa à eleicao.");
+        }
+        return SUCCESS;
+    }
 
-	public String getTitulo() {
-		return titulo;
-	}
+    public String get() {
+        return SUCCESS;
+    }
 
-	public void setTitulo(String titulo) {
-		this.titulo = titulo;
-	}
+    public String getTitulo() {
+        return titulo;
+    }
 
-	public String getDescricao() {
-		return descricao;
-	}
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
 
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
+    public String getDescricao() {
+        return descricao;
+    }
 
-	public GregorianCalendar getDataInicio() {
-		return dataInicio;
-	}
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
-	public void setDataInicio(String dataInicio)throws ParseException {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-		Date date = df.parse(dataInicio);
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime(date);
-		this.dataInicio = cal;
-	}
+    public GregorianCalendar getDataInicio() {
+        return dataInicio;
+    }
 
-	public GregorianCalendar getDataFim() {
-		return dataFim;
-	}
+    public void setDataInicio(String dataInicio) throws ParseException {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        Date date = df.parse(dataInicio);
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        this.dataInicio = cal;
+    }
 
-	public void setDataFim(String dataFim)throws ParseException{
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-		Date date = df.parse(dataFim);
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime(date);
-		this.dataFim = cal;
-	}
+    public GregorianCalendar getDataFim() {
+        return dataFim;
+    }
 
-	public ArrayList<Profissao> getYourProf() {
-		ArrayList<Profissao> aux=new ArrayList<>();
-		switch (this.yourProf){
-			case "Estudante":
-				aux.add(Profissao.Estudante);
-				break;
-			case "Docente":
-				aux.add(Profissao.Docente);
-				break;
-			case "Funcionario":
-				aux.add(Profissao.Funcionario);
-				break;
-			case "Geral":
-				aux.add(Profissao.Estudante);
-				aux.add(Profissao.Docente);
-				aux.add(Profissao.Funcionario);
-				break;
-		}
-		if(aux.isEmpty())
-			return null;
-		else
-			return	aux;
-	}
+    public void setDataFim(String dataFim) throws ParseException {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        Date date = df.parse(dataFim);
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        this.dataFim = cal;
+    }
 
-	public void setYourProf(String yourProf) {
-		this.yourProf = yourProf;
-	}
+    public ArrayList<Profissao> getYourProf() {
+        ArrayList<Profissao> aux = new ArrayList<>();
+        switch (this.yourProf) {
+            case "Estudante":
+                aux.add(Profissao.Estudante);
+                break;
+            case "Docente":
+                aux.add(Profissao.Docente);
+                break;
+            case "Funcionario":
+                aux.add(Profissao.Funcionario);
+                break;
+            case "Geral":
+                aux.add(Profissao.Estudante);
+                aux.add(Profissao.Docente);
+                aux.add(Profissao.Funcionario);
+                break;
+        }
+        if (aux.isEmpty())
+            return null;
+        else
+            return aux;
+    }
 
-	public List<String> getProfs() {
-		List<String> aux=new ArrayList<>();
-		for(Profissao prof: Profissao.values()){
-			aux.add(prof.name());
-		}
-		aux.add("Geral");
-		return aux;
-	}
+    public void setYourProf(String yourProf) {
+        this.yourProf = yourProf;
+    }
 
-	public String getTituloNovo() {
-		return tituloNovo;
-	}
+    public List<String> getProfs() {
+        List<String> aux = new ArrayList<>();
+        for (Profissao prof : Profissao.values()) {
+            aux.add(prof.name());
+        }
+        aux.add("Geral");
+        return aux;
+    }
 
-	public void setTituloNovo(String tituloNovo) {
-		this.tituloNovo = tituloNovo;
-	}
+    public String getTituloNovo() {
+        return tituloNovo;
+    }
 
-	public String getDescricaoNova() {
-		return descricaoNova;
-	}
+    public void setTituloNovo(String tituloNovo) {
+        this.tituloNovo = tituloNovo;
+    }
 
-	public void setDescricaoNova(String descricaoNova) {
-		this.descricaoNova = descricaoNova;
-	}
+    public String getDescricaoNova() {
+        return descricaoNova;
+    }
 
-	public GregorianCalendar getDataInicioNova() {
-		return dataInicioNova;
-	}
+    public void setDescricaoNova(String descricaoNova) {
+        this.descricaoNova = descricaoNova;
+    }
 
-	public void setDataInicioNova(String dataInicioNova)throws ParseException {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-		Date date = df.parse(dataInicioNova);
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime(date);
-		this.dataInicioNova = cal;
-	}
+    public GregorianCalendar getDataInicioNova() {
+        return dataInicioNova;
+    }
 
-	public GregorianCalendar getDataFimNova() {
-		return dataFimNova;
-	}
+    public void setDataInicioNova(String dataInicioNova) throws ParseException {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        Date date = df.parse(dataInicioNova);
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        this.dataInicioNova = cal;
+    }
 
-	public void setDataFimNova(String dataFimNova)throws ParseException {
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-		Date date = df.parse(dataFimNova);
-		GregorianCalendar cal = new GregorianCalendar();
-		cal.setTime(date);
-		this.dataFimNova = cal;
-	}
+    public GregorianCalendar getDataFimNova() {
+        return dataFimNova;
+    }
 
-	public String getNome() {
-		return nome;
-	}
+    public void setDataFimNova(String dataFimNova) throws ParseException {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        Date date = df.parse(dataFimNova);
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        this.dataFimNova = cal;
+    }
 
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
+    public String getNome() {
+        return nome;
+    }
 
-	public String getDepartamento() {
-		return departamento;
-	}
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-	public void setDepartamento(String departamento) {
-		this.departamento = departamento;
-	}
+    public String getDepartamento() {
+        return departamento;
+    }
 
-	public HeyBean getHeyBean() {
-		if(!session.containsKey("heyBean"))
-			this.setHeyBean(new HeyBean());
-		return (HeyBean) session.get("heyBean");
-	}
+    public void setDepartamento(String departamento) {
+        this.departamento = departamento;
+    }
 
-	public void setHeyBean(HeyBean heyBean) {
-		this.session.put("heyBean", heyBean);
-	}
+    public HeyBean getHeyBean() {
+        if (!session.containsKey("heyBean"))
+            this.setHeyBean(new HeyBean());
+        return (HeyBean) session.get("heyBean");
+    }
 
-	@Override
-	public void setSession(Map<String, Object> session) {
-		this.session = session;
-	}
+    public void setHeyBean(HeyBean heyBean) {
+        this.session.put("heyBean", heyBean);
+    }
+
+    @Override
+    public void setSession(Map<String, Object> session) {
+        this.session = session;
+    }
 }

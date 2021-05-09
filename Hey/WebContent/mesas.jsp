@@ -9,24 +9,24 @@
 <title>Hey!</title>
 </head>
 <body>
-	<s:url action="listPessoas.action" var="urlTag">
+	<s:url action="listPessoas" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Votantes</s:a>
 
-	<s:url action="listEleicoes.action" var="urlTag">
+	<s:url action="listEleicoes" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Eleições</s:a>
 
-	<s:url action="listMesas.action" var="urlTag">
+	<s:url action="listMesas" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Mesas de Voto</s:a>
 
-	<s:url action="votePage.action" var="urlTag">
+	<s:url action="votePage" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Votar</s:a>
 
 	<h1>Mesas de Voto</h1>
-	<s:iterator value="heyBean.allMesas">
+	<s:iterator value="listMesas">
 		<b><s:label value="Departamento:"/></b>
 		<s:property value="departamento" /><br>
 		<b><s:label value="IP Multicast:"/></b>
@@ -45,7 +45,7 @@
 		<s:iterator value="membros">
 			<s:property value="nome" />
 		</s:iterator>
-		<s:form action="deleteMesas" method="delete">
+		<s:form action="deleteMesas">
 			<s:hidden name="yourDep" value="%{departamento}" />
 			<s:submit  value="Remover"/>
 		</s:form>
@@ -61,7 +61,7 @@
 		<br>
 	</s:if>
 
-	<s:form action="addMesas" method="post">
+	<s:form action="addMesas" >
 		<s:label value="Departamento:" />
 		<s:select label="Departamento:" list="deps" name="yourDep"/><br>
 		<s:label value="IP:" />
@@ -78,7 +78,7 @@
 	</s:form>
 
 	<h2>Editar Mesa</h2>
-	<s:form action="editMesas" method="put">
+	<s:form action="editMesas">
 		<s:label value="Departamento:" />
 		<s:select label="Departamento:" list="deps" name="yourDep"/><br>
 		<s:label value="Novo Membro #1:" />

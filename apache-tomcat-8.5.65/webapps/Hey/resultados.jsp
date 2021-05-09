@@ -9,19 +9,19 @@
 <title>Hey!</title>
 </head>
 <body>
-	<s:url action="listPessoas.action" var="urlTag">
+	<s:url action="listPessoas" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Votantes</s:a>
 
-	<s:url action="listEleicoes.action" var="urlTag">
+	<s:url action="listEleicoes" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Eleições</s:a>
 
-	<s:url action="listMesas.action" var="urlTag">
+	<s:url action="listMesas" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Mesas de Voto</s:a>
 
-	<s:url action="votePage.action" var="urlTag">
+	<s:url action="votePage" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Votar</s:a>
 
@@ -70,7 +70,7 @@
 	</s:if>
 
 	<h2>Consultar Voto Indivídual</h2>
-	<s:form action="getVoto" method="getVoto">
+	<s:form action="getVoto" >
 		<s:hidden name="titulo" value="%{titulo}" />
 		<s:textfield placeholder="Número Cartão CC" name="numeroCC"/>
 		<s:submit  value="Consultar Voto"/>

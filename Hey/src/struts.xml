@@ -4,110 +4,111 @@
 and should reside on the classpath of the webapp (generally /WEB-INF/classes). -->
 
 <!DOCTYPE struts PUBLIC
-    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
-    "http://struts.apache.org/dtds/struts-2.0.dtd">
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
 
 <struts>
 
-  <!-- devMode equals debug information and reload everything for every request -->
-  <constant name="struts.devMode" value="true" />
-  <constant name="struts.ui.theme" value="simple" />
+    <!-- devMode equals debug information and reload everything for every request -->
+    <constant name="struts.devMode" value="true"/>
+    <constant name="struts.ui.theme" value="simple"/>
+    <constant name="struts.action.excludePattern" value="/ws"/>
 
-  <package name="hey" extends="struts-default">
-	
-	<default-action-ref name="index" />
-	
-	<global-results>
-		<result name="error">/error.jsp</result>
-	</global-results>
+    <package name="hey" extends="struts-default">
 
-	<!-- all exceptions not caught by the application will lead to error.jsp -->
-	<global-exception-mappings>
-		<exception-mapping exception="java.lang.Exception" result="error" />
-	</global-exception-mappings>
+        <default-action-ref name="index"/>
 
-	<!-- 'index' action leads to the view provided by index.jsp -->
-    <action name="index">
-      <result>/index.jsp</result>
-    </action>
+        <global-results>
+            <result name="error">/error.jsp</result>
+        </global-results>
 
-	<!-- 'login' action calls 'execute' in 'LoginAction' -->
-    <action name="login" class="hey.action.PessoasAction" method="login">
-      <result name="success">/pessoas.jsp</result>
-      <result name="login">/index.jsp</result>
-    </action>
+        <!-- all exceptions not caught by the application will lead to error.jsp -->
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="error"/>
+        </global-exception-mappings>
 
-      <action name="addPessoas" class="hey.action.PessoasAction" method="post">
-          <result name="success">/pessoas.jsp</result>
-      </action>
+        <!-- 'index' action leads to the view provided by index.jsp -->
+        <action name="index">
+            <result>/index.jsp</result>
+        </action>
 
-      <action name="listPessoas" class="hey.action.PessoasAction" method="get">
-          <result name="success">/pessoas.jsp</result>
-      </action>
+        <!-- 'login' action calls 'execute' in 'LoginAction' -->
+        <action name="login" class="hey.action.PessoasAction" method="login">
+            <result name="success">/pessoas.jsp</result>
+            <result name="login">/index.jsp</result>
+        </action>
 
-      <action name="addEleicoes" class="hey.action.EleicoesAction" method="post">
-          <result name="success">/eleicoes.jsp</result>
-      </action>
+        <action name="addPessoas" class="hey.action.PessoasAction" method="post">
+            <result name="success">/pessoas.jsp</result>
+        </action>
 
-      <action name="listEleicoes" class="hey.action.EleicoesAction" method="get">
-          <result name="success">/eleicoes.jsp</result>
-      </action>
+        <action name="listPessoas" class="hey.action.PessoasAction" method="get">
+            <result name="success">/pessoas.jsp</result>
+        </action>
 
-      <action name="editEleicoes" class="hey.action.EleicoesAction" method="put">
-          <result name="success">/eleicoes.jsp</result>
-      </action>
+        <action name="addEleicoes" class="hey.action.EleicoesAction" method="post">
+            <result name="success">/eleicoes.jsp</result>
+        </action>
 
-      <action name="addMesaEleicoes" class="hey.action.EleicoesAction" method="addMesa">
-          <result name="success">/eleicoes.jsp</result>
-      </action>
+        <action name="listEleicoes" class="hey.action.EleicoesAction" method="get">
+            <result name="success">/eleicoes.jsp</result>
+        </action>
 
-      <action name="removeMesaEleicoes" class="hey.action.EleicoesAction" method="removeMesa">
-          <result name="success">/eleicoes.jsp</result>
-      </action>
+        <action name="editEleicoes" class="hey.action.EleicoesAction" method="put">
+            <result name="success">/eleicoes.jsp</result>
+        </action>
 
-      <action name="listResultados" class="hey.action.ResultadosAction" method="get">
-          <result name="success">/resultados.jsp</result>
-      </action>
+        <action name="addMesaEleicoes" class="hey.action.EleicoesAction" method="addMesa">
+            <result name="success">/eleicoes.jsp</result>
+        </action>
 
-      <action name="getVoto" class="hey.action.ResultadosAction" method="getVoto">
-          <result name="success">/resultados.jsp</result>
-      </action>
+        <action name="removeMesaEleicoes" class="hey.action.EleicoesAction" method="removeMesa">
+            <result name="success">/eleicoes.jsp</result>
+        </action>
 
-      <action name="listMesas" class="hey.action.MesasAction" method="get">
-          <result name="success">/mesas.jsp</result>
-      </action>
+        <action name="listResultados" class="hey.action.ResultadosAction" method="get">
+            <result name="success">/resultados.jsp</result>
+        </action>
 
-      <action name="addMesas" class="hey.action.MesasAction" method="post">
-          <result name="success">/mesas.jsp</result>
-      </action>
+        <action name="getVoto" class="hey.action.ResultadosAction" method="getVoto">
+            <result name="success">/resultados.jsp</result>
+        </action>
 
-      <action name="deleteMesas" class="hey.action.MesasAction" method="delete">
-          <result name="success">/mesas.jsp</result>
-      </action>
+        <action name="listMesas" class="hey.action.MesasAction" method="get">
+            <result name="success">/mesas.jsp</result>
+        </action>
 
-      <action name="editMesas" class="hey.action.MesasAction" method="put">
-          <result name="success">/mesas.jsp</result>
-      </action>
+        <action name="addMesas" class="hey.action.MesasAction" method="post">
+            <result name="success">/mesas.jsp</result>
+        </action>
 
-      <action name="listListas" class="hey.action.ListasAction" method="get">
-          <result name="success">/listas.jsp</result>
-      </action>
+        <action name="deleteMesas" class="hey.action.MesasAction" method="delete">
+            <result name="success">/mesas.jsp</result>
+        </action>
 
-      <action name="addListas" class="hey.action.ListasAction" method="post">
-          <result name="success">/listas.jsp</result>
-      </action>
+        <action name="editMesas" class="hey.action.MesasAction" method="put">
+            <result name="success">/mesas.jsp</result>
+        </action>
 
-      <action name="deleteListas" class="hey.action.ListasAction" method="delete">
-          <result name="success">/listas.jsp</result>
-      </action>
+        <action name="listListas" class="hey.action.ListasAction" method="get">
+            <result name="success">/listas.jsp</result>
+        </action>
 
-      <action name="votePage" class="hey.action.VotarAction" method="view">
-          <result name="success">/votar.jsp</result>
-      </action>
+        <action name="addListas" class="hey.action.ListasAction" method="post">
+            <result name="success">/listas.jsp</result>
+        </action>
 
-      <action name="votoAntecipado" class="hey.action.VotarAction" method="votarAntecipado">
-          <result name="success">/votar.jsp</result>
-      </action>
-  </package>
+        <action name="deleteListas" class="hey.action.ListasAction" method="delete">
+            <result name="success">/listas.jsp</result>
+        </action>
+
+        <action name="votePage" class="hey.action.VotarAction" method="view">
+            <result name="success">/votar.jsp</result>
+        </action>
+
+        <action name="votoAntecipado" class="hey.action.VotarAction" method="votarAntecipado">
+            <result name="success">/votar.jsp</result>
+        </action>
+    </package>
 
 </struts>

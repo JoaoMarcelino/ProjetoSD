@@ -10,19 +10,19 @@
 </head>
 <body>
 <s:if test="heyBean.username=='Admin'">
-	<s:url action="listPessoas.action" var="urlTag">
+	<s:url action="listPessoas" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Votantes</s:a>
 
-	<s:url action="listEleicoes.action" var="urlTag">
+	<s:url action="listEleicoes" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Eleições</s:a>
 
-	<s:url action="listMesas.action" var="urlTag">
+	<s:url action="listMesas" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Mesas de Voto</s:a>
 
-	<s:url action="votePage.action" var="urlTag">
+	<s:url action="votePage" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Votar</s:a>
 
@@ -37,7 +37,7 @@
 		<s:iterator value="listaPessoas">
 			<s:property value="nome"/>
 		</s:iterator>
-		<s:form action="deleteListas" method="delete">
+		<s:form action="deleteListas" >
 			<s:hidden name="nome" value="%{nome}" />
 			<s:hidden name="titulo" value="%{titulo}" />
 			<s:submit  value="Remover"/>
@@ -54,7 +54,7 @@
 		<br>
 	</s:if>
 
-	<s:form action="addListas" method="post" id="form">
+	<s:form action="addListas" id="form">
 		<s:hidden name="titulo" /><br>
 		<s:label value="Nome:" />
 		<s:textfield name="nome" /><br>
@@ -64,7 +64,7 @@
 		<s:textfield id="numero" /><br>
 		<s:label value="Membro #1:" />
 		<s:textfield placeholder="membros#1" name="membros[0]" id="membros[0]" /><br>
-		<s:submit value="Registar Votante" id="botao"/>
+		<s:submit value="Adicionar Lista" id="botao"/>
 	</s:form>
 </s:if>
 
