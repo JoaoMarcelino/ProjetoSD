@@ -40,6 +40,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 			if (loginNumberCC.equals("admin") && loginPassword.equals("admin")) {
 				logout();
 				getHeyBean().setUsername("Admin");
+				return SUCCESS;
 			}
 			else{
 				logout();

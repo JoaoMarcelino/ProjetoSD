@@ -22,12 +22,39 @@ public class VotarAction extends ActionSupport implements SessionAware {
     private String myChoice;
     private List<String> choices;
 
+    private String myElection;
+    private List<String> eleicoes;
+
+    public String getMyElection() {
+        return myElection;
+    }
+
+    public void setMyElection(String myElection) {
+        this.myElection = myElection;
+    }
+
+    public List<String> getEleicoes() {
+
+        List<String>  aux = new ArrayList<>();
+
+
+        ArrayList<Eleicao> eleicoes = getEleicoesDisponiveis();
+        if(eleicoes != null) {
+            for (Eleicao eleicao : eleicoes) {
+                aux.add(eleicao.getTitulo());
+            }
+        }
+        aux.add("teste");
+        return aux;
+    }
+
+
     public String view() {
         return SUCCESS;
     }
 
     public String votarAntecipado() {
-        String status = getHeyBean().votarAntecipado(numero, pass, titulo, getMyChoice());
+        String status = getHeyBean().votarAntecipado(numero, pass, getMyElection(), getMyChoice());
         getHeyBean().setMessage(status);
         return SUCCESS;
     }

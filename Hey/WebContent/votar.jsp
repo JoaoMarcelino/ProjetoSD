@@ -74,7 +74,7 @@
     <s:label value="Password:"/>
     <s:password name="pass"/><br>
     <s:label value="Nome da Eleicao:"/>
-    <s:textfield name="titulo"/><br>
+    <s:select list="eleicoes" name="myElection" /><br>
     <s:label value="Tipo de Voto:"/>
     <s:select list="choices" name="myChoice"/><br>
     <s:label value="Lista:"/>

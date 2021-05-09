@@ -25,8 +25,9 @@ public class HeyBean {
 
 
     public HeyBean() {
-        RMIHostIP = "192.168.1.69";
-        RMIHostPort = 4000;
+        //RMIHostIP = "192.168.1.69";
+        RMIHostIP = "127.0.0.1";
+        RMIHostPort = 8000;
         totalTries = 3;
         try {
             Registry r = LocateRegistry.getRegistry(RMIHostIP, RMIHostPort);
