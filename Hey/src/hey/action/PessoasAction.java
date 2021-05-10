@@ -27,6 +27,8 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 	private String numberCC;
 	private GregorianCalendar expireCCDate;
 
+	private boolean admin;
+
 	private String loginNumberCC;
 	private String loginPassword;
 
@@ -60,18 +62,22 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 	public String post(){
 		Profissao profissao=getYourProf();
 		Departamento departamento=getYourDep();
-		try{
-			if(nome!=null && password!=null && numberCC!=null && expireCCDate!=null && profissao!=null && departamento!=null){
-				String status = getHeyBean().servidor.addPessoa(nome,password,departamento,telefone,morada,numberCC,expireCCDate,profissao);
-				getHeyBean().setMessage(status);
-			}
-			else{
-				getHeyBean().setMessage("Falta informacao para o registo do votante.");
-			}
-		}catch (RemoteException e){
-			getHeyBean().setMessage("Erro RMI no registo do votante.");
+		if(nome!=null && password!=null && numberCC!=null && expireCCDate!=null && profissao!=null && departamento!=null){
+			String status = getHeyBean().addPessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao, admin);
+			getHeyBean().setMessage(status);
 		}
+		else{
+			getHeyBean().setMessage("Falta informacao para o registo do votante.");
+		}
+
 		return SUCCESS;
+	}
+
+	public ArrayList<Pessoa> getListPessoas(){
+		ArrayList<Pessoa> aux = getHeyBean().listPessoas();
+		if(aux==null)
+			getHeyBean().setMessage("Erro RMI na listagem de listas ou eleição não existe.");
+		return aux;
 	}
 
 	public String get(){
@@ -195,6 +201,11 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 	public void setLoginPassword(String loginPassword) {
 		this.loginPassword = loginPassword;
 	}
+
+	public boolean isAdmin() { return admin; }
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin; }
 
 	public HeyBean getHeyBean() {
 		if(!session.containsKey("heyBean"))

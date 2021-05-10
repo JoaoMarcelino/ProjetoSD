@@ -110,6 +110,20 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
     }
 
+    public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada,
+                            String numberCC, GregorianCalendar expireCCDate, Profissao profissao, boolean isAdmin) throws RemoteException {
+        if (getPessoaByCC(numberCC) == null) {
+            Pessoa pessoa = new Pessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate,
+                    profissao, isAdmin);
+            this.pessoas.add(pessoa);
+            save("pessoas");
+            return nome + "(" + numberCC + ") adicionado.";
+        } else {
+            return nome + "(" + numberCC + ") jA existe.";
+        }
+
+    }
+
     public String addEleicao(String titulo, String descricao, GregorianCalendar dataInicio, GregorianCalendar dataFim,
                              CopyOnWriteArrayList<Profissao> profissoes, CopyOnWriteArrayList<Departamento> departamentos) throws RemoteException {
         if (getEleicaoByName(titulo) == null) {

@@ -42,6 +42,9 @@
     <s:property value="morada"/><br>
     <b><s:label value="Telefone:"/></b>
     <s:property value="telefone"/><br>
+    <b><s:label value="isAdmin:"/></b>
+    <s:property value="admin"/><br>
+
     <br>
     <br>
 </s:iterator>
@@ -71,6 +74,8 @@
     <s:textfield name="morada"/><br>
     <s:label value="Telefone:"/>
     <s:textfield name="telefone"/><br>
+    <s:label value="Admin:"/>
+    <s:checkbox name="admin" fieldValue="true"/><br>
     <s:submit value="Registar Votante"/>
 </s:form>
 

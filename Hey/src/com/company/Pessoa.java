@@ -14,8 +14,10 @@ public class Pessoa implements Serializable {
     private GregorianCalendar expireCCDate;
     private Profissao profissao;
 
-    public Pessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, GregorianCalendar expireCCDate, Profissao profissao) {
 
+    private boolean admin;
+
+    public Pessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, GregorianCalendar expireCCDate, Profissao profissao) {
 
         this.nome = nome;
         this.password = password;
@@ -25,6 +27,20 @@ public class Pessoa implements Serializable {
         this.numberCC = numberCC;
         this.expireCCDate = expireCCDate;
         this.profissao = profissao;
+        this.admin = false;
+    }
+
+    public Pessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, GregorianCalendar expireCCDate, Profissao profissao, boolean isAdmin) {
+
+        this.nome = nome;
+        this.password = password;
+        this.departamento = departamento;
+        this.telefone = telefone;
+        this.morada = morada;
+        this.numberCC = numberCC;
+        this.expireCCDate = expireCCDate;
+        this.profissao = profissao;
+        this.admin = isAdmin;
     }
 
     public void setNome(String nome) {
@@ -91,5 +107,13 @@ public class Pessoa implements Serializable {
 
     public Profissao getProfissao() {
         return profissao;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        admin = admin;
     }
 }
