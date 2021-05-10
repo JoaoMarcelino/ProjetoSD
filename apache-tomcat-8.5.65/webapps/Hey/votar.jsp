@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <title>Hey!</title>
+    <title>Votação</title>
 </head>
 <body>
 <s:url action="listPessoas" var="urlTag">
@@ -73,12 +73,9 @@
     <s:textfield name="numero"/><br>
     <s:label value="Password:"/>
     <s:password name="pass"/><br>
-    <s:label value="Nome da Eleicao:"/>
-    <s:textfield name="titulo"/><br>
-    <s:label value="Tipo de Voto:"/>
-    <s:select list="choices" name="myChoice"/><br>
-    <s:label value="Lista:"/>
-    <s:textfield name="nome"/><br>
+    <s:label value="Eleicao e Lista"/><br>
+    <s:doubleselect name="myElection" list="eleicoes"
+                    doubleName="myChoice" doubleList="getChoices(top)" /><br>
     <s:submit value="Votar"/>
 </s:form>
 

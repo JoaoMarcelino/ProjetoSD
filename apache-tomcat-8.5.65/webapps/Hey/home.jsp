@@ -22,6 +22,9 @@
   </s:url>
   <s:a href="%{urlTag}">Mesas de Voto</s:a>
 
+  <s:url action="votePage" var="urlTag">
+  </s:url>
+  <s:a href="%{urlTag}">Votar</s:a>
 
 </s:if>
 <s:else>
