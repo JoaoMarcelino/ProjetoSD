@@ -7,29 +7,30 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d485924-f8b0-4629-85a6-ee5511fa043c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../Hey/ObjectFiles/eleicoes.obj" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Hey/WebContent/notificacoes.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Hey/WebContent/style.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/ObjectFiles/eleicoes.obj" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/ObjectFiles/eleicoes.obj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Hey/ObjectFiles/pessoas.obj" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/ObjectFiles/pessoas.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/eleicoes.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/eleicoes.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/error.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/error.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Hey/WebContent/home.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/home.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/listas.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/listas.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/mesas.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/mesas.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Hey/WebContent/pessoas.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/pessoas.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/votar.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/votar.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/resultados.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/resultados.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/style.css" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../Hey/out/artifacts/Hey/Hey.war" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/artifacts/Hey/Hey.war" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/CustomTask.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/CustomTask.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/Pessoa.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/Pessoa.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/RMIServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/RMIServer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/RMI_S_Interface.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/RMI_S_Interface.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/action/PessoasAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/action/PessoasAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/action/VotarAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/action/VotarAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/model/HeyBean.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/model/HeyBean.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/src/com/company/Pessoa.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/com/company/Pessoa.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/src/com/company/RMIServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/com/company/RMIServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/src/com/company/RMI_S_Interface.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/com/company/RMI_S_Interface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/src/hey/action/PessoasAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/hey/action/PessoasAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/src/hey/action/VotarAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/hey/action/VotarAction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/src/hey/model/HeyBean.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/hey/model/HeyBean.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RMI/src/com/company/Pessoa.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RMI/src/com/company/Pessoa.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RMI/src/com/company/RMIServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RMI/src/com/company/RMIServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../RMI/src/com/company/RMI_S_Interface.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RMI/src/com/company/RMI_S_Interface.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/Hey/WEB-INF/classes/hey/action/PessoasAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/Hey/WEB-INF/classes/hey/action/PessoasAction.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/struts.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/struts.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/src/struts.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/struts.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/WebSocket/WebSocket.war" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/WebSocket/WebSocket.war" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/WebSocket/ws/WebSocketAnnotation.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/WebSocket/ws/WebSocketAnnotation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ws/WebSocketAnnotation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ws/WebSocketAnnotation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/Hey/WEB-INF/classes/struts.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/Hey/WEB-INF/classes/struts.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/Hey/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/Hey/index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/Hey/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/classes/ws/WebSocketAnnotation.class" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/classes/ws/WebSocketAnnotation.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -181,11 +182,22 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1620656945744</updated>
-      <workItem from="1620656947214" duration="2122000" />
+      <workItem from="1620656947214" duration="4301000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

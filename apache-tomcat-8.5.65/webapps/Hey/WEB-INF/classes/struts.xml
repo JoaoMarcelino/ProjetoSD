@@ -32,6 +32,10 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
             <result>/index.jsp</result>
         </action>
 
+        <action name="notificacoes">
+            <result>/notificacoes.jsp</result>
+        </action>
+
         <!-- 'login' action calls 'execute' in 'LoginAction' -->
         <action name="login" class="hey.action.PessoasAction" method="login">
             <result name="success">/home.jsp</result>

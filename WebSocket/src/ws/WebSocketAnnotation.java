@@ -1,8 +1,10 @@
 package ws;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.lang.model.type.ArrayType;
 import javax.websocket.server.ServerEndpoint;
 import javax.websocket.OnOpen;
 import javax.websocket.OnClose;
@@ -15,6 +17,7 @@ public class WebSocketAnnotation {
     private static final AtomicInteger sequence = new AtomicInteger(1);
     private final String username;
     private Session session;
+    private static ArrayList<WebSocketAnnotation> users=new ArrayList<>();
 
     public WebSocketAnnotation() {
         username = "User" + sequence.getAndIncrement();
@@ -23,12 +26,12 @@ public class WebSocketAnnotation {
     @OnOpen
     public void start(Session session) {
         this.session = session;
-        String message = "*" + username + "* connected.";
-        sendMessage(message);
+        users.add(this);
     }
 
     @OnClose
     public void end() {
+        users.remove(this);
     	// clean up once the WebSocket connection is closed
     }
 
@@ -48,11 +51,14 @@ public class WebSocketAnnotation {
     private void sendMessage(String text) {
     	// uses *this* object's session to call sendText()
     	try {
-			this.session.getBasicRemote().sendText(text);
+    	    for(WebSocketAnnotation usr:users){
+    	        usr.session.getBasicRemote().sendText(text);
+            }
 		} catch (IOException e) {
 			// clean up once the WebSocket connection is closed
 			try {
 				this.session.close();
+				users.remove(this);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
