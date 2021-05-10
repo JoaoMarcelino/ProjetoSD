@@ -4,11 +4,15 @@
 package hey.action;
 
 import com.company.Eleicao;
+import com.company.Lista;
+import com.company.Pessoa;
+import com.company.Voto;
 import com.opensymphony.xwork2.ActionSupport;
 import hey.model.HeyBean;
 import org.apache.struts2.interceptor.SessionAware;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -22,12 +26,23 @@ public class VotarAction extends ActionSupport implements SessionAware {
     private String myChoice;
     private List<String> choices;
 
+    private Eleicao myElection;
+    private List<String> eleicoes;
+
+
+
     public String view() {
         return SUCCESS;
     }
 
     public String votarAntecipado() {
-        String status = getHeyBean().votarAntecipado(numero, pass, titulo, getMyChoice());
+        String status = getHeyBean().votarAntecipado(numero, pass, getMyElection(), getMyChoice());
+        getHeyBean().setMessage(status);
+        return SUCCESS;
+    }
+
+    public String votar() {
+        String status =  getHeyBean().votarAntecipado(numero, pass, getMyElection(), getMyChoice());
         getHeyBean().setMessage(status);
         return SUCCESS;
     }
@@ -45,13 +60,45 @@ public class VotarAction extends ActionSupport implements SessionAware {
         this.myChoice = myChoice;
     }
 
-    public List<String> getChoices() {
+    public List<String> getChoices(String titulo) {
         List<String> aux = new ArrayList<>();
-        aux.add("Lista");
+        Eleicao eleicao =  getHeyBean().getEleicaoByTitulo(titulo);
+        if(eleicao != null){
+            List<Lista> listas = eleicao.getListas();
+
+            for(Lista lst : listas){
+                aux.add(lst.getNome());
+            }
+        }
+
         aux.add("Nulo");
         aux.add("Branco");
         return aux;
     }
+
+
+    public String getMyElection() {
+        return myElection.getTitulo();
+    }
+
+    public void setMyElection(Eleicao myElection) {
+        this.myElection = myElection;
+    }
+
+    public List<String> getEleicoes() {
+
+        List<String>  aux = new ArrayList<>();
+
+
+        ArrayList<Eleicao> eleicoes = getEleicoesDisponiveis();
+        if(eleicoes != null) {
+            for (Eleicao eleicao : eleicoes) {
+                aux.add(eleicao.getTitulo());
+            }
+        }
+        return aux;
+    }
+
 
     public ArrayList<Eleicao> getEleicoesDisponiveis() {
         ArrayList<Eleicao> aux = getHeyBean().listEleicoes();

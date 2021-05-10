@@ -25,8 +25,9 @@ public class HeyBean {
 
 
     public HeyBean() {
-        RMIHostIP = "192.168.1.69";
-        RMIHostPort = 4000;
+        //RMIHostIP = "192.168.1.69";
+        RMIHostIP = "127.0.0.1";
+        RMIHostPort = 8000;
         totalTries = 3;
         try {
             Registry r = LocateRegistry.getRegistry(RMIHostIP, RMIHostPort);
@@ -36,10 +37,10 @@ public class HeyBean {
         }
     }
 
-    public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, GregorianCalendar expireCCDate, Profissao profissao) {
+    public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, GregorianCalendar expireCCDate, Profissao profissao, boolean isAdmin) {
         for (int i = 0; i < totalTries; i++) {
             try {
-                String status = servidor.addPessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao);
+                String status = servidor.addPessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao, isAdmin);
                 return status;
             } catch (RemoteException e) {
                 try {
@@ -102,6 +103,23 @@ public class HeyBean {
             }
         }
         return "Servidor RMI indisponivel.";
+    }
+
+    public Eleicao getEleicaoByTitulo(String titulo){
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                Eleicao eleicao = servidor.getEleicaoByName(titulo);
+                return eleicao;
+            } catch (RemoteException e) {
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                }
+                if (i == totalTries - 1)
+                    return null;
+            }
+        }
+        return null;
     }
 
     public String editEleicao(String tituloAntigo, String tituloNovo, String descricaoNova, GregorianCalendar dataInicio, GregorianCalendar dataFim) {
@@ -312,6 +330,25 @@ public class HeyBean {
         for (int i = 0; i < totalTries; i++) {
             try {
                 String status = servidor.addVotoAntecipado(numeroCC, password, nomeEleicao, nomeLista);
+                return status;
+            } catch (RemoteException e) {
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                }
+                if (i == totalTries - 1)
+                    return "Servidor RMI indisponivel.";
+            }
+        }
+        return "Servidor RMI indisponivel.";
+    }
+
+    public String votar(String numeroCC, String password, String nomeEleicao, String nomeLista) {
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                Pessoa pessoa = servidor.getPessoaByCC(numeroCC);
+                Voto voto = new Voto(pessoa, new GregorianCalendar());
+                String status = servidor.adicionarVoto( nomeEleicao, voto, nomeLista,null);
                 return status;
             } catch (RemoteException e) {
                 try {

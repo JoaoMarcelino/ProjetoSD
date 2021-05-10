@@ -7,48 +7,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9d485924-f8b0-4629-85a6-ee5511fa043c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/WebSocket.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/WebSocket_1_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebContent/WEB-INF/web.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/WebSocket.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/META-INF/MANIFEST.MF" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/web.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/chat.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/index.jsp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/index.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Hey/ObjectFiles/eleicoes.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/ObjectFiles/pessoas.obj" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/ObjectFiles/pessoas.obj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/home.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/home.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/pessoas.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/pessoas.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/WebContent/votar.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/WebContent/votar.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Hey/out/artifacts/Hey/Hey.war" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/artifacts/Hey/Hey.war" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/CustomTask.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/CustomTask.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/Pessoa.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/Pessoa.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/RMIServer.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/RMIServer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/RMI_S_Interface.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/com/company/RMI_S_Interface.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/action/PessoasAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/action/PessoasAction.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/action/VotarAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/action/VotarAction.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/model/HeyBean.class" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/out/production/Hey/hey/model/HeyBean.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/src/com/company/Pessoa.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/com/company/Pessoa.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/src/com/company/RMIServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/com/company/RMIServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/src/com/company/RMI_S_Interface.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/com/company/RMI_S_Interface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/src/hey/action/PessoasAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/hey/action/PessoasAction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/src/hey/action/VotarAction.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/hey/action/VotarAction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Hey/src/hey/model/HeyBean.java" beforeDir="false" afterPath="$PROJECT_DIR$/../Hey/src/hey/model/HeyBean.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RMI/src/com/company/Pessoa.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RMI/src/com/company/Pessoa.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RMI/src/com/company/RMIServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RMI/src/com/company/RMIServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../RMI/src/com/company/RMI_S_Interface.java" beforeDir="false" afterPath="$PROJECT_DIR$/../RMI/src/com/company/RMI_S_Interface.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/Hey/WEB-INF/classes/hey/action/PessoasAction.class" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/Hey/WEB-INF/classes/hey/action/PessoasAction.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/classes/example/HelloWorld.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/FastInoset.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/gmbal-api-only.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/ha-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/javax.annotation.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/jaxb-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/jaxb-impl.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/jaxb-xjc.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/jaxws-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/jaxws-rt.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/jaxws-tools.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/jsr181-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/mail.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/management-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/mimepull.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/policy.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/saaj-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/saaj-impl.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/stax-ex.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/stax2-api.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/streambuffer.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/lib/woodstox-core-asl.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/sun-jaxws.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/WEB-INF/web.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../apache-tomcat-8.5.65/webapps/WebSocket/index.jsp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
