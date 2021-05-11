@@ -17,7 +17,7 @@
 
     <s:url action="listEleicoes.action" var="urlTag">
     </s:url>
-    <s:a href="%{urlTag}">Eleições</s:a>
+    <s:a href="%{urlTag}">Eleiï¿½ï¿½es</s:a>
 
     <s:url action="listMesas.action" var="urlTag">
     </s:url>
@@ -30,13 +30,13 @@
 </s:if>
 <s:else>
 
-    <s:url action="vote.action" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votar</s:a>
+  <s:url action="votePage" var="urlTag">
+  </s:url>
+  <s:a href="%{urlTag}">Votar</s:a>
 
-    <s:url action="" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Eleições</s:a>
+  <s:url action="listEleicoes" var="urlTag">
+  </s:url>
+  <s:a href="%{urlTag}">Eleiï¿½ï¿½es</s:a>
 </s:else>
 
 <h1>Home Screen</h1>
@@ -46,7 +46,7 @@
 </s:if>
 
 <a id="icon" href="#" class="notification float">
-    <span>Notificações</span>
+    <span>Notificaï¿½ï¿½es</span>
     <span id="badge" class="badge">0</span>
     <iframe src="notificacoes.jsp" id="iframe" style="display: none;">
     </iframe>

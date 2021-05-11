@@ -9,6 +9,7 @@
     <title>Votação</title>
 </head>
 <body>
+<s:if test="heyBean.username=='Admin'">
 <s:url action="listPessoas" var="urlTag">
 </s:url>
 <s:a href="%{urlTag}">Votantes</s:a>
@@ -69,15 +70,32 @@
 <br>
 
 <s:form action="votoAntecipado">
-    <s:label value="Número CC:"/>
-    <s:textfield name="numero"/><br>
-    <s:label value="Password:"/>
-    <s:password name="pass"/><br>
+
     <s:label value="Eleicao e Lista"/><br>
     <s:doubleselect name="myElection" list="eleicoes"
                     doubleName="myChoice" doubleList="getChoices(top)" /><br>
     <s:submit value="Votar"/>
 </s:form>
+
+</s:if>
+<s:else>
+
+    <s:url action="votePage" var="urlTag">
+    </s:url>
+    <s:a href="%{urlTag}">Votar</s:a>
+
+    <s:url action="listEleicoes" var="urlTag">
+    </s:url>
+    <s:a href="%{urlTag}">Eleições</s:a>
+
+    <s:form action="votar">
+
+        <s:label value="Eleicao e Lista"/><br>
+        <s:doubleselect name="myElection" list="eleicoes"
+                        doubleName="myChoice" doubleList="getChoices(top)" /><br>
+        <s:submit value="Votar"/>
+    </s:form>
+</s:else>
 
 </body>
 </html>
