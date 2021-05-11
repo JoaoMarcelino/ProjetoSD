@@ -13,6 +13,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
     <constant name="struts.devMode" value="true"/>
     <constant name="struts.ui.theme" value="simple"/>
     <constant name="struts.action.excludePattern" value="/ws"/>
+    <constant name="struts.custom.i18n.resources" value="config"/>
 
     <package name="hey" extends="struts-default">
 

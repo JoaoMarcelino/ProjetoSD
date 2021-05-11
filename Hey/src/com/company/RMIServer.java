@@ -1,6 +1,7 @@
 package com.company;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -16,7 +17,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
     public static int RMIHostPort;
     public static int frequency = 1000; // frequencia de pings entre servidores (milisegundos)
     public static int totalTries = 3;// n tentativas ate assumir papel de servidor principal
-
+    private static final String pathToProperties = "src/resources/config.properties";
     public CopyOnWriteArrayList<RMI_C_Interface> consolas = new CopyOnWriteArrayList<RMI_C_Interface>();
     public CopyOnWriteArrayList<Eleicao> eleicoes = new CopyOnWriteArrayList<Eleicao>();
     public CopyOnWriteArrayList<Pessoa> pessoas = new CopyOnWriteArrayList<Pessoa>();
@@ -34,15 +35,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         }
     }
 
-    public static void main(String args[]) {
-        if (args.length != 2) {
-            System.out.println("Bad arguments. Run java RMIServer {RMIHostIP} {RMIHostPort}");
-            System.exit(1);
-        }
-        RMIHostIP = args[0];
-        RMIHostPort = Integer.parseInt(args[1]);
-
-
+    public static void main(String[] args) {
+        loadProperties();
         try {
             Registry r = LocateRegistry.getRegistry(RMIHostIP, RMIHostPort);
             RMI_S_Interface servidorPrincipal = (RMI_S_Interface) r.lookup("ServidorRMI");
@@ -96,6 +90,32 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         }
     }
 
+    public static String printGregorianCalendar(GregorianCalendar data, boolean flagHora) {
+        int minuto = data.get(Calendar.MINUTE);
+        int hora = data.get(Calendar.HOUR_OF_DAY);
+        int dia = data.get(Calendar.DATE);
+        int mes = data.get(Calendar.MONTH) + 1;
+        int ano = data.get(Calendar.YEAR);
+        if (flagHora)
+            return dia + "/" + mes + "/" + ano + " " + hora + ":" + minuto;
+        else
+            return dia + "/" + mes + "/" + ano;
+    }
+
+    public static void loadProperties() {
+        try {
+            InputStream input = new FileInputStream(pathToProperties);
+            Properties prop = new Properties();
+            prop.load(input);
+            RMIHostIP = prop.getProperty("RMIHostIP");
+            RMIHostPort = Integer.parseInt(prop.getProperty("RMIHostPort"));
+        } catch (FileNotFoundException e) {
+            System.out.println("Ficheiro de configurações não encontrado");
+        } catch (IOException e) {
+            System.out.println("Erro na leitura de ficheiro de configurações");
+        }
+    }
+
     public String addPessoa(String nome, String password, Departamento departamento, String telefone, String morada,
                             String numberCC, GregorianCalendar expireCCDate, Profissao profissao) throws RemoteException {
         if (getPessoaByCC(numberCC) == null) {
@@ -104,7 +124,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
             this.pessoas.add(pessoa);
             save("pessoas");
             return nome + "(" + numberCC + ") adicionado.";
-        } else {
+        }
+        else {
             return nome + "(" + numberCC + ") jA existe.";
         }
 
@@ -118,7 +139,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
             this.pessoas.add(pessoa);
             save("pessoas");
             return nome + "(" + numberCC + ") adicionado.";
-        } else {
+        }
+        else {
             return nome + "(" + numberCC + ") jA existe.";
         }
 
@@ -133,7 +155,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
             Timer time = new Timer(); // Instantiate Timer Object
             time.schedule(new CustomTask(this, eleicao), eleicao.getDataFim().getTimeInMillis() - (new GregorianCalendar()).getTimeInMillis());
             return titulo + " adicionada.";
-        } else {
+        }
+        else {
             return titulo + " ja existe.";
         }
     }
@@ -156,7 +179,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
             this.mesas.add(mesa);
             save("mesas");
             return departamento + " adicionada.";
-        } else {
+        }
+        else {
             return departamento + " ou grupo Multicast ja existe.";
         }
     }
@@ -177,7 +201,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         save("mesas");
         return "Mesa removida.";
     }
-
 
     public String addMesaEleicao(String nomeMesa, String nomeEleicao) throws RemoteException {
         MesaVoto mesa = getMesaByDepartamento(nomeMesa);
@@ -252,7 +275,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         return status;
     }
 
-
     public String adicionarVoto(String nomeEleicao, Voto voto, String nomeLista, Departamento dep) throws RemoteException {
         Eleicao ele = getEleicaoByName(nomeEleicao, dep);
 
@@ -266,9 +288,11 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
         if (candidato != null) {
             tipo = "Valido";
-        } else if (nomeLista.equals("Branco")) {
+        }
+        else if (nomeLista.equals("Branco")) {
             tipo = "Branco";
-        } else {
+        }
+        else {
             tipo = "Nulo";
         }
 
@@ -277,7 +301,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         if (hasVoted) {
             save("eleicoes");
             String update = "Alguem votou na Eleicao " + ele.getTitulo() + " a "
-                    + printGregorianCalendar(new GregorianCalendar(),true) + ".";
+                    + printGregorianCalendar(new GregorianCalendar(), true) + ".";
             sendToAll(update);
             return "true | Voto com Sucesso.";
         }
@@ -300,9 +324,11 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         Lista candidato = ele.getListaByName(nomeLista);
         if (candidato != null) {
             tipo = "Valido";
-        } else if (nomeLista.equals("Branco")) {
+        }
+        else if (nomeLista.equals("Branco")) {
             tipo = "Branco";
-        } else {
+        }
+        else {
             tipo = "Nulo";
         }
 
@@ -310,7 +336,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         if (status.equals("Voto realizado com sucesso.")) {
             save("eleicoes");
             String update = p.getNome() + " votou antecipadamente na Eleicao " + ele.getTitulo() + " a "
-                    + printGregorianCalendar(new GregorianCalendar(),true) + ".";
+                    + printGregorianCalendar(new GregorianCalendar(), true) + ".";
             sendToAll(update);
         }
 
@@ -381,12 +407,13 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         if (flag) {
             mesavoto.turnOn();
             String update = "Mesa " + mesavoto.getDepartamento() + " foi aberta a "
-                    + printGregorianCalendar(new GregorianCalendar(),true) + ".";
+                    + printGregorianCalendar(new GregorianCalendar(), true) + ".";
             sendToAll(update);
-        } else {
+        }
+        else {
             mesavoto.turnOff();
             String update = "Mesa " + mesavoto.getDepartamento() + " foi fechada a "
-                    + printGregorianCalendar(new GregorianCalendar(),true) + ".";
+                    + printGregorianCalendar(new GregorianCalendar(), true) + ".";
             sendToAll(update);
         }
 
@@ -444,7 +471,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
     public void ping() throws RemoteException {
     }
-
 
     public void save(String arrayName) {
         File file = new File("./ObjectFiles/" + arrayName + ".obj");
@@ -539,18 +565,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         }
     }
 
-    public static String printGregorianCalendar(GregorianCalendar data, boolean flagHora) {
-        int minuto = data.get(Calendar.MINUTE);
-        int hora = data.get(Calendar.HOUR_OF_DAY);
-        int dia = data.get(Calendar.DATE);
-        int mes = data.get(Calendar.MONTH) + 1;
-        int ano = data.get(Calendar.YEAR);
-        if (flagHora)
-            return dia + "/" + mes + "/" + ano + " " + hora + ":" + minuto;
-        else
-            return dia + "/" + mes + "/" + ano;
-    }
-
     public void subscribe(RMI_C_Interface c) throws RemoteException {
         consolas.add(c);
         save("consolas");
@@ -591,7 +605,8 @@ class CustomTask extends TimerTask {
                 if (ele != null && ele.getDataFim().before(new GregorianCalendar())) {
                     servidor.sendToAll(ele.getTitulo() + " terminou.");
                     break;
-                } else if (ele != null && !ele.getDataFim().before(new GregorianCalendar())) {
+                }
+                else if (ele != null && !ele.getDataFim().before(new GregorianCalendar())) {
                     sleep(ele.getDataFim().getTimeInMillis() - (new GregorianCalendar().getTimeInMillis()));
                 }
             }

@@ -5,18 +5,22 @@ package hey.model;
 
 import com.company.*;
 
+import java.io.*;
+import java.nio.file.Paths;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class HeyBean {
-    private final String RMIHostIP;
-    private final int RMIHostPort;
+    private String pathToProperties="../webapps/Hey/WEB-INF/classes/resources/config.properties";
+    private  String RMIHostIP;
+    private  int RMIHostPort;
     private final int totalTries;
     public RMI_S_Interface servidor;
     private String username;
@@ -25,11 +29,10 @@ public class HeyBean {
 
 
     public HeyBean() {
-        //RMIHostIP = "192.168.1.69";
-        RMIHostIP = "127.0.0.1";
-        RMIHostPort = 8000;
         totalTries = 3;
         try {
+            loadProperties();
+
             Registry r = LocateRegistry.getRegistry(RMIHostIP, RMIHostPort);
             servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
         } catch (NotBoundException | RemoteException e) {
@@ -384,5 +387,19 @@ public class HeyBean {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void loadProperties() {
+        try {
+            InputStream input = new FileInputStream(pathToProperties);
+            Properties prop = new Properties();
+            prop.load(input);
+            RMIHostIP = prop.getProperty("RMIHostIP");
+            RMIHostPort = Integer.parseInt(prop.getProperty("RMIHostPort"));
+        }catch (FileNotFoundException e){
+            System.out.println("Ficheiro de configurações não encontrado");
+        }catch (IOException e){
+            System.out.println("Erro na leitura de ficheiro de configurações");
+        }
     }
 }
