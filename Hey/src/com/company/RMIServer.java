@@ -277,7 +277,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         if (hasVoted) {
             save("eleicoes");
             String update = "Alguem votou na Eleicao " + ele.getTitulo() + " a "
-                    + printGregorianCalendar(new GregorianCalendar()) + ".";
+                    + printGregorianCalendar(new GregorianCalendar(),true) + ".";
             sendToAll(update);
             return "true | Voto com Sucesso.";
         }
@@ -310,7 +310,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         if (status.equals("Voto realizado com sucesso.")) {
             save("eleicoes");
             String update = p.getNome() + " votou antecipadamente na Eleicao " + ele.getTitulo() + " a "
-                    + printGregorianCalendar(new GregorianCalendar()) + ".";
+                    + printGregorianCalendar(new GregorianCalendar(),true) + ".";
             sendToAll(update);
         }
 
@@ -381,12 +381,12 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         if (flag) {
             mesavoto.turnOn();
             String update = "Mesa " + mesavoto.getDepartamento() + " foi aberta a "
-                    + printGregorianCalendar(new GregorianCalendar()) + ".";
+                    + printGregorianCalendar(new GregorianCalendar(),true) + ".";
             sendToAll(update);
         } else {
             mesavoto.turnOff();
             String update = "Mesa " + mesavoto.getDepartamento() + " foi fechada a "
-                    + printGregorianCalendar(new GregorianCalendar()) + ".";
+                    + printGregorianCalendar(new GregorianCalendar(),true) + ".";
             sendToAll(update);
         }
 
@@ -539,13 +539,16 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         }
     }
 
-    public static String printGregorianCalendar(GregorianCalendar data) {
-        int hora = data.get(Calendar.HOUR);
+    public static String printGregorianCalendar(GregorianCalendar data, boolean flagHora) {
+        int minuto = data.get(Calendar.MINUTE);
+        int hora = data.get(Calendar.HOUR_OF_DAY);
         int dia = data.get(Calendar.DATE);
         int mes = data.get(Calendar.MONTH) + 1;
         int ano = data.get(Calendar.YEAR);
-
-        return hora + "h " + dia + " " + mes + " " + ano;
+        if (flagHora)
+            return dia + "/" + mes + "/" + ano + " " + hora + ":" + minuto;
+        else
+            return dia + "/" + mes + "/" + ano;
     }
 
     public void subscribe(RMI_C_Interface c) throws RemoteException {
