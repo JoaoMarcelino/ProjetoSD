@@ -10,6 +10,7 @@
 <title>Hey!</title>
 </head>
 <body>
+<s:if test="heyBean.loggedInAsAdmin==true">
 	<s:url action="listPessoas" var="urlTag">
 	</s:url>
 	<s:a href="%{urlTag}">Votantes</s:a>
@@ -27,6 +28,17 @@
 	<s:a href="%{urlTag}">Votar</s:a>
 
 	<h1>Resultados de <s:property value="titulo"/></h1>
+</s:if>
+<s:else>
+
+	<s:url action="votePage" var="urlTag">
+	</s:url>
+	<s:a href="%{urlTag}">Votar</s:a>
+
+	<s:url action="listEleicoes" var="urlTag">
+	</s:url>
+	<s:a href="%{urlTag}">Eleições</s:a>
+</s:else>
 
 	<s:if test="resultados!=null">
 		<s:label value="Total de Votos:" />

@@ -10,7 +10,7 @@
     <title>Home</title>
 </head>
 <body>
-<s:if test="heyBean.username=='Admin'">
+<s:if test="heyBean.loggedInAsAdmin==true">
     <s:url action="listPessoas.action" var="urlTag">
     </s:url>
     <s:a href="%{urlTag}">Votantes</s:a>
@@ -29,14 +29,13 @@
 
 </s:if>
 <s:else>
+  <s:url action="votePage" var="urlTag">
+  </s:url>
+  <s:a href="%{urlTag}">Votar</s:a>
 
-    <s:url action="vote.action" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votar</s:a>
-
-    <s:url action="" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Eleições</s:a>
+  <s:url action="listEleicoes" var="urlTag">
+  </s:url>
+  <s:a href="%{urlTag}">Eleições</s:a>
 </s:else>
 
 <h1>Home Screen</h1>

@@ -26,7 +26,7 @@ public class VotarAction extends ActionSupport implements SessionAware {
     private String myChoice;
     private List<String> choices;
 
-    private Eleicao myElection;
+    private String myElection;
     private List<String> eleicoes;
 
 
@@ -36,14 +36,14 @@ public class VotarAction extends ActionSupport implements SessionAware {
     }
 
     public String votarAntecipado() {
-        String status = getHeyBean().votarAntecipado(numero, pass, getMyElection(), getMyChoice());
-        getHeyBean().setMessage(status);
+        String status = getHeyBean().votarAntecipado(getHeyBean().getUsername(), getHeyBean().getPassword(), getMyElection(), getMyChoice());
+        addFieldError("votar", status);
         return SUCCESS;
     }
 
     public String votar() {
-        String status =  getHeyBean().votarAntecipado(numero, pass, getMyElection(), getMyChoice());
-        getHeyBean().setMessage(status);
+        String status =  getHeyBean().votar(getHeyBean().getUsername(), getHeyBean().getPassword(), getMyElection(), getMyChoice());
+        addFieldError("votar", status);
         return SUCCESS;
     }
 
@@ -78,22 +78,19 @@ public class VotarAction extends ActionSupport implements SessionAware {
 
 
     public String getMyElection() {
-        return myElection.getTitulo();
+        return myElection;
     }
 
-    public void setMyElection(Eleicao myElection) {
+    public void setMyElection(String myElection) {
         this.myElection = myElection;
     }
 
     public List<String> getEleicoes() {
-
-        List<String>  aux = new ArrayList<>();
-
-
-        ArrayList<Eleicao> eleicoes = getEleicoesDisponiveis();
-        if(eleicoes != null) {
-            for (Eleicao eleicao : eleicoes) {
-                aux.add(eleicao.getTitulo());
+        ArrayList<String> aux=new ArrayList<>();
+        ArrayList<Eleicao> eleicoes = getHeyBean().listEleicoes();
+        for(Eleicao ele:eleicoes){
+            if(ele.checkStart()){
+                aux.add(ele.getTitulo());
             }
         }
         return aux;

@@ -276,7 +276,14 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
     }
 
     public String adicionarVoto(String nomeEleicao, Voto voto, String nomeLista, Departamento dep) throws RemoteException {
-        Eleicao ele = getEleicaoByName(nomeEleicao, dep);
+        Eleicao ele=null;
+        if(dep==null){
+             ele = getEleicaoByName(nomeEleicao);
+        }
+        else{
+             ele = getEleicaoByName(nomeEleicao, dep);
+        }
+
 
         if (ele == null) {
             return "false | Voto nao aceite (getElecao)";

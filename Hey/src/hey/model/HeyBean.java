@@ -25,6 +25,7 @@ public class HeyBean {
     public RMI_S_Interface servidor;
     private String username;
     private String password;
+    private boolean loggedInAsAdmin;
     private String message;
 
 
@@ -365,8 +366,50 @@ public class HeyBean {
         return "Servidor RMI indisponivel.";
     }
 
+    public String login(String numeroCC, String password) {
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                return servidor.login(numeroCC,password);
+            } catch (RemoteException e) {
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                }
+                if (i == totalTries - 1)
+                    return null;
+            }
+        }
+        return null;
+    }
+
+    public Pessoa getPessoaByCC(String numeroCC) {
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                return servidor.getPessoaByCC(numeroCC);
+            } catch (RemoteException e) {
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                }
+                if (i == totalTries - 1)
+                    return null;
+            }
+        }
+        return null;
+    }
+
+    public boolean getLoggedInAsAdmin() {
+        return loggedInAsAdmin;
+    }
+
+    public void setLoggedInAsAdmin(boolean loggedInAsAdmin) {
+        this.loggedInAsAdmin = loggedInAsAdmin;
+    }
+
     public String getMessage() {
-        return this.message;
+        String aux=this.message;
+        this.message="";
+        return aux;
     }
 
     public void setMessage(String message) {

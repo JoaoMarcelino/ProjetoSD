@@ -40,7 +40,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
         <!-- 'login' action calls 'execute' in 'LoginAction' -->
         <action name="login" class="hey.action.PessoasAction" method="login">
             <result name="success">/home.jsp</result>
-            <result name="error">/home.jsp</result>
+            <result name="error">/index.jsp</result>
         </action>
 
         <action name="addPessoas" class="hey.action.PessoasAction" method="post">
@@ -112,6 +112,10 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
         </action>
 
         <action name="votoAntecipado" class="hey.action.VotarAction" method="votarAntecipado">
+            <result name="success">/votar.jsp</result>
+        </action>
+
+        <action name="votar" class="hey.action.VotarAction" method="votar">
             <result name="success">/votar.jsp</result>
         </action>
     </package>
