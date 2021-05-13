@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
-
+import org.json.simple.JSONObject;
 
 public class HeyBean {
     private String pathToProperties="../webapps/Hey/WEB-INF/classes/resources/config.properties";
@@ -369,7 +369,7 @@ public class HeyBean {
     public String login(String numeroCC, String password) {
         for (int i = 0; i < totalTries; i++) {
             try {
-                return servidor.login(numeroCC,password);
+                return servidor.login(numeroCC,password,true);
             } catch (RemoteException e) {
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
@@ -380,6 +380,23 @@ public class HeyBean {
             }
         }
         return null;
+    }
+
+    public void logout(String numeroCC, String password) {
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                servidor.logout(numeroCC,password,true);
+                return;
+            } catch (RemoteException e) {
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                }
+                if (i == totalTries - 1)
+                    return;
+            }
+        }
+        return;
     }
 
     public Pessoa getPessoaByCC(String numeroCC) {

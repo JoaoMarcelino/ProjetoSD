@@ -29,6 +29,10 @@
     </s:url>
     <s:a href="%{urlTag}">Votar</s:a>
 
+    <s:url action="logout" var="urlTag">
+    </s:url>
+    <s:a href="%{urlTag}">Logout</s:a>
+
     <h1>Eleições Registadas</h1>
 
     <s:iterator value="listEleicoes">
@@ -111,6 +115,12 @@
         <s:submit value="Editar Eleicao"/>
     </s:form>
 
+    <a id="icon" href="#" class="notification float">
+        <span>Notificações</span>
+        <span id="badge" class="badge">0</span>
+        <iframe src="notificacoes.jsp" id="iframe" style="display: none;">
+        </iframe>
+    </a>
 </s:if>
 <s:else>
 
@@ -121,6 +131,10 @@
     <s:url action="listEleicoes" var="urlTag">
     </s:url>
     <s:a href="%{urlTag}">Eleições</s:a>
+
+    <s:url action="logout" var="urlTag">
+    </s:url>
+    <s:a href="%{urlTag}">Logout</s:a>
 
     <h1>Eleições Registadas</h1>
     <s:iterator value="listEleicoes">
@@ -149,5 +163,17 @@
     </s:iterator>
 </s:else>
 
+<script type="text/javascript">
+    icon = document.getElementById("icon");
+    icon.addEventListener("click", function () {
+        iframe = document.getElementById("iframe");
+        if (iframe.style.display == "block") {
+            iframe.style.display = "none";
+        } else {
+            document.getElementById("badge").innerText = 0;
+            iframe.style.display = "block";
+        }
+    });
+</script>
 </body>
 </html>

@@ -2,17 +2,13 @@ package ws;
 
 import com.company.RMI_S_Interface;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.lang.model.type.ArrayType;
@@ -24,15 +20,17 @@ import javax.websocket.OnError;
 import javax.websocket.Session;
 
 import com.company.*;
+import org.json.simple.JSONObject;
 
 @ServerEndpoint(value = "/ws")
 public class WebSocketAnnotation extends UnicastRemoteObject implements RMI_C_Interface {
     private static final AtomicInteger sequence = new AtomicInteger(1);
-    private String pathToProperties="../webapps/WebSocket/WEB-INF/classes/resources/config.properties";
     private static RMI_S_Interface servidor;
     private final String username;
-    private  String RMIHostIP;
-    private  int RMIHostPort;
+    private final String pathToProperties = "../webapps/WebSocket/WEB-INF/classes/resources/config.properties";
+    private HashMap<Pessoa, String> usersLoggedIn = new HashMap<>();
+    private String RMIHostIP;
+    private int RMIHostPort;
     private Session session;
 
 
@@ -44,12 +42,51 @@ public class WebSocketAnnotation extends UnicastRemoteObject implements RMI_C_In
             Registry r = LocateRegistry.getRegistry(RMIHostIP, RMIHostPort);
             servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
             servidor.subscribe(this);
-        } catch (RemoteException | NotBoundException e) {}
+        } catch (RemoteException | NotBoundException e) {
+        }
     }
 
     @OnOpen
     public void start(Session session) {
         this.session = session;
+        try {
+            usersLoggedIn = servidor.getUsersLoggedIn();
+            for (Pessoa pessoa : usersLoggedIn.keySet()) {
+                JSONObject data = new JSONObject();
+                data.put("tipo", "utilizador");
+                data.put("nome", pessoa.getNome());
+                data.put("cc", pessoa.getNumberCC());
+                data.put("estado", "login");
+                if (usersLoggedIn.get(pessoa).equals("web")) {
+                    data.put("ligacao", "web");
+                }
+                else {
+                    data.put("ligacao", "multicast");
+                }
+                data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
+                StringWriter out = new StringWriter();
+                try {
+                    data.writeJSONString(out);
+                    String jsonText = out.toString();
+                    sendMessage(jsonText);
+                } catch (Exception ignored) {
+                }
+            }
+        } catch (RemoteException ignored) {
+
+        }
+    }
+
+    public String printGregorianCalendar(GregorianCalendar data, boolean flagHora) {
+        int minuto = data.get(Calendar.MINUTE);
+        int hora = data.get(Calendar.HOUR_OF_DAY);
+        int dia = data.get(Calendar.DATE);
+        int mes = data.get(Calendar.MONTH) + 1;
+        int ano = data.get(Calendar.YEAR);
+        if (flagHora)
+            return dia + "/" + mes + "/" + ano + " " + hora + ":" + minuto;
+        else
+            return dia + "/" + mes + "/" + ano;
     }
 
     @OnClose
@@ -63,8 +100,6 @@ public class WebSocketAnnotation extends UnicastRemoteObject implements RMI_C_In
 
     @OnMessage
     public void receiveMessage(String message) {
-        // one should never trust the client, and sensitive HTML
-        // characters should be replaced with &lt; &gt; &quot; &amp;
         String upperCaseMessage = message.toUpperCase();
         sendMessage("[" + username + "] " + upperCaseMessage);
     }
@@ -96,9 +131,9 @@ public class WebSocketAnnotation extends UnicastRemoteObject implements RMI_C_In
             prop.load(input);
             RMIHostIP = prop.getProperty("RMIHostIP");
             RMIHostPort = Integer.parseInt(prop.getProperty("RMIHostPort"));
-        }catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             System.out.println("Ficheiro de configurações não encontrado");
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Erro na leitura de ficheiro de configurações");
         }
     }

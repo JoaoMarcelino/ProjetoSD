@@ -70,6 +70,11 @@ public class PessoasAction extends ActionSupport implements SessionAware {
         loginPassword = null;
     }
 
+    public String logoutNotify(){
+        getHeyBean().logout(getHeyBean().getUsername(),getHeyBean().getPassword());
+        return SUCCESS;
+    }
+
     public String post() {
         Profissao profissao = getYourProf();
         Departamento departamento = getYourDep();

@@ -375,6 +375,7 @@ class MulticastReader extends Thread {
         for (int i = 0; i < totalTries; i++) {
             try {
                 mensagem = servidor.adicionarVoto(eleicao, voto, escolha, mesa.getDepartamento());
+                servidor.logout(voto.getPessoa().getNumberCC(),voto.getPessoa().getPassword(),false);
                 break;
             } catch (RemoteException e) {
                 try {
@@ -473,7 +474,7 @@ class MulticastReader extends Thread {
         String mensagem = "";
         for (int i = 0; i < totalTries; i++) {
             try {
-                mensagem = servidor.login(numeroCC, password);
+                mensagem = servidor.login(numeroCC, password,false);
                 break;
             } catch (RemoteException e) {
                 try {

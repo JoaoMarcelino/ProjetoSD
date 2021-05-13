@@ -1,5 +1,7 @@
 package com.company;
 
+import org.json.simple.JSONObject;
+
 import java.io.*;
 import java.nio.file.Paths;
 import java.rmi.*;
@@ -13,15 +15,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static java.lang.Thread.sleep;
 
 public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
+    private static final String pathToProperties = "src/resources/config.properties";
     public static String RMIHostIP;
     public static int RMIHostPort;
     public static int frequency = 1000; // frequencia de pings entre servidores (milisegundos)
     public static int totalTries = 3;// n tentativas ate assumir papel de servidor principal
-    private static final String pathToProperties = "src/resources/config.properties";
     public CopyOnWriteArrayList<RMI_C_Interface> consolas = new CopyOnWriteArrayList<RMI_C_Interface>();
     public CopyOnWriteArrayList<Eleicao> eleicoes = new CopyOnWriteArrayList<Eleicao>();
     public CopyOnWriteArrayList<Pessoa> pessoas = new CopyOnWriteArrayList<Pessoa>();
     public CopyOnWriteArrayList<MesaVoto> mesas = new CopyOnWriteArrayList<MesaVoto>();
+    public HashMap<Pessoa, String> loggedInUsers = new HashMap<>();
 
 
     public RMIServer() throws RemoteException {
@@ -276,12 +279,12 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
     }
 
     public String adicionarVoto(String nomeEleicao, Voto voto, String nomeLista, Departamento dep) throws RemoteException {
-        Eleicao ele=null;
-        if(dep==null){
-             ele = getEleicaoByName(nomeEleicao);
+        Eleicao ele = null;
+        if (dep == null) {
+            ele = getEleicaoByName(nomeEleicao);
         }
-        else{
-             ele = getEleicaoByName(nomeEleicao, dep);
+        else {
+            ele = getEleicaoByName(nomeEleicao, dep);
         }
 
 
@@ -307,9 +310,14 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
         if (hasVoted) {
             save("eleicoes");
-            String update = "Alguem votou na Eleicao " + ele.getTitulo() + " a "
-                    + printGregorianCalendar(new GregorianCalendar(), true) + ".";
-            sendToAll(update);
+            JSONObject data = new JSONObject();
+            data.put("tipo", "voto");
+            data.put("nome", voto.getPessoa().getNome());
+            data.put("profissao", voto.getPessoa().getProfissao().name());
+            data.put("eleicao", ele.getTitulo());
+            data.put("mesa", dep.name());
+            data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
+            sendToAll(data);
             return "true | Voto com Sucesso.";
         }
         return "false | Voto nao aceite.";
@@ -342,9 +350,14 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         String status = ele.addVotoAntecipado(v, nomeLista, tipo);
         if (status.equals("Voto realizado com sucesso.")) {
             save("eleicoes");
-            String update = p.getNome() + " votou antecipadamente na Eleicao " + ele.getTitulo() + " a "
-                    + printGregorianCalendar(new GregorianCalendar(), true) + ".";
-            sendToAll(update);
+            JSONObject data = new JSONObject();
+            data.put("tipo", "voto");
+            data.put("nome", p.getNome());
+            data.put("profissao", p.getProfissao().name());
+            data.put("eleicao", ele.getTitulo());
+            data.put("mesa", null);
+            data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
+            sendToAll(data);
         }
 
         return status;
@@ -412,16 +425,21 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         MesaVoto mesavoto = this.getMesaByDepartamento(mesa.getDepartamento().toString());
 
         if (flag) {
-            mesavoto.turnOn();
-            String update = "Mesa " + mesavoto.getDepartamento() + " foi aberta a "
-                    + printGregorianCalendar(new GregorianCalendar(), true) + ".";
-            sendToAll(update);
+            JSONObject data = new JSONObject();
+            data.put("tipo", "mesa");
+            data.put("estado", "ligado");
+            data.put("mesa", mesavoto.getDepartamento().name());
+            data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
+            sendToAll(data);
         }
         else {
             mesavoto.turnOff();
-            String update = "Mesa " + mesavoto.getDepartamento() + " foi fechada a "
-                    + printGregorianCalendar(new GregorianCalendar(), true) + ".";
-            sendToAll(update);
+            JSONObject data = new JSONObject();
+            data.put("tipo", "mesa");
+            data.put("estado", "desligado");
+            data.put("mesa", mesavoto.getDepartamento().name());
+            data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
+            sendToAll(data);
         }
 
     }
@@ -467,13 +485,58 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         return mesas;
     }
 
-    public String login(String cc, String password) throws RemoteException {
+    public String login(String cc, String password, boolean web) throws RemoteException {
 
         for (Pessoa pessoa : pessoas) {
-            if (pessoa.getNumberCC().equals(cc) && pessoa.getPassword().equals(password))
+            if (pessoa.getNumberCC().equals(cc) && pessoa.getPassword().equals(password)) {
+                JSONObject data = new JSONObject();
+                data.put("tipo", "utilizador");
+                data.put("nome", pessoa.getNome());
+                data.put("cc", pessoa.getNumberCC());
+                data.put("estado", "login");
+                if (web) {
+                    data.put("ligacao", "web");
+                    loggedInUsers.put(pessoa, "web");
+                }
+                else {
+                    data.put("ligacao", "multicast");
+                    loggedInUsers.put(pessoa, "multicast");
+                }
+                data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
+                sendToAll(data);
+
                 return "true | Login com Sucesso";
+            }
+
+
         }
         return "false | Login Incorreto";
+    }
+
+    public void logout(String cc, String password, boolean web) throws RemoteException {
+        for (Pessoa pessoa : pessoas) {
+            if (pessoa.getNumberCC().equals(cc) && pessoa.getPassword().equals(password)) {
+                JSONObject data = new JSONObject();
+                data.put("tipo", "utilizador");
+                data.put("nome", pessoa.getNome());
+                data.put("cc", pessoa.getNumberCC());
+                data.put("estado", "logout");
+                if (web) {
+                    data.put("ligacao", "web");
+                    loggedInUsers.remove(pessoa);
+                }
+                else {
+                    data.put("ligacao", "multicast");
+                    loggedInUsers.remove(pessoa);
+                }
+                data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
+                sendToAll(data);
+            }
+        }
+    }
+
+    public HashMap<Pessoa, String> getUsersLoggedIn() throws RemoteException {
+        return loggedInUsers;
     }
 
     public void ping() throws RemoteException {
@@ -582,17 +645,23 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         save("consolas");
     }
 
-    public void sendToAll(String s) {
 
-        for (RMI_C_Interface consola : consolas) {
-            try {
-                consola.printOnClient(s);
-            } catch (RemoteException e) {
-                consolas.remove(consola);
-                save("consolas");
+    public void sendToAll(JSONObject data) {
+        StringWriter out = new StringWriter();
+        try {
+            data.writeJSONString(out);
+            String jsonText = out.toString();
+            for (RMI_C_Interface consola : consolas) {
+                try {
+                    consola.printOnClient(jsonText);
+                } catch (RemoteException e) {
+                    consolas.remove(consola);
+                    save("consolas");
+                }
             }
+        } catch (IOException e) {
+            System.out.println("Erro a processar notificação.");
         }
-
     }
 }
 
@@ -606,11 +675,29 @@ class CustomTask extends TimerTask {
         servidor = serv;
     }
 
+    public static String printGregorianCalendar(GregorianCalendar data, boolean flagHora) {
+        int minuto = data.get(Calendar.MINUTE);
+        int hora = data.get(Calendar.HOUR_OF_DAY);
+        int dia = data.get(Calendar.DATE);
+        int mes = data.get(Calendar.MONTH) + 1;
+        int ano = data.get(Calendar.YEAR);
+        if (flagHora)
+            return dia + "/" + mes + "/" + ano + " " + hora + ":" + minuto;
+        else
+            return dia + "/" + mes + "/" + ano;
+    }
+
     public void run() {
         try {
             while (true) {
-                if (ele != null && ele.getDataFim().before(new GregorianCalendar())) {
-                    servidor.sendToAll(ele.getTitulo() + " terminou.");
+                if (ele != null && ele.getDataFim().compareTo(new GregorianCalendar()) < 60000) {
+                    JSONObject data = new JSONObject();
+                    data.put("tipo", "eleicao");
+                    data.put("nome", ele.getTitulo());
+                    data.put("estado", "terminou");
+                    data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
+
+                    servidor.sendToAll(data);
                     break;
                 }
                 else if (ele != null && !ele.getDataFim().before(new GregorianCalendar())) {

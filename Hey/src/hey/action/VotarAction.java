@@ -30,7 +30,6 @@ public class VotarAction extends ActionSupport implements SessionAware {
     private List<String> eleicoes;
 
 
-
     public String view() {
         return SUCCESS;
     }
@@ -42,7 +41,7 @@ public class VotarAction extends ActionSupport implements SessionAware {
     }
 
     public String votar() {
-        String status =  getHeyBean().votar(getHeyBean().getUsername(), getHeyBean().getPassword(), getMyElection(), getMyChoice());
+        String status = getHeyBean().votar(getHeyBean().getUsername(), getHeyBean().getPassword(), getMyElection(), getMyChoice());
         addFieldError("votar", status);
         return SUCCESS;
     }
@@ -62,11 +61,11 @@ public class VotarAction extends ActionSupport implements SessionAware {
 
     public List<String> getChoices(String titulo) {
         List<String> aux = new ArrayList<>();
-        Eleicao eleicao =  getHeyBean().getEleicaoByTitulo(titulo);
-        if(eleicao != null){
+        Eleicao eleicao = getHeyBean().getEleicaoByTitulo(titulo);
+        if (eleicao != null) {
             List<Lista> listas = eleicao.getListas();
 
-            for(Lista lst : listas){
+            for (Lista lst : listas) {
                 aux.add(lst.getNome());
             }
         }
@@ -86,14 +85,24 @@ public class VotarAction extends ActionSupport implements SessionAware {
     }
 
     public List<String> getEleicoes() {
-        ArrayList<String> aux=new ArrayList<>();
+        ArrayList<String> aux = new ArrayList<>();
         ArrayList<Eleicao> eleicoes = getHeyBean().listEleicoes();
-        for(Eleicao ele:eleicoes){
-            if(ele.checkStart()){
+        for (Eleicao ele : eleicoes) {
+            if (ele.checkStart()) {
                 aux.add(ele.getTitulo());
             }
         }
         return aux;
+    }
+
+    public List<Eleicao> getEleicoesInfo() {
+        ArrayList<Eleicao> eleicoes = getHeyBean().listEleicoes();
+        for (Eleicao ele : eleicoes) {
+            if (!ele.checkStart()) {
+                eleicoes.remove(ele);
+            }
+        }
+        return eleicoes;
     }
 
 

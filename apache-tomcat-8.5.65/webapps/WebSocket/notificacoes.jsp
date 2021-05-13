@@ -46,7 +46,29 @@
     function onMessage(message) { // print the received message
       var icon=window.parent.document.getElementById('badge');
       icon.innerText= (parseInt(icon.innerText)+1).toString();
-      writeToHistory(message.data);
+      var msg = JSON.parse(message.data);
+      switch (msg.tipo){
+          case "mesa":
+              writeToHistory("Mesa " + msg.mesa + " foi " + msg.estado + " a " + msg.data + ".");
+              break;
+          case "eleicao":
+              writeToHistory("Eleicao " + msg.nome + " " + msg.estado + " a " + msg.data + ".");
+              break;
+          case "utilizador":
+              writeToHistory("Utilizador " + msg.nome + " " + msg.estado + " a " + msg.data + ".");
+              if(msg.estado==="login")
+                 writeToLiveUsers(msg.nome,true);
+              else
+                  writeToLiveUsers(msg.nome,false);
+              break;
+          case "voto":
+              writeToHistory("Votante " + msg.nome + " (" + msg.profissao + ") " + " votou na eleicao " + msg.eleicao + " ,na mesa " + msg.mesa + "a" + msg.data + ".");
+              break;
+          default:
+              writeToHistory("Notificacao com forma desconhecida.");
+              break;
+
+      }
     }
 
     function onError(event) {
@@ -64,6 +86,24 @@
         history.scrollTop = history.scrollHeight;
     }
 
+    function writeToLiveUsers(user,status) {
+        var usrs = document.getElementById('users');
+        if(status===true){
+            var line = document.createElement('p');
+            line.style.wordWrap = 'break-word';
+            line.innerHTML = user+"<br>";
+            line.id=user;
+            usrs.appendChild(line);
+            usrs.scrollTop = usrs.scrollHeight;
+        }
+        else {
+            var target = document.getElementById(user);
+            target.remove();
+            usrs.scrollTop = usrs.scrollHeight;
+        }
+
+    }
+
 </script>
 
 <div>
@@ -71,5 +111,14 @@
         <div id="history"></div>
     </div>
 </div>
+
+<b><i>Utilizadoes Ativos</i></b>
+<div>
+    <div id="container1">
+        <div id="users"></div>
+    </div>
+</div>
+
+
 </body>
 </html>

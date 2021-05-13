@@ -27,9 +27,9 @@
     </s:url>
     <s:a href="%{urlTag}">Votar</s:a>
 
-    <h1>Votar Antecipadamente</h1>
+    <h1>Votar</h1>
 
-    <s:iterator value="eleicoes">
+    <s:iterator value="eleicoesInfo">
         <b><s:label value="Título:"/></b>
         <s:property value="titulo"/><br>
         <b><s:label value="Descrição:"/></b>
@@ -40,9 +40,9 @@
         <s:date name="dataFim" format="dd/MM/yy HH:mm"/><br>
         <b><s:label value="Profissões Permititdas:"/></b>
         <s:iterator value="profissoesPermitidas">
-            <s:property/>
+            <s:property/>,
         </s:iterator><br>
-        <b><s:label value="Mesas Associadas:"/></b>
+        <b><s:label value="Mesas Associadas:"/></b><br>
         <s:iterator value="mesas">
             <s:property value="departamento"/>
             <s:property value="ip"/>
@@ -50,25 +50,22 @@
             <s:property value="status"/>
             <br>
         </s:iterator><br>
-        <b><s:label value="Listas:"/></b>
+        <b><s:label value="Listas:"/></b><br>
         <s:iterator value="listas">
             <s:label value="Nome:"/>
             <s:property value="nome"/><br>
             <s:label value="Tipo:"/>
             <s:property value="tipoLista"/><br>
-            <s:label value="Listas:"/>
+            <s:label value="Membros:"/>
             <s:iterator value="listaPessoas">
-                <s:property value="nome"/>
+                <s:property value="nome"/>,
             </s:iterator><br>
         </s:iterator><br>
         <br>
         <br>
     </s:iterator>
-    <br>
-    <br>
 
-    <s:form action="votoAntecipado">
-
+    <s:form action="votar">
         <s:label value="Eleicao e Lista"/><br>
         <s:doubleselect name="myElection" list="eleicoes"
                         doubleName="myChoice" doubleList="getChoices(top)"/><br>
@@ -84,8 +81,43 @@
     <s:url action="listEleicoes" var="urlTag">
     </s:url>
     <s:a href="%{urlTag}">Eleições</s:a>
-
     <h1>Votar</h1>
+    <s:iterator value="eleicoesInfo">
+        <b><s:label value="Título:"/></b>
+        <s:property value="titulo"/><br>
+        <b><s:label value="Descrição:"/></b>
+        <s:property value="descricao"/><br>
+        <b><s:label value="Data de Início:"/></b>
+        <s:date name="dataInicio" format="dd/MM/yy HH:mm"/><br>
+        <b><s:label value="Data de Fim:"/></b>
+        <s:date name="dataFim" format="dd/MM/yy HH:mm"/><br>
+        <b><s:label value="Profissões Permititdas:"/></b>
+        <s:iterator value="profissoesPermitidas">
+            <s:property/>,
+        </s:iterator><br>
+        <b><s:label value="Mesas Associadas:"/></b><br>
+        <s:iterator value="mesas">
+            <s:property value="departamento"/>
+            <s:property value="ip"/>
+            <s:property value="port"/>
+            <s:property value="status"/>
+            <br>
+        </s:iterator><br>
+        <b><s:label value="Listas:"/></b><br>
+        <s:iterator value="listas">
+            <s:label value="Nome:"/>
+            <s:property value="nome"/><br>
+            <s:label value="Tipo:"/>
+            <s:property value="tipoLista"/><br>
+            <s:label value="Membros:"/>
+            <s:iterator value="listaPessoas">
+                <s:property value="nome"/>,
+            </s:iterator><br>
+        </s:iterator><br>
+        <br>
+        <br>
+    </s:iterator>
+
     <s:form action="votar">
         <s:label value="Eleicao e Lista"/>
         <s:doubleselect label="Eleição e Lista" name="myElection" list="eleicoes"

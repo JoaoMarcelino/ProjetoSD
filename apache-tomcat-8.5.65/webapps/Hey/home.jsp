@@ -28,6 +28,16 @@
     </s:url>
     <s:a href="%{urlTag}">Votar</s:a>
 
+    <s:url action="logout" var="urlTag">
+    </s:url>
+    <s:a href="%{urlTag}">Logout</s:a>
+
+    <a id="icon" href="#" class="notification float">
+        <span>Notificações</span>
+        <span id="badge" class="badge">0</span>
+        <iframe src="notificacoes.jsp" id="iframe" style="display: none;">
+        </iframe>
+    </a>
 </s:if>
 <s:else>
     <s:url action="votePage" var="urlTag">
@@ -40,14 +50,6 @@
 </s:else>
 
 <h1>Home Screen</h1>
-
-<a id="icon" href="#" class="notification float">
-    <span>Notificações</span>
-    <span id="badge" class="badge">0</span>
-    <iframe src="notificacoes.jsp" id="iframe" style="display: none;">
-    </iframe>
-</a>
-
 <script type="text/javascript">
     icon = document.getElementById("icon");
     icon.addEventListener("click", function () {
