@@ -7,6 +7,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <title>Hey!</title>
     <style type="text/css">
+
+
         input#chat {
             width: 456px;
             border: 1px solid #AACAAC;
@@ -60,8 +62,8 @@
         .float {
             position: fixed;
 
-            top: 40px;
-            right: 40px;
+            top: 80px;
+            right: 20px;
 
             border-radius: 50px;
             text-align: center;
@@ -76,6 +78,30 @@
         #iframe {
             width: 450px;
             height: 500px;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 10px 0px;
+            padding: 0;
+            overflow: hidden;
+            background-color: #404040;
+        }
+
+        li {
+            float: left;
+        }
+
+        li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        li a:hover {
+            background-color: black;
         }
 
     </style>

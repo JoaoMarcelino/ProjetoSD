@@ -10,28 +10,36 @@
     <title>Hey!</title>
 </head>
 <body>
-<s:fielderror fieldName="mesas"/>
 <s:if test="heyBean.loggedInAsAdmin==true">
-    <s:url action="listPessoas" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votantes</s:a>
+    <ul>
+        <li>
+            <s:url action="listPessoas.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votantes</s:a>
+        </li>
+        <li>
+            <s:url action="listEleicoes.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Eleições</s:a>
+        </li>
+        <li>
+            <s:url action="listMesas.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Mesas de Voto</s:a>
+        </li>
+        <li>
+            <s:url action="votePage" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votar</s:a>
+        </li>
+        <li style="float:right">
+            <s:url action="logout" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}"><b>Logout</b></s:a>
+        </li>
+    </ul>
 
-    <s:url action="listEleicoes" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Eleições</s:a>
-
-    <s:url action="listMesas" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Mesas de Voto</s:a>
-
-    <s:url action="votePage" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votar</s:a>
-
-    <s:url action="logout" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Logout</s:a>
-
+    <s:fielderror fieldName="mesas" cssStyle="padding-left: 20px; color: white;"/>
     <h1>Mesas de Voto</h1>
     <s:iterator value="listMesas">
         <b><s:label value="Departamento:"/></b>
@@ -63,10 +71,7 @@
     <br>
 
     <h2>Adicionar Mesa</h2>
-    <s:if test="heyBean.message!=null">
-        <b><i><s:label name="heyBean.message"/></i></b>
-        <br>
-    </s:if>
+
 
     <s:form action="addMesas">
         <s:label value="Departamento:"/>

@@ -10,28 +10,38 @@
     <title>Home</title>
 </head>
 <body>
-<s:fielderror fieldName="home"/>
+
 <s:if test="heyBean.loggedInAsAdmin==true">
-    <s:url action="listPessoas.action" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votantes</s:a>
 
-    <s:url action="listEleicoes.action" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Eleições</s:a>
+    <ul>
+        <li>
+            <s:url action="listPessoas.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votantes</s:a>
+        </li>
+        <li>
+            <s:url action="listEleicoes.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Eleições</s:a>
+        </li>
+        <li>
+            <s:url action="listMesas.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Mesas de Voto</s:a>
+        </li>
+        <li>
+            <s:url action="votePage" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votar</s:a>
+        </li>
+        <li style="float:right">
+            <s:url action="logout" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}"><b>Logout</b></s:a>
+        </li>
+    </ul>
 
-    <s:url action="listMesas.action" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Mesas de Voto</s:a>
-
-    <s:url action="votePage" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votar</s:a>
-
-    <s:url action="logout" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Logout</s:a>
-
+    <s:fielderror fieldName="home" cssStyle="padding-left: 20px; color: white;"/>
     <a id="icon" href="#" class="notification float">
         <span>Notificações</span>
         <span id="badge" class="badge">0</span>
@@ -40,17 +50,25 @@
     </a>
 </s:if>
 <s:else>
-    <s:url action="votePage" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votar</s:a>
+    <ul>
+        <li>
+            <s:url action="votePage" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votar</s:a>
+        </li>
+        <li>
+            <s:url action="listEleicoes" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Eleições</s:a>
+        </li>
+        <li style="float:right">
+            <s:url action="logout" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Logout</s:a>
+        </li>
+    </ul>
 
-    <s:url action="listEleicoes" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Eleições</s:a>
-
-    <s:url action="logout" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Logout</s:a>
+    <s:fielderror fieldName="home" cssStyle="padding-left: 20px; color: white;"/>
 </s:else>
 
 <h1>Home Screen</h1>
