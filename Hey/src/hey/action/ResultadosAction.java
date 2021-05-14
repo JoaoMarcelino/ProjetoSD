@@ -40,7 +40,7 @@ public class ResultadosAction extends ActionSupport implements SessionAware {
 
     public String getMesa() {
         if (v.getMesa() == null)
-            return "Admin Console";
+            return "Web/Admin Console";
         else
             return v.getMesa().getDepartamento().name();
     }

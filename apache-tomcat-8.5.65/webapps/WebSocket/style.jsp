@@ -68,6 +68,16 @@
             box-shadow: 2px 2px 3px #999;
         }
 
+        td {
+            text-align: center;
+        }
+
+
+        #iframe {
+            width: 450px;
+            height: 500px;
+        }
+
     </style>
 </head>
 <body>

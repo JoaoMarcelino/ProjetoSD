@@ -32,7 +32,7 @@ public class WebSocketAnnotation extends UnicastRemoteObject implements RMI_C_In
     private String RMIHostIP;
     private int RMIHostPort;
     private Session session;
-
+    private String nomeEleicao;
 
     public WebSocketAnnotation() throws RemoteException {
         super();
@@ -72,6 +72,26 @@ public class WebSocketAnnotation extends UnicastRemoteObject implements RMI_C_In
                 } catch (Exception ignored) {
                 }
             }
+
+            ArrayList<MesaVoto> mesas = new ArrayList<>(servidor.listMesas());
+            for (MesaVoto m : mesas) {
+                JSONObject data = new JSONObject();
+                data.put("tipo", "mesa");
+                data.put("mesa", m.getDepartamento().name());
+                if (m.getStatus())
+                    data.put("estado", "ligado");
+                else
+                    data.put("estado", "desligado");
+                data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
+                StringWriter out = new StringWriter();
+                try {
+                    data.writeJSONString(out);
+                    String jsonText = out.toString();
+                    sendMessage(jsonText);
+                } catch (Exception ignored) {
+                }
+            }
+
         } catch (RemoteException ignored) {
 
         }
@@ -93,15 +113,35 @@ public class WebSocketAnnotation extends UnicastRemoteObject implements RMI_C_In
     public void end() {
         try {
             servidor.unsubscribe(this);
-        } catch (RemoteException e) {
+        } catch (RemoteException ignored) {
         }
 
     }
 
     @OnMessage
     public void receiveMessage(String message) {
-        String upperCaseMessage = message.toUpperCase();
-        sendMessage("[" + username + "] " + upperCaseMessage);
+        this.nomeEleicao = message;
+        try {
+            ArrayList<Voto> votos = new ArrayList<>(servidor.getEleicaoByName(this.nomeEleicao).getVotos());
+            for (Voto v : votos) {
+                JSONObject data = new JSONObject();
+                data.put("tipo", "voto");
+                data.put("nome", v.getPessoa().getNome());
+                data.put("profissao", v.getPessoa().getProfissao().name());
+                data.put("eleicao", this.nomeEleicao);
+                if (v.getMesa() == null)
+                    data.put("mesa", "Web");
+                else
+                    data.put("mesa", v.getMesa().getDepartamento().name());
+                data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
+                StringWriter out = new StringWriter();
+                data.writeJSONString(out);
+                String jsonText = out.toString();
+                sendMessage(jsonText);
+                System.out.println(jsonText);
+            }
+        } catch (IOException ignored) {
+        }
     }
 
     @OnError

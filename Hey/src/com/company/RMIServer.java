@@ -315,7 +315,10 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
             data.put("nome", voto.getPessoa().getNome());
             data.put("profissao", voto.getPessoa().getProfissao().name());
             data.put("eleicao", ele.getTitulo());
-            data.put("mesa", dep.name());
+            if(dep==null)
+            data.put("mesa", "Web");
+            else
+                data.put("mesa", dep.name());
             data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
             sendToAll(data);
             return "true | Voto com Sucesso.";
@@ -355,7 +358,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
             data.put("nome", p.getNome());
             data.put("profissao", p.getProfissao().name());
             data.put("eleicao", ele.getTitulo());
-            data.put("mesa", null);
+            data.put("mesa", "Web");
             data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
             sendToAll(data);
         }

@@ -15,14 +15,15 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.json.simple.JSONObject;
 
 public class HeyBean {
-    private String pathToProperties="../webapps/Hey/WEB-INF/classes/resources/config.properties";
-    private  String RMIHostIP;
-    private  int RMIHostPort;
     private final int totalTries;
     public RMI_S_Interface servidor;
+    private final String pathToProperties = "../webapps/Hey/WEB-INF/classes/resources/config.properties";
+    private String RMIHostIP;
+    private int RMIHostPort;
     private String username;
     private String password;
     private boolean loggedInAsAdmin;
@@ -109,7 +110,7 @@ public class HeyBean {
         return "Servidor RMI indisponivel.";
     }
 
-    public Eleicao getEleicaoByTitulo(String titulo){
+    public Eleicao getEleicaoByTitulo(String titulo) {
         for (int i = 0; i < totalTries; i++) {
             try {
                 Eleicao eleicao = servidor.getEleicaoByName(titulo);
@@ -352,7 +353,7 @@ public class HeyBean {
             try {
                 Pessoa pessoa = servidor.getPessoaByCC(numeroCC);
                 Voto voto = new Voto(pessoa, new GregorianCalendar());
-                String status = servidor.adicionarVoto( nomeEleicao, voto, nomeLista,null);
+                String status = servidor.adicionarVoto(nomeEleicao, voto, nomeLista, null);
                 return status;
             } catch (RemoteException e) {
                 try {
@@ -369,7 +370,7 @@ public class HeyBean {
     public String login(String numeroCC, String password) {
         for (int i = 0; i < totalTries; i++) {
             try {
-                return servidor.login(numeroCC,password,true);
+                return servidor.login(numeroCC, password, true);
             } catch (RemoteException e) {
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
@@ -385,7 +386,7 @@ public class HeyBean {
     public void logout(String numeroCC, String password) {
         for (int i = 0; i < totalTries; i++) {
             try {
-                servidor.logout(numeroCC,password,true);
+                servidor.logout(numeroCC, password, true);
                 return;
             } catch (RemoteException e) {
                 try {
@@ -424,8 +425,8 @@ public class HeyBean {
     }
 
     public String getMessage() {
-        String aux=this.message;
-        this.message="";
+        String aux = this.message;
+        this.message = "";
         return aux;
     }
 
@@ -456,9 +457,9 @@ public class HeyBean {
             prop.load(input);
             RMIHostIP = prop.getProperty("RMIHostIP");
             RMIHostPort = Integer.parseInt(prop.getProperty("RMIHostPort"));
-        }catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             System.out.println("Ficheiro de configurações não encontrado");
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Erro na leitura de ficheiro de configurações");
         }
     }
