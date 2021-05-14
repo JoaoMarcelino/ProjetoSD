@@ -10,7 +10,7 @@
     <title>Hey!</title>
 </head>
 <body>
-<s:fielderror fieldName="all"/>
+<s:fielderror fieldName="pessoas"/>
 <s:if test="heyBean.loggedInAsAdmin==true">
     <s:url action="listPessoas" var="urlTag">
     </s:url>
@@ -27,6 +27,10 @@
     <s:url action="votePage" var="urlTag">
     </s:url>
     <s:a href="%{urlTag}">Votar</s:a>
+
+    <s:url action="logout" var="urlTag">
+    </s:url>
+    <s:a href="%{urlTag}">Logout</s:a>
 
     <h1>Votantes Registados</h1>
 

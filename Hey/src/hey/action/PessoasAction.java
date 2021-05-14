@@ -79,10 +79,10 @@ public class PessoasAction extends ActionSupport implements SessionAware {
         Departamento departamento = getYourDep();
         if (nome != null && password != null && numberCC != null && expireCCDate != null && profissao != null && departamento != null) {
             String status = getHeyBean().addPessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao, admin);
-            getHeyBean().setMessage(status);
+            addFieldError("pessoas",status);
         }
         else {
-            getHeyBean().setMessage("Falta informacao para o registo do votante.");
+            addFieldError("pessoas","Falta informacao para o registo do votante.");
         }
 
         return SUCCESS;
@@ -91,7 +91,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     public ArrayList<Pessoa> getListPessoas() {
         ArrayList<Pessoa> aux = getHeyBean().listPessoas();
         if (aux == null)
-            getHeyBean().setMessage("Erro RMI na listagem de listas ou eleição não existe.");
+            addFieldError("pessoas","Erro RMI na listagem de listas ou eleição não existe.");
         return aux;
     }
 

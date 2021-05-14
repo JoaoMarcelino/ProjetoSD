@@ -27,6 +27,10 @@
     </s:url>
     <s:a href="%{urlTag}">Votar</s:a>
 
+    <s:url action="logout" var="urlTag">
+    </s:url>
+    <s:a href="%{urlTag}">Logout</s:a>
+
     <h1>Votar</h1>
 
     <s:iterator value="eleicoesInfo">
@@ -65,10 +69,12 @@
         <br>
     </s:iterator>
 
-    <s:form action="votar">
+    <s:form action="votar" method="POST">
         <s:label value="Eleicao e Lista"/><br>
         <s:doubleselect name="myElection" list="eleicoes"
                         doubleName="myChoice" doubleList="getChoices(top)"/><br>
+        <s:label value="Votar Antecipadamente?"/>
+        <s:checkbox name="votarAntecipadamente" fieldValue="true"/><br>
         <s:submit value="Votar"/>
     </s:form>
 
@@ -81,6 +87,11 @@
     <s:url action="listEleicoes" var="urlTag">
     </s:url>
     <s:a href="%{urlTag}">Eleições</s:a>
+
+    <s:url action="logout" var="urlTag">
+    </s:url>
+    <s:a href="%{urlTag}">Logout</s:a>
+
     <h1>Votar</h1>
     <s:iterator value="eleicoesInfo">
         <b><s:label value="Título:"/></b>

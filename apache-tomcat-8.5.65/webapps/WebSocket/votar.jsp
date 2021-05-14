@@ -69,6 +69,8 @@
         <s:label value="Eleicao e Lista"/><br>
         <s:doubleselect name="myElection" list="eleicoes"
                         doubleName="myChoice" doubleList="getChoices(top)"/><br>
+        <s:label value="Votar Antecipadamente?"/>
+        <s:checkbox name="votarAntecipadamente" fieldValue="true"/><br>
         <s:submit value="Votar"/>
     </s:form>
 

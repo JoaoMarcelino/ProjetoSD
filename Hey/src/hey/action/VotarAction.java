@@ -29,19 +29,26 @@ public class VotarAction extends ActionSupport implements SessionAware {
     private String myElection;
     private List<String> eleicoes;
 
+    private boolean votarAntecipadamente = false;
+
 
     public String view() {
         return SUCCESS;
     }
 
-    public String votarAntecipado() {
-        String status = getHeyBean().votarAntecipado(getHeyBean().getUsername(), getHeyBean().getPassword(), getMyElection(), getMyChoice());
-        addFieldError("votar", status);
-        return SUCCESS;
-    }
 
     public String votar() {
-        String status = getHeyBean().votar(getHeyBean().getUsername(), getHeyBean().getPassword(), getMyElection(), getMyChoice());
+        String status = "";
+        if(getHeyBean().getUsername()!="Admin"){
+            if (votarAntecipadamente)
+                status = getHeyBean().votarAntecipado(getHeyBean().getUsername(), getHeyBean().getPassword(), getMyElection(), getMyChoice());
+            else
+                status = getHeyBean().votar(getHeyBean().getUsername(), getHeyBean().getPassword(), getMyElection(), getMyChoice());
+        }
+        else
+            status="Faça login com uma conta normal. A usar conta Admin de momento.";
+
+
         addFieldError("votar", status);
         return SUCCESS;
     }
@@ -88,35 +95,17 @@ public class VotarAction extends ActionSupport implements SessionAware {
         ArrayList<String> aux = new ArrayList<>();
         ArrayList<Eleicao> eleicoes = getHeyBean().listEleicoes();
         for (Eleicao ele : eleicoes) {
-            if (ele.checkStart()) {
-                aux.add(ele.getTitulo());
-            }
+            aux.add(ele.getTitulo());
+
         }
         return aux;
     }
 
-    public List<Eleicao> getEleicoesInfo() {
+    public ArrayList<Eleicao> getEleicoesInfo() {
         ArrayList<Eleicao> eleicoes = getHeyBean().listEleicoes();
-        for (Eleicao ele : eleicoes) {
-            if (!ele.checkStart()) {
-                eleicoes.remove(ele);
-            }
-        }
         return eleicoes;
     }
 
-
-    public ArrayList<Eleicao> getEleicoesDisponiveis() {
-        ArrayList<Eleicao> aux = getHeyBean().listEleicoes();
-
-        ArrayList<Eleicao> disponiveis = new ArrayList<>();
-        for (Eleicao ele : aux) {
-            if (!ele.checkStart()) {
-                disponiveis.add(ele);
-            }
-        }
-        return disponiveis;
-    }
 
     public String getNumero() {
         return numero;
@@ -148,6 +137,14 @@ public class VotarAction extends ActionSupport implements SessionAware {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public boolean isVotarAntecipadamente() {
+        return votarAntecipadamente;
+    }
+
+    public void setVotarAntecipadamente(boolean votarAntecipadamente) {
+        this.votarAntecipadamente = votarAntecipadamente;
     }
 
     public HeyBean getHeyBean() {

@@ -10,7 +10,7 @@
     <title>Home</title>
 </head>
 <body>
-<s:fielderror fieldName="all"/>
+<s:fielderror fieldName="home"/>
 <s:if test="heyBean.loggedInAsAdmin==true">
     <s:url action="listPessoas.action" var="urlTag">
     </s:url>
@@ -47,6 +47,10 @@
     <s:url action="listEleicoes" var="urlTag">
     </s:url>
     <s:a href="%{urlTag}">Eleições</s:a>
+
+    <s:url action="logout" var="urlTag">
+    </s:url>
+    <s:a href="%{urlTag}">Logout</s:a>
 </s:else>
 
 <h1>Home Screen</h1>

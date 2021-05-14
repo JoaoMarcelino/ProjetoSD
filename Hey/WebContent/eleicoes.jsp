@@ -10,7 +10,7 @@
     <title>Hey!</title>
 </head>
 <body>
-<s:fielderror fieldName="all"/>
+<s:fielderror fieldName="eleicoes"/>
 <s:if test="heyBean.loggedInAsAdmin==true">
     <s:fielderror fieldName="all"/>
     <s:url action="listPessoas" var="urlTag">

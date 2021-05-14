@@ -9,6 +9,7 @@
     <title>Hey!</title>
 </head>
 <body>
+<s:fielderror fieldName="index"/>
 <h1><b>e-Voting UC</b></h1>
 <s:form action="login" method="post">
     <input placeholder="Número CC" name="loginNumberCC"/><br>

@@ -27,7 +27,6 @@ public class HeyBean {
     private String username;
     private String password;
     private boolean loggedInAsAdmin;
-    private String message;
 
 
     public HeyBean() {
@@ -422,16 +421,6 @@ public class HeyBean {
 
     public void setLoggedInAsAdmin(boolean loggedInAsAdmin) {
         this.loggedInAsAdmin = loggedInAsAdmin;
-    }
-
-    public String getMessage() {
-        String aux = this.message;
-        this.message = "";
-        return aux;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public String getUsername() {

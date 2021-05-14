@@ -116,9 +116,6 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
             <result name="success">/votar.jsp</result>
         </action>
 
-        <action name="votoAntecipado" class="hey.action.VotarAction" method="votarAntecipado">
-            <result name="success">/votar.jsp</result>
-        </action>
 
         <action name="votar" class="hey.action.VotarAction" method="votar">
             <result name="success">/votar.jsp</result>
