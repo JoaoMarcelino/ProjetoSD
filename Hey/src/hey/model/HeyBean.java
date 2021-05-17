@@ -4,6 +4,7 @@
 package hey.model;
 
 import com.company.*;
+import com.github.scribejava.core.model.OAuth2AccessToken;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -11,6 +12,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Properties;
@@ -28,6 +30,14 @@ public class HeyBean {
     private boolean loggedInAsAdmin;
     private String message;
 
+    //FacebookBean
+    private FacebookREST fb;
+    private String authUrl;
+    private String authCode;
+    private String secretState;
+    private OAuth2AccessToken accessToken;
+    private String name;
+    private String test = "Ola Mundo!";
 
     public HeyBean() {
         totalTries = 3;
@@ -36,6 +46,9 @@ public class HeyBean {
 
             Registry r = LocateRegistry.getRegistry(RMIHostIP, RMIHostPort);
             servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
+
+            this.fb = new FacebookREST();
+
         } catch (NotBoundException | RemoteException e) {
             e.printStackTrace(); // what happens *after* we reach this line?
         }
@@ -444,5 +457,49 @@ public class HeyBean {
         }catch (IOException e){
             System.out.println("Erro na leitura de ficheiro de configurações");
         }
+    }
+
+    //Facebook Methods
+
+    public String getTest(){
+        return this.test;
+    }
+
+    public boolean getAccessToken() {
+        this.accessToken = this.fb.getAccessToken(this.authCode, this.secretState);
+        if (this.accessToken != null)
+            return true;
+        return false;
+    }
+
+    public String getAuthUrl() {
+        System.out.println("authURL");
+        this.authUrl = this.fb.getAuthorizationURL();
+        return authUrl;
+    }
+
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public void setAuthCode(String authCode) {
+        this.authCode = authCode;
+    }
+
+    public String getSecretState() {
+        return secretState;
+    }
+
+    public void setSecretState(String secretState) {
+        this.secretState = secretState;
+    }
+
+
+    public String getName() throws ParseException {
+        return this.fb.getAccountName(this.accessToken);
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

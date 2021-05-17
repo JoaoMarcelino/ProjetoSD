@@ -1,4 +1,5 @@
 <%@ taglib prefix="s" uri="/struts-tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
          pageEncoding="ISO-8859-1" %>
 <%@include file="style.jsp"%>
@@ -15,6 +16,7 @@
     <input placeholder="Password" name="loginPassword"/><br>
     <s:submit value="Login"/>
 </s:form>
+
 
 <a id="icon" href="#" class="notification float" >
     <span>Notificações</span>

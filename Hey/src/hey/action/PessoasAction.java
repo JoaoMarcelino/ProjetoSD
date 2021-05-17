@@ -7,6 +7,7 @@ import com.company.Departamento;
 import com.company.Pessoa;
 import com.company.Profissao;
 import com.opensymphony.xwork2.ActionSupport;
+import hey.model.FacebookBean;
 import hey.model.HeyBean;
 import org.apache.struts2.interceptor.SessionAware;
 
@@ -36,6 +37,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     private String yourProf = "";
     private List<String> deps;
     private String yourDep = "";
+
 
     public String login() {
         if (loginNumberCC.equals("admin") && loginPassword.equals("admin")) {
@@ -235,4 +237,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     public void setSession(Map<String, Object> session) {
         this.session = session;
     }
+
+
+
 }

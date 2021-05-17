@@ -10,6 +10,10 @@
     <title>Home</title>
 </head>
 <body>
+
+<p> <a href="<s:property value="heyBean.authUrl"/>">Login with Facebook Account</a>   </p>
+
+<p> <s:property value="heyBean.test"/></p>
 <s:fielderror fieldName="all"/>
 <s:if test="heyBean.loggedInAsAdmin==true">
     <s:url action="listPessoas.action" var="urlTag">
