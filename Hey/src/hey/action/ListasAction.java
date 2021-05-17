@@ -30,17 +30,17 @@ public class ListasAction extends ActionSupport implements SessionAware {
 
         if (nome != null && profissao != null && !pessoas.isEmpty()) {
             String status = getHeyBean().addLista(titulo, nome, new CopyOnWriteArrayList<>(pessoas), profissao);
-            getHeyBean().setMessage(status);
+            addFieldError("listas",status);
         }
         else {
-            getHeyBean().setMessage("Falta informacao para a adição da lista.");
+            addFieldError("listas","Falta informacao para a adição da lista.");
         }
         return SUCCESS;
     }
 
     public String delete() {
         String status = getHeyBean().removeLista(titulo, nome);
-        getHeyBean().setMessage(status);
+        addFieldError("listas",status);
         return SUCCESS;
     }
 
@@ -51,7 +51,7 @@ public class ListasAction extends ActionSupport implements SessionAware {
     public ArrayList<Lista> getListas() {
         ArrayList<Lista> aux=getHeyBean().listListas(titulo);
         if(aux==null)
-            getHeyBean().setMessage("Erro RMI na listagem de listas ou eleição não existe.");
+            addFieldError("listas","Erro RMI na listagem de listas ou eleição não existe.");
         return aux;
     }
 

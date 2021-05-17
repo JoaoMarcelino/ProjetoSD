@@ -10,25 +10,37 @@
     <title>Hey!</title>
 </head>
 <body>
-<s:fielderror fieldName="all"/>
 <s:if test="heyBean.loggedInAsAdmin==true">
     <s:fielderror fieldName="all"/>
-    <s:url action="listPessoas" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votantes</s:a>
+    <ul>
+        <li>
+            <s:url action="listPessoas.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votantes</s:a>
+        </li>
+        <li>
+            <s:url action="listEleicoes.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Eleições</s:a>
+        </li>
+        <li>
+            <s:url action="listMesas.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Mesas de Voto</s:a>
+        </li>
+        <li>
+            <s:url action="votePage" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votar</s:a>
+        </li>
+        <li style="float:right">
+            <s:url action="logout" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}"><b>Logout</b></s:a>
+        </li>
+    </ul>
 
-    <s:url action="listEleicoes" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Eleições</s:a>
-
-    <s:url action="listMesas" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Mesas de Voto</s:a>
-
-    <s:url action="votePage" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votar</s:a>
-
+    <s:fielderror fieldName="eleicoes" cssStyle="padding-left: 20px; color: white;"/>
     <h1>Eleições Registadas</h1>
 
     <s:iterator value="listEleicoes">
@@ -111,17 +123,34 @@
         <s:submit value="Editar Eleicao"/>
     </s:form>
 
+    <a id="icon" href="#" class="notification float">
+        <span>Notificações</span>
+        <span id="badge" class="badge">0</span>
+        <iframe src="notificacoes.jsp" id="iframe" style="display: none;">
+        </iframe>
+    </a>
 </s:if>
 <s:else>
 
-    <s:url action="votePage" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votar</s:a>
+    <ul>
+        <li>
+            <s:url action="votePage" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votar</s:a>
+        </li>
+        <li>
+            <s:url action="listEleicoes" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Eleições</s:a>
+        </li>
+        <li style="float:right">
+            <s:url action="logout" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Logout</s:a>
+        </li>
+    </ul>
 
-    <s:url action="listEleicoes" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Eleições</s:a>
-
+    <s:fielderror fieldName="eleicoes" cssStyle="padding-left: 20px; color: white;"/>
     <h1>Eleições Registadas</h1>
     <s:iterator value="listEleicoes">
         <b><s:label value="Título:"/></b>
@@ -149,5 +178,17 @@
     </s:iterator>
 </s:else>
 
+<script type="text/javascript">
+    icon = document.getElementById("icon");
+    icon.addEventListener("click", function () {
+        iframe = document.getElementById("iframe");
+        if (iframe.style.display == "block") {
+            iframe.style.display = "none";
+        } else {
+            document.getElementById("badge").innerText = 0;
+            iframe.style.display = "block";
+        }
+    });
+</script>
 </body>
 </html>

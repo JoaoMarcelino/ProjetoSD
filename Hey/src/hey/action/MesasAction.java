@@ -28,17 +28,17 @@ public class MesasAction extends ActionSupport implements SessionAware {
 
         if (ip != null && port != null && departamento != null && aux.size() == 3) {
             String status = getHeyBean().addMesa(departamento, aux, ip, port);
-            getHeyBean().setMessage(status);
+            addFieldError("mesas",status);
         }
         else {
-            getHeyBean().setMessage("Falta informação para o registo da mesa.");
+            addFieldError("mesas","Falta informação para o registo da mesa.");
         }
         return SUCCESS;
     }
 
     public String delete() {
         String status = getHeyBean().removeMesa(yourDep);
-        getHeyBean().setMessage(status);
+        addFieldError("mesas",status);
         return SUCCESS;
     }
 
@@ -48,10 +48,10 @@ public class MesasAction extends ActionSupport implements SessionAware {
 
         if (departamento != null && aux.size() == 3) {
             String status = getHeyBean().editMesa(departamento.name(), aux.get(0).getNome(), aux.get(1).getNome(), aux.get(2).getNome());
-            getHeyBean().setMessage(status);
+            addFieldError("mesas",status);
         }
         else {
-            getHeyBean().setMessage("Falta informacao para a edição da mesa.");
+            addFieldError("mesas","Falta informacao para a edição da mesa.");
         }
         return SUCCESS;
     }

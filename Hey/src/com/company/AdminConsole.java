@@ -1,9 +1,15 @@
 package com.company;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.JSONParser;
+
 import java.net.*;
 import java.io.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.text.ParseException;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.rmi.*;
@@ -44,7 +50,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
 
             consola = new AdminConsole();
-            servidor.subscribe((RMI_C_Interface) consola);
+            servidor.subscribe(consola);
 
             while (true) {
                 System.out.println(printMenu());
@@ -104,7 +110,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                             listMesas(reader);
                             break;
                         case "5":
-                            servidor.unsubscribe((RMI_C_Interface) consola);
+                            servidor.unsubscribe(consola);
                             System.exit(0);
                         default:
                             System.out.println("Escolha invalida.Tente 1.1, por exemplo.");
@@ -295,7 +301,8 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
         if (res == null) {
             System.out.println("Eleicao nao existe ou ainda nao terminou.");
-        } else {
+        }
+        else {
             System.out.println("Eleicao:" + res.getTitulo());
             System.out.println("Total de Votos:" + res.getTotalVotos());
             System.out.println("Votos em Branco:" + res.getBrancos());
@@ -343,14 +350,16 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
 
         if (v == null) {
             System.out.println("Pessoa ou eleicao nao existe.");
-        } else {
+        }
+        else {
             System.out.println("Nome: " + v.getPessoa().getNome());
             System.out.println("Eleicao: " + nomeEleicao);
             System.out.println("Hora de Voto: " + printGregorianCalendar(v.getData(), true));
             System.out.print("Departamento: ");
             if (v.getMesa() == null) {
                 System.out.println("Admin Console");
-            } else {
+            }
+            else {
                 System.out.println(v.getMesa().getDepartamento());
             }
         }
@@ -754,7 +763,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             intInputValue = 0;
             try {
                 intInputValue = Integer.parseInt(input);
-                if ((max != -1 && intInputValue <= max && intInputValue > 0) || max == -1) isValid = true;
+                if (max == -1 || (intInputValue <= max && intInputValue > 0)) isValid = true;
                 else System.out.println("Not a valid Input");
             } catch (NumberFormatException ne) {
                 System.out.println("Not a valid Input");
@@ -782,10 +791,11 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
                     ano = data.substring(6, 10);
                     hora = data.substring(11, 13);
                     minuto = data.substring(14, 16);
-                    calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia), Integer.parseInt(hora), Integer.parseInt(minuto));
+                    calendar.set(Integer.parseInt(ano), Integer.parseInt(mes) - 1, Integer.parseInt(dia), Integer.parseInt(hora), Integer.parseInt(minuto) - 1);
                     isValid = true;
                 }
-            } else {
+            }
+            else {
                 Pattern p = Pattern.compile("\\d{2}(\\/)\\d{2}(\\/)\\d{4}$");    // 01/02/2022 12:30
                 Matcher m = p.matcher(data);
 
@@ -863,6 +873,29 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
     }
 
     public void printOnClient(String s) throws RemoteException {
-        System.out.println("> " + s);
+        try {
+            JSONObject rj = (JSONObject) JSONValue.parse(s);
+            String tipo = rj.get("tipo").toString();
+            switch (tipo) {
+                case "mesa":
+                    System.out.println("Mesa " + rj.get("mesa") + " foi " + rj.get("estado") + " a " + rj.get("data") + ".");
+                    break;
+                case "eleicao":
+                    System.out.println("Eleicao " + rj.get("nome") + " " + rj.get("estado") + " a " + rj.get("data") + ".");
+                    break;
+                case "utilizador":
+                    System.out.println("Utilizador " + rj.get("nome") + " " + rj.get("estado") + " a " + rj.get("data") + ".");
+                    break;
+                case "voto":
+                    System.out.println("Votante " + rj.get("nome") + " (" + rj.get("profissao") + ") " + " votou na eleicao " + rj.get("eleicao") + " ,na mesa " + rj.get("mesa") + "a" + rj.get("data") + ".");
+                    break;
+                default:
+                    System.out.println("Notificacao com forma desconhecida.");
+                    break;
+            }
+        } catch (Exception e) {
+            System.out.println("Erro a processar notificacao.");
+        }
+
     }
 }

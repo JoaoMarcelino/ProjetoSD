@@ -35,5 +35,6 @@
     <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" name="WebSocket-1.1" level="project" />
     <orderEntry type="library" name="WebSocket-1.1" level="project" />
+    <orderEntry type="library" name="json_simple-1.1" level="project" />
   </component>
 </module>

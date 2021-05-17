@@ -27,20 +27,20 @@ public class ResultadosAction extends ActionSupport implements SessionAware {
     public Resultado getResultados() {
         res = getHeyBean().getResultados(this.titulo);
         if (res == null)
-            getHeyBean().setMessage("Erro RMI na consulta dos resultados.");
+            addFieldError("resultados", "Erro RMI na consulta dos resultados.");
         return res;
     }
 
     public String getVoto() {
         v = getHeyBean().getVoto(this.numeroCC, this.titulo);
         if (v == null)
-            getHeyBean().setMessage("Erro RMI na consulta de voto ou pessoa não existe.");
+            addFieldError("resultados", "Erro RMI na consulta de voto ou pessoa não existe.");
         return SUCCESS;
     }
 
     public String getMesa() {
         if (v.getMesa() == null)
-            return "Admin Console";
+            return "Web/Admin Console";
         else
             return v.getMesa().getDepartamento().name();
     }

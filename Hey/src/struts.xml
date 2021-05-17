@@ -43,6 +43,11 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
             <result name="error">/index.jsp</result>
         </action>
 
+        <action name="logout" class="hey.action.PessoasAction" method="logoutNotify">
+            <result name="success">/index.jsp</result>
+            <result name="error">/index.jsp</result>
+        </action>
+
         <action name="addPessoas" class="hey.action.PessoasAction" method="post">
             <result name="success">/pessoas.jsp</result>
         </action>
@@ -111,9 +116,6 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
             <result name="success">/votar.jsp</result>
         </action>
 
-        <action name="votoAntecipado" class="hey.action.VotarAction" method="votarAntecipado">
-            <result name="success">/votar.jsp</result>
-        </action>
 
         <action name="votar" class="hey.action.VotarAction" method="votar">
             <result name="success">/votar.jsp</result>

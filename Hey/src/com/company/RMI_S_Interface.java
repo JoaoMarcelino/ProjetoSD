@@ -1,5 +1,7 @@
 package com.company;
 
+import org.json.simple.JSONObject;
+
 import java.rmi.*;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -47,7 +49,11 @@ public interface RMI_S_Interface extends Remote {
 
     CopyOnWriteArrayList<MesaVoto> listMesas() throws RemoteException;
 
-    String login(String cc, String password) throws RemoteException;
+    String login(String cc, String password, boolean web) throws RemoteException;
+
+    void logout(String cc, String password, boolean web) throws RemoteException;
+
+    HashMap<Pessoa, String> getUsersLoggedIn() throws RemoteException;
 
     void ping() throws RemoteException;
 
@@ -63,7 +69,7 @@ public interface RMI_S_Interface extends Remote {
 
     void unsubscribe(RMI_C_Interface c) throws RemoteException;
 
-    void sendToAll(String s) throws RemoteException;
+    void sendToAll(JSONObject data) throws RemoteException;
 
     void turnMesa(MesaVoto mesa, Boolean flag) throws RemoteException;
 

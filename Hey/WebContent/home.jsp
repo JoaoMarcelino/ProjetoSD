@@ -14,44 +14,68 @@
 <p> <a href="<s:property value="heyBean.authUrl"/>">Login with Facebook Account</a>   </p>
 
 <p> <s:property value="heyBean.test"/></p>
-<s:fielderror fieldName="all"/>
+
 <s:if test="heyBean.loggedInAsAdmin==true">
-    <s:url action="listPessoas.action" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votantes</s:a>
 
-    <s:url action="listEleicoes.action" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Eleições</s:a>
+    <ul>
+        <li>
+            <s:url action="listPessoas.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votantes</s:a>
+        </li>
+        <li>
+            <s:url action="listEleicoes.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Eleiï¿½ï¿½es</s:a>
+        </li>
+        <li>
+            <s:url action="listMesas.action" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Mesas de Voto</s:a>
+        </li>
+        <li>
+            <s:url action="votePage" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votar</s:a>
+        </li>
+        <li style="float:right">
+            <s:url action="logout" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}"><b>Logout</b></s:a>
+        </li>
+    </ul>
 
-    <s:url action="listMesas.action" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Mesas de Voto</s:a>
-
-    <s:url action="votePage" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votar</s:a>
-
+    <s:fielderror fieldName="home" cssStyle="padding-left: 20px; color: white;"/>
+    <a id="icon" href="#" class="notification float">
+        <span>Notificaï¿½ï¿½es</span>
+        <span id="badge" class="badge">0</span>
+        <iframe src="notificacoes.jsp" id="iframe" style="display: none;">
+        </iframe>
+    </a>
 </s:if>
 <s:else>
-    <s:url action="votePage" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Votar</s:a>
+    <ul>
+        <li>
+            <s:url action="votePage" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votar</s:a>
+        </li>
+        <li>
+            <s:url action="listEleicoes" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Eleiï¿½ï¿½es</s:a>
+        </li>
+        <li style="float:right">
+            <s:url action="logout" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Logout</s:a>
+        </li>
+    </ul>
 
-    <s:url action="listEleicoes" var="urlTag">
-    </s:url>
-    <s:a href="%{urlTag}">Eleições</s:a>
+    <s:fielderror fieldName="home" cssStyle="padding-left: 20px; color: white;"/>
 </s:else>
 
 <h1>Home Screen</h1>
-
-<a id="icon" href="#" class="notification float">
-    <span>Notificações</span>
-    <span id="badge" class="badge">0</span>
-    <iframe src="notificacoes.jsp" id="iframe" style="display: none;">
-    </iframe>
-</a>
-
 <script type="text/javascript">
     icon = document.getElementById("icon");
     icon.addEventListener("click", function () {

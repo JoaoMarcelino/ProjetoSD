@@ -40,10 +40,10 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
 
         if (titulo != null && descricao != null && profissoes != null && dataInicio != null && dataFim != null) {
             String status = getHeyBean().addEleicao(titulo, descricao, dataInicio, dataFim, new CopyOnWriteArrayList<>(profissoes), departamentosPermitidos);
-            getHeyBean().setMessage(status);
+            addFieldError("eleicoes", status);
         }
         else {
-            getHeyBean().setMessage("Falta informacao para a criacao da eleicao.");
+            addFieldError("eleicoes", "Falta informacao para a criacao da eleicao.");
         }
         return SUCCESS;
     }
@@ -51,10 +51,10 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
     public String put() {
         if (titulo != null && tituloNovo != null && descricaoNova != null && dataInicioNova != null && dataFimNova != null) {
             String status = getHeyBean().editEleicao(titulo, tituloNovo, descricaoNova, dataInicioNova, dataFimNova);
-            getHeyBean().setMessage(status);
+            addFieldError("eleicoes", status);
         }
         else {
-            getHeyBean().setMessage("Falta informacao para a edição da eleicao.");
+            addFieldError("eleicoes","Falta informacao para a edição da eleicao.");
         }
         return SUCCESS;
     }
@@ -66,10 +66,10 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
     public String addMesa() {
         if (titulo != null && nome != null) {
             String status = getHeyBean().addMesaEleicao(nome, titulo);
-            getHeyBean().setMessage(status);
+            addFieldError("eleicoes", status);
         }
         else {
-            getHeyBean().setMessage("Falta informacao para a associação da mesa à eleicao.");
+            addFieldError("eleicoes","Falta informacao para a associação da mesa à eleicao.");
         }
         return SUCCESS;
     }
@@ -77,10 +77,10 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
     public String removeMesa() {
         if (titulo != null && departamento != null) {
             String status = getHeyBean().removeMesaEleicao(departamento, titulo);
-            getHeyBean().setMessage(status);
+            addFieldError("eleicoes", status);
         }
         else {
-            getHeyBean().setMessage("Falta informacao para a disossiação da mesa à eleicao.");
+            addFieldError("eleicoes","Falta informacao para a disossiação da mesa à eleicao.");
         }
         return SUCCESS;
     }

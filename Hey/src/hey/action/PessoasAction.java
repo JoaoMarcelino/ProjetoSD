@@ -11,7 +11,6 @@ import hey.model.FacebookBean;
 import hey.model.HeyBean;
 import org.apache.struts2.interceptor.SessionAware;
 
-import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -72,15 +71,20 @@ public class PessoasAction extends ActionSupport implements SessionAware {
         loginPassword = null;
     }
 
+    public String logoutNotify(){
+        getHeyBean().logout(getHeyBean().getUsername(),getHeyBean().getPassword());
+        return SUCCESS;
+    }
+
     public String post() {
         Profissao profissao = getYourProf();
         Departamento departamento = getYourDep();
         if (nome != null && password != null && numberCC != null && expireCCDate != null && profissao != null && departamento != null) {
             String status = getHeyBean().addPessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao, admin);
-            getHeyBean().setMessage(status);
+            addFieldError("pessoas",status);
         }
         else {
-            getHeyBean().setMessage("Falta informacao para o registo do votante.");
+            addFieldError("pessoas","Falta informacao para o registo do votante.");
         }
 
         return SUCCESS;
@@ -89,7 +93,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     public ArrayList<Pessoa> getListPessoas() {
         ArrayList<Pessoa> aux = getHeyBean().listPessoas();
         if (aux == null)
-            getHeyBean().setMessage("Erro RMI na listagem de listas ou eleição não existe.");
+            addFieldError("pessoas","Erro RMI na listagem de listas ou eleição não existe.");
         return aux;
     }
 

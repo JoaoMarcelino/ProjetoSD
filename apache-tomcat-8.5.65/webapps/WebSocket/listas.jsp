@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
          pageEncoding="ISO-8859-1" %>
-<%@include file="style.jsp"%>
+<%@include file="style.jsp" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -10,6 +10,7 @@
     <title>Hey!</title>
 </head>
 <body>
+<s:fielderror fieldName="all"/>
 <s:if test="heyBean.loggedInAsAdmin==true">
     <s:url action="listPessoas" var="urlTag">
     </s:url>
@@ -50,10 +51,7 @@
     <br>
 
     <h2>Adicionar Lista</h2>
-    <s:if test="heyBean.message!=null">
-        <b><i><s:label name="heyBean.message"/></i></b>
-        <br>
-    </s:if>
+
 
     <s:form action="addListas" id="form">
         <s:hidden name="titulo"/><br>
