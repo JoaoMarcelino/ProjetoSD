@@ -484,20 +484,7 @@ public class HeyBean {
         //associate with Pessoa in RMI
         for (int i = 0; i < totalTries; i++) {
             try {
-                Pessoa pessoa = servidor.getPessoaByFacebookId(facebookId);
-
-                if(pessoa != null){
-                    return false;
-                }
-
-                pessoa = getPessoaByCC(this.username);
-                System.out.println(this.username);
-
-                if (pessoa != null) {
-                    pessoa.setFacebookId(facebookId);
-                    System.out.println("pessoa:" + pessoa.getNumberCC() + "id:" + pessoa.getFacebookId());
-                    return true;
-                }
+                return servidor.changeFacebookId(this.username, facebookId);
 
             }catch(RemoteException e){
                 try {
@@ -548,14 +535,13 @@ public class HeyBean {
         //find Pessoa in RMI
         for (int i = 0; i < totalTries; i++) {
             try {
-                Pessoa pessoa = servidor.getPessoaByCC(numberCC);
 
-                if (pessoa != null) {
-                    pessoa.setFacebookId("null");
-                    System.out.println("pessoa:" + pessoa.getNumberCC() + "id:" + pessoa.getFacebookId());
+                if(servidor.changeFacebookId(numberCC, "null")){
                     return "success";
                 }
-                return "error";
+                else
+                    return "error";
+
             } catch (RemoteException e) {
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");

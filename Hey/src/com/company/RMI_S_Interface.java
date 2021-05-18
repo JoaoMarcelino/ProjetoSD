@@ -41,6 +41,8 @@ public interface RMI_S_Interface extends Remote {
 
     Pessoa getPessoaByCC(String numberCC) throws RemoteException;
 
+    boolean changeFacebookId(String numberCC, String id) throws RemoteException;
+
     Pessoa getPessoaByFacebookId(String facebookId) throws RemoteException;
 
     CopyOnWriteArrayList<Eleicao> listEleicoes() throws RemoteException;

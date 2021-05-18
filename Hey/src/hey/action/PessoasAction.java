@@ -92,7 +92,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
         return SUCCESS;
     }
 
-    public String removeFacebookId(){
+    public String delete(){
         if (numberCC != null) {
             String status = getHeyBean().removeFacebookId(numberCC);
             addFieldError("removeId", status);
@@ -105,6 +105,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 
     public ArrayList<Pessoa> getListPessoas() {
         ArrayList<Pessoa> aux = getHeyBean().listPessoas();
+
         if (aux == null)
             addFieldError("pessoas","Erro RMI na listagem de listas ou eleição não existe.");
         return aux;
