@@ -24,12 +24,17 @@ public class FacebookLoginAction extends ActionSupport implements SessionAware {
 
             boolean newAssociation = bean.associateFacebookAccount();
             if(!newAssociation) {
-                bean.loginByFacebookId();
+                boolean login = bean.loginByFacebookId();
+                if (!login) {
+                    addFieldError("Loginfb", "Erro no login de Facebook.");
+                    return ERROR;
+                }
             }
             session.put("loggedin", true);
             return SUCCESS;
         }
 
+        addFieldError("Loginfb","Erro no login de Facebook.");
         return ERROR;
     }
 

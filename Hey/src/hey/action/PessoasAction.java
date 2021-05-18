@@ -112,7 +112,12 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     }
 
     public String get() {
+
         return SUCCESS;
+    }
+
+    public void auxiliar(){
+        getHeyBean().getAuthUrl();
     }
 
     public void setUsername(String username) {

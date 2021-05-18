@@ -409,9 +409,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         }
 
         return false;
-
     }
-
 
     public Pessoa getPessoaByFacebookId(String facebookId) throws RemoteException {
         for (Pessoa pessoa : pessoas) {
