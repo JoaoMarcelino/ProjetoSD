@@ -18,9 +18,6 @@
     <s:submit value="Login"/>
 </s:form>
 
-<s:form action ="buttonfb" >
-    <s:submit value="Login c/ Facebook"/>
-</s:form>
-
+<p> <a href="<s:property value="heyBean.authUrl"/>">Login c/ Facebook</a>   </p>
 </body>
 </html>
