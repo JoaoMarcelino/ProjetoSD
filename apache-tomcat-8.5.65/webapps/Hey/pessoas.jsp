@@ -60,6 +60,10 @@
         <s:property value="admin"/><br>
         <b><s:label value="Facebook:"/></b>
         <s:property value="facebookId"/><br>
+        <s:form action="deleteFacebookId">
+            <s:hidden name="facebookId" value="%{facebookId}"/>
+            <s:submit value="Remover FacebookId"/>
+        </s:form>
 
         <br>
         <br>

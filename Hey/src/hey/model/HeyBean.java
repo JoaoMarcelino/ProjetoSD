@@ -544,11 +544,11 @@ public class HeyBean {
         return false;
     }
 
-    public String removeFacebookId(String facebookId){
+    public String removeFacebookId(String numberCC){
         //find Pessoa in RMI
         for (int i = 0; i < totalTries; i++) {
             try {
-                Pessoa pessoa = servidor.getPessoaByFacebookId(facebookId);
+                Pessoa pessoa = servidor.getPessoaByCC(numberCC);
 
                 if (pessoa != null) {
                     pessoa.setFacebookId("null");

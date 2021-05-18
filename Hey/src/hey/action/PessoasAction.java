@@ -93,8 +93,8 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     }
 
     public String removeFacebookId(){
-        if (facebookId != null) {
-            String status = getHeyBean().removeFacebookId(facebookId);
+        if (numberCC != null) {
+            String status = getHeyBean().removeFacebookId(numberCC);
             addFieldError("removeId", status);
         }
         else {

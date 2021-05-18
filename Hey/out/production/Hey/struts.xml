@@ -29,7 +29,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
         </global-exception-mappings>
 
         <!-- 'index' action leads to the view provided by index.jsp -->
-        <action name="index" class="hey.action.PessoasAction" method="execute">
+        <action name="index">
             <result>/index.jsp</result>
         </action>
 
