@@ -34,7 +34,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
         </action>
 
         <action name="notificacoes">
-            <result>/notificacoes.jsp</result>
+            <result>/WEB-INF/notificacoes.jsp</result>
         </action>
 
         <!-- 'login' action calls 'execute' in 'LoginAction' -->
@@ -119,6 +119,11 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
 
         <action name="votar" class="hey.action.VotarAction" method="votar">
             <result name="success">/WEB-INF/votar.jsp</result>
+        </action>
+
+        <action name="fblogin" class="hey.action.FacebookLoginAction" method="execute">
+            <result name="success">/home.jsp</result>
+            <result name="error">/error.jsp</result>
         </action>
     </package>
 

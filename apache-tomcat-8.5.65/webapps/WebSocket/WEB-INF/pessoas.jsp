@@ -61,7 +61,7 @@
         <b><s:label value="Facebook:"/></b>
         <s:property value="facebookId"/><br>
         <s:form action="deleteFacebookId">
-            <s:hidden name="numberCC" value="%{numberCC}"/>
+            <s:hidden name="facebookId" value="%{facebookId}"/>
             <s:submit value="Remover FacebookId"/>
         </s:form>
 
@@ -94,6 +94,26 @@
         <s:checkbox name="admin" fieldValue="true"/><br>
         <s:submit value="Registar Votante"/>
     </s:form>
+
+
+    <a id="icon" href="#" class="notification float">
+        <span>Notificações</span>
+        <span id="badge" class="badge">0</span>
+        <iframe src="notificacoes" id="iframe" style="display: none;">
+        </iframe>
+    </a>
+    <script type="text/javascript">
+        icon = document.getElementById("icon");
+        icon.addEventListener("click", function () {
+            iframe = document.getElementById("iframe");
+            if (iframe.style.display == "block") {
+                iframe.style.display = "none";
+            } else {
+                document.getElementById("badge").innerText = 0;
+                iframe.style.display = "block";
+            }
+        });
+    </script>
 </s:if>
 </body>
 </html>

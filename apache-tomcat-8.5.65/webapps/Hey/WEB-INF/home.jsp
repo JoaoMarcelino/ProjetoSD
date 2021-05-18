@@ -22,7 +22,7 @@
         <li>
             <s:url action="listEleicoes.action" var="urlTag">
             </s:url>
-            <s:a href="%{urlTag}">EleiÃ§Ãµes</s:a>
+            <s:a href="%{urlTag}">Eleições</s:a>
         </li>
         <li>
             <s:url action="listMesas.action" var="urlTag">
@@ -43,7 +43,7 @@
 
     <s:fielderror fieldName="home" cssStyle="padding-left: 20px; color: white;"/>
     <a id="icon" href="#" class="notification float">
-        <span>NotificaÃ§Ãµes</span>
+        <span>Notificações</span>
         <span id="badge" class="badge">0</span>
         <iframe src="notificacoes" id="iframe" style="display: none;">
         </iframe>
@@ -59,7 +59,7 @@
         <li>
             <s:url action="listEleicoes" var="urlTag">
             </s:url>
-            <s:a href="%{urlTag}">Eleiï¿½ï¿½es</s:a>
+            <s:a href="%{urlTag}">Eleições</s:a>
         </li>
         <li style="float:right">
             <s:url action="logout" var="urlTag">

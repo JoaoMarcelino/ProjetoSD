@@ -126,7 +126,7 @@
     <a id="icon" href="#" class="notification float">
         <span>Notificações</span>
         <span id="badge" class="badge">0</span>
-        <iframe src="../notificacoes.jsp" id="iframe" style="display: none;">
+        <iframe src="notificacoes" id="iframe" style="display: none;">
         </iframe>
     </a>
 </s:if>

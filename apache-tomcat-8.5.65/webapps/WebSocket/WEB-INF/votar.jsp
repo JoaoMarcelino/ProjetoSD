@@ -87,6 +87,24 @@
         <s:submit value="Votar"/>
     </s:form>
 
+    <a id="icon" href="#" class="notification float">
+        <span>Notificações</span>
+        <span id="badge" class="badge">0</span>
+        <iframe src="notificacoes" id="iframe" style="display: none;">
+        </iframe>
+    </a>
+    <script type="text/javascript">
+        icon = document.getElementById("icon");
+        icon.addEventListener("click", function () {
+            iframe = document.getElementById("iframe");
+            if (iframe.style.display == "block") {
+                iframe.style.display = "none";
+            } else {
+                document.getElementById("badge").innerText = 0;
+                iframe.style.display = "block";
+            }
+        });
+    </script>
 </s:if>
 <s:else>
     <ul>
