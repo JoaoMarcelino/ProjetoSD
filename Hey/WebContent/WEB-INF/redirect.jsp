@@ -7,20 +7,11 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <title>Hey!</title>
+    <title>Home</title>
 </head>
 <body>
-<s:fielderror fieldName="index"/>
-<h1><b>e-Voting UC</b></h1>
-<s:form action="login" method="post">
-    <input placeholder="Numero CC" name="loginNumberCC"/><br>
-    <input placeholder="Password" type="password" name="loginPassword"/><br>
-    <s:submit value="Login"/>
-</s:form>
-
-<s:form action ="buttonfb" >
-    <s:submit value="Login c/ Facebook"/>
-</s:form>
-
+<p> <a href="<s:property value="authUrl"/>">Login Facebook</a>   </p>
+    </iframe>
+</script>
 </body>
 </html>

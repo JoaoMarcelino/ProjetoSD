@@ -130,6 +130,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
         </action>
 
         <action name="buttonfb" class="hey.action.PessoasAction" method="auxiliar">
+            <result name="success">/WEB-INF/redirect.jsp</result>
         </action>
     </package>
 

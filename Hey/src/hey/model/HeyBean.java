@@ -570,9 +570,8 @@ public class HeyBean {
 
 
     public String getAuthUrl() {
-
         this.authUrl = this.fb.getAuthorizationURL();
-        return authUrl;
+        return this.fb.getAuthorizationURL();
     }
 
     public String getAuthCode() {

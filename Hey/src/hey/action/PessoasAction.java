@@ -112,12 +112,11 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     }
 
     public String get() {
-
         return SUCCESS;
     }
 
-    public void auxiliar(){
-        getHeyBean().getAuthUrl();
+    public String auxiliar(){
+        return SUCCESS;
     }
 
     public void setUsername(String username) {
@@ -252,6 +251,10 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 
     public void setFacebookId(String facebookId) {
         this.facebookId = facebookId;
+    }
+
+    public String getAuthUrl(){
+        return getHeyBean().getAuthUrl();
     }
 
     public HeyBean getHeyBean() {
