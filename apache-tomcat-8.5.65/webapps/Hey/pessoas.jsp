@@ -58,6 +58,8 @@
         <s:property value="telefone"/><br>
         <b><s:label value="isAdmin:"/></b>
         <s:property value="admin"/><br>
+        <b><s:label value="Facebook:"/></b>
+        <s:property value="facebookId"/><br>
 
         <br>
         <br>

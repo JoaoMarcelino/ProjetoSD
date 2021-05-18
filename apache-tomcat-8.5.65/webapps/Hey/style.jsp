@@ -85,7 +85,7 @@
             margin: 10px 0px;
             padding: 0;
             overflow: hidden;
-            background-color: #6a6a6a;
+            background-color: #404040;
         }
 
         li {

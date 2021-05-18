@@ -29,7 +29,7 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
         </global-exception-mappings>
 
         <!-- 'index' action leads to the view provided by index.jsp -->
-        <action name="index" >
+        <action name="index" class="hey.action.PessoasAction" method="execute">
             <result>/index.jsp</result>
         </action>
 
@@ -122,7 +122,8 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
         </action>
 
         <action name="fblogin" class="hey.action.FacebookLoginAction" method="execute">
-            <result>/home.jsp</result>
+            <result name="success">/home.jsp</result>
+            <result name="error">/error.jsp</result>
         </action>
     </package>
 

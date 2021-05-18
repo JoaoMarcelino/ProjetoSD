@@ -13,9 +13,11 @@
 <s:fielderror fieldName="index"/>
 <h1><b>e-Voting UC</b></h1>
 <s:form action="login" method="post">
-    <input placeholder="N�mero CC" name="loginNumberCC"/><br>
+    <input placeholder="Numero CC" name="loginNumberCC"/><br>
     <input placeholder="Password" type="password" name="loginPassword"/><br>
     <s:submit value="Login"/>
 </s:form>
+
+<p> <a href="<s:property value="heyBean.authUrl"/>">LogIn with Facebook Account</a>   </p>
 </body>
 </html>

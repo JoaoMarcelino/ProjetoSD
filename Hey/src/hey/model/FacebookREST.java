@@ -29,7 +29,6 @@ public class FacebookREST {
     private String secretState;
 
     public FacebookREST(){
-        System.out.println("rest");
         loadProperties();
          this.service = new ServiceBuilder(apiKey)
                 .apiSecret(apiSecret)
@@ -39,7 +38,6 @@ public class FacebookREST {
     }
 
     public String getAuthorizationURL() {
-        System.out.println("getAuthorizationURL");
         String authorizationURL = this.service.getAuthorizationUrl(secretState);
 
         return authorizationURL;
@@ -75,6 +73,36 @@ public class FacebookREST {
         } catch (InterruptedException | ParseException e) {
             e.printStackTrace();
         }
+        return "";
+    }
+
+    public String getAccountId(OAuth2AccessToken accessToken){
+        OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
+        this.service.signRequest(accessToken, request);
+
+        try(Response response = this.service.execute(request)){
+            String reply = response.getBody();
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(reply);
+
+            return(String) json.get("id");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException | ParseException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String VoteAppeal(OAuth2AccessToken accessToken){
+        //todo
+        return "";
+    }
+
+    public String shareResults(OAuth2AccessToken accessToken){
+        //todo
         return "";
     }
 

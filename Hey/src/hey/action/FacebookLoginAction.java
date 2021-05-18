@@ -17,13 +17,19 @@ public class FacebookLoginAction extends ActionSupport implements SessionAware {
     @Override
     public String execute(){
 
-        HeyBean fb = getHeyBean();
-        fb.setAuthCode(this.code);
-        fb.setSecretState(this.state);
-        if(fb.getAccessToken()){
+        HeyBean bean = getHeyBean();
+        bean.setAuthCode(this.code);
+        bean.setSecretState(this.state);
+        if(bean.getAccessToken()){
+
+            boolean newAssociation = bean.associateFacebookAccount();
+            if(!newAssociation) {
+                bean.loginByFacebookId();
+            }
             session.put("loggedin", true);
             return SUCCESS;
         }
+
         return ERROR;
     }
 

@@ -28,6 +28,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     private GregorianCalendar expireCCDate;
 
     private boolean admin;
+    private String facebookId;
 
     private String loginNumberCC;
     private String loginPassword;
@@ -40,9 +41,9 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 
     public String login() {
         if (loginNumberCC.equals("admin") && loginPassword.equals("admin")) {
-            logout();
             getHeyBean().setUsername("Admin");
             getHeyBean().setLoggedInAsAdmin(true);
+            logout();
             return SUCCESS;
         }
         else {
@@ -51,6 +52,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
                 getHeyBean().setUsername(loginNumberCC);
                 getHeyBean().setPassword(loginPassword);
                 Pessoa p=getHeyBean().getPessoaByCC(loginNumberCC);
+                logout();
                 if(p!=null && p.isAdmin()){
                     getHeyBean().setLoggedInAsAdmin(true);
                 }
@@ -87,6 +89,17 @@ public class PessoasAction extends ActionSupport implements SessionAware {
             addFieldError("pessoas","Falta informacao para o registo do votante.");
         }
 
+        return SUCCESS;
+    }
+
+    public String removeFacebookId(){
+        if (facebookId != null) {
+            String status = getHeyBean().removeFacebookId(facebookId);
+            addFieldError("removeId", status);
+        }
+        else {
+            addFieldError("removeId","Falta informacao para a disossiação do facebookId.");
+        }
         return SUCCESS;
     }
 
@@ -225,6 +238,14 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 
     public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public String getFacebookId() {
+        return facebookId;
+    }
+
+    public void setFacebookId(String facebookId) {
+        this.facebookId = facebookId;
     }
 
     public HeyBean getHeyBean() {
