@@ -16,7 +16,7 @@ public class FacebookLoginAction extends ActionSupport implements SessionAware {
 
     @Override
     public String execute(){
-
+        System.out.println("execute");
         HeyBean bean = getHeyBean();
         bean.setAuthCode(this.code);
         bean.setSecretState(this.state);

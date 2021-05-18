@@ -39,7 +39,6 @@ public class FacebookREST {
 
     public String getAuthorizationURL() {
         String authorizationURL = this.service.getAuthorizationUrl(secretState);
-
         return authorizationURL;
     }
 
