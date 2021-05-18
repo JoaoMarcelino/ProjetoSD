@@ -63,7 +63,10 @@ public class FacebookREST {
             String reply = response.getBody();
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(reply);
-
+            System.out.println("HTTP RESPONSE: =============");
+            System.out.println(response.getCode());
+            System.out.println(response.getBody());
+            System.out.println("END RESPONSE ===============");
             return(String) json.get("name");
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,7 +86,10 @@ public class FacebookREST {
             String reply = response.getBody();
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(reply);
-
+            System.out.println("HTTP RESPONSE: =============");
+            System.out.println(response.getCode());
+            System.out.println(response.getBody());
+            System.out.println("END RESPONSE ===============");
             return(String) json.get("id");
         } catch (IOException e) {
             e.printStackTrace();
@@ -95,13 +101,59 @@ public class FacebookREST {
         return "";
     }
 
-    public String VoteAppeal(OAuth2AccessToken accessToken){
-        //todo
+    public String voteAppeal(OAuth2AccessToken accessToken){
+        OAuthRequest request = new OAuthRequest(Verb.POST, PROTECTED_RESOURCE_URL + "/feed");
+        System.out.println("voto");
+        request.addHeader("Content-Type", "application/json");
+        request.setPayload("{\n" +
+                "    \"message\": " + "Votem Cornos" +",\n" +
+                "    \"link\": http://localhost:8080/Hey/listResultados.action,\n" +
+                "}");
+        this.service.signRequest(accessToken, request);
+
+        try(Response response = this.service.execute(request)){
+            String reply = response.getBody();
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(reply);
+            System.out.println("HTTP RESPONSE: =============");
+            System.out.println(response.getCode());
+            System.out.println(response.getBody());
+            System.out.println("END RESPONSE ===============");
+            return(String) json.get("id");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException | ParseException e) {
+            e.printStackTrace();
+        }
         return "";
+
     }
 
     public String shareResults(OAuth2AccessToken accessToken){
-        //todo
+        OAuthRequest request = new OAuthRequest(Verb.POST, PROTECTED_RESOURCE_URL + "/feed");
+        System.out.println("resultados");
+
+        request.addHeader("Content-Type", "application/json");
+        request.setPayload("{\n" +
+                "    \"message\": " + "RESULTADOS: " +",\n" +
+                "    \"access_token\": " + accessToken +",\n" +
+                "}");
+        service.signRequest(accessToken, request);
+        try(Response response = this.service.execute(request)){
+            String reply = response.getBody();
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(reply);
+
+            return(String) json.get("id");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException | ParseException e) {
+            e.printStackTrace();
+        }
         return "";
     }
 
