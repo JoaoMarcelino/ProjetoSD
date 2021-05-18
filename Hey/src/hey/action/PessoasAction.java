@@ -7,6 +7,7 @@ import com.company.Departamento;
 import com.company.Pessoa;
 import com.company.Profissao;
 import com.opensymphony.xwork2.ActionSupport;
+import hey.model.FacebookBean;
 import hey.model.HeyBean;
 import org.apache.struts2.interceptor.SessionAware;
 
@@ -27,6 +28,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     private GregorianCalendar expireCCDate;
 
     private boolean admin;
+    private String facebookId;
 
     private String loginNumberCC;
     private String loginPassword;
@@ -36,11 +38,12 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     private List<String> deps;
     private String yourDep = "";
 
+
     public String login() {
         if (loginNumberCC.equals("admin") && loginPassword.equals("admin")) {
-            logout();
             getHeyBean().setUsername("Admin");
             getHeyBean().setLoggedInAsAdmin(true);
+            logout();
             return SUCCESS;
         }
         else {
@@ -49,6 +52,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
                 getHeyBean().setUsername(loginNumberCC);
                 getHeyBean().setPassword(loginPassword);
                 Pessoa p=getHeyBean().getPessoaByCC(loginNumberCC);
+                logout();
                 if(p!=null && p.isAdmin()){
                     getHeyBean().setLoggedInAsAdmin(true);
                 }
@@ -85,6 +89,17 @@ public class PessoasAction extends ActionSupport implements SessionAware {
             addFieldError("pessoas","Falta informacao para o registo do votante.");
         }
 
+        return SUCCESS;
+    }
+
+    public String removeFacebookId(){
+        if (numberCC != null) {
+            String status = getHeyBean().removeFacebookId(numberCC);
+            addFieldError("removeId", status);
+        }
+        else {
+            addFieldError("removeId","Falta informacao para a disossiação do facebookId.");
+        }
         return SUCCESS;
     }
 
@@ -225,6 +240,14 @@ public class PessoasAction extends ActionSupport implements SessionAware {
         this.admin = admin;
     }
 
+    public String getFacebookId() {
+        return facebookId;
+    }
+
+    public void setFacebookId(String facebookId) {
+        this.facebookId = facebookId;
+    }
+
     public HeyBean getHeyBean() {
         if (!session.containsKey("heyBean"))
             this.setHeyBean(new HeyBean());
@@ -239,4 +262,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     public void setSession(Map<String, Object> session) {
         this.session = session;
     }
+
+
+
 }

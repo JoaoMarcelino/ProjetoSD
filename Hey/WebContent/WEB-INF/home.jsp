@@ -22,7 +22,7 @@
         <li>
             <s:url action="listEleicoes.action" var="urlTag">
             </s:url>
-            <s:a href="%{urlTag}">Eleições</s:a>
+            <s:a href="%{urlTag}">EleiÃ§Ãµes</s:a>
         </li>
         <li>
             <s:url action="listMesas.action" var="urlTag">
@@ -43,7 +43,7 @@
 
     <s:fielderror fieldName="home" cssStyle="padding-left: 20px; color: white;"/>
     <a id="icon" href="#" class="notification float">
-        <span>Notificações</span>
+        <span>NotificaÃ§Ãµes</span>
         <span id="badge" class="badge">0</span>
         <iframe src="notificacoes" id="iframe" style="display: none;">
         </iframe>
@@ -59,7 +59,7 @@
         <li>
             <s:url action="listEleicoes" var="urlTag">
             </s:url>
-            <s:a href="%{urlTag}">Eleições</s:a>
+            <s:a href="%{urlTag}">Eleiï¿½ï¿½es</s:a>
         </li>
         <li style="float:right">
             <s:url action="logout" var="urlTag">
@@ -72,6 +72,19 @@
 </s:else>
 
 <h1>Home Screen</h1>
+
+
+<s:if test="heyBean.loginToken==true">
+    <p> Hello,</p>
+    <p> <s:property value="heyBean.name"/></p>
+</s:if>
+<s:else>
+    <p> Not Linked to Facebook </p>
+    <p> <a href="<s:property value="heyBean.authUrl"/>">Link with Facebook Account</a>   </p>
+</s:else>
+
+
+
 <script type="text/javascript">
     icon = document.getElementById("icon");
     icon.addEventListener("click", function () {

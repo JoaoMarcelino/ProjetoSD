@@ -4,6 +4,7 @@
 package hey.model;
 
 import com.company.*;
+import com.github.scribejava.core.model.OAuth2AccessToken;
 
 import java.io.*;
 import java.nio.file.Paths;
@@ -11,6 +12,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Properties;
@@ -27,7 +29,16 @@ public class HeyBean {
     private String username;
     private String password;
     private boolean loggedInAsAdmin;
+    private String facebookId = "";
 
+    //FacebookBean
+    private FacebookREST fb;
+    private String authUrl;
+    private String authCode;
+    private String secretState;
+    private OAuth2AccessToken accessToken;
+    private boolean loginToken;
+    private String name = "";
 
     public HeyBean() {
         totalTries = 3;
@@ -36,6 +47,9 @@ public class HeyBean {
 
             Registry r = LocateRegistry.getRegistry(RMIHostIP, RMIHostPort);
             servidor = (RMI_S_Interface) r.lookup("ServidorRMI");
+
+            this.fb = new FacebookREST();
+
         } catch (NotBoundException | RemoteException e) {
             e.printStackTrace(); // what happens *after* we reach this line?
         }
@@ -385,6 +399,13 @@ public class HeyBean {
     public void logout(String numeroCC, String password) {
         for (int i = 0; i < totalTries; i++) {
             try {
+                this.username = null;
+                this.password = null;
+                this.accessToken = null;
+                this.secretState = null;
+                this.authCode = null;
+                this.loggedInAsAdmin = false;
+                this.loginToken = false;
                 servidor.logout(numeroCC, password, true);
                 return;
             } catch (RemoteException e) {
@@ -451,5 +472,154 @@ public class HeyBean {
         } catch (IOException e) {
             System.out.println("Erro na leitura de ficheiro de configurações");
         }
+    }
+
+    //Facebook Methods
+
+    public boolean associateFacebookAccount() {
+
+        //getId
+        String facebookId = this.fb.getAccountId(this.accessToken);
+
+        //associate with Pessoa in RMI
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                Pessoa pessoa = servidor.getPessoaByFacebookId(facebookId);
+
+                if(pessoa != null){
+                    return false;
+                }
+
+                pessoa = getPessoaByCC(this.username);
+                System.out.println(this.username);
+
+                if (pessoa != null) {
+                    pessoa.setFacebookId(facebookId);
+                    System.out.println("pessoa:" + pessoa.getNumberCC() + "id:" + pessoa.getFacebookId());
+                    return true;
+                }
+
+            }catch(RemoteException e){
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                }
+                if (i == totalTries - 1)
+                    return false;
+            }
+
+        }
+
+        return false;
+    }
+
+    public boolean loginByFacebookId(){
+
+        String facebookId = fb.getAccountId(this.accessToken);
+
+        //find Pessoa in RMI
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                Pessoa pessoa = servidor.getPessoaByFacebookId(facebookId);
+
+                if(pessoa != null){
+
+                    this.username = pessoa.getNumberCC();
+                    this.password = pessoa.getPassword();
+
+                    this.setLoggedInAsAdmin(pessoa.isAdmin());
+
+                    return true;
+                }
+                return false;
+            } catch (RemoteException e) {
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                }
+                if (i == totalTries - 1)
+                    return false;
+            }
+        }
+        return false;
+    }
+
+    public String removeFacebookId(String numberCC){
+        //find Pessoa in RMI
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                Pessoa pessoa = servidor.getPessoaByCC(numberCC);
+
+                if (pessoa != null) {
+                    pessoa.setFacebookId("null");
+                    System.out.println("pessoa:" + pessoa.getNumberCC() + "id:" + pessoa.getFacebookId());
+                    return "success";
+                }
+                return "error";
+            } catch (RemoteException e) {
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                }
+                if (i == totalTries - 1)
+                    return "error";
+            }
+        }
+        return "error";
+    }
+
+    public boolean getAccessToken() {
+        if (this.accessToken != null)
+            return true;
+
+        this.accessToken = this.fb.getAccessToken(this.authCode, this.secretState);
+        if (this.accessToken != null)
+            return true;
+        return false;
+    }
+
+    public boolean isLoginToken() {
+        return getAccessToken();
+    }
+
+
+    public String getAuthUrl() {
+
+        this.authUrl = this.fb.getAuthorizationURL();
+        return authUrl;
+    }
+
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public void setAuthCode(String authCode) {
+        this.authCode = authCode;
+    }
+
+    public String getSecretState() {
+        return secretState;
+    }
+
+    public void setSecretState(String secretState) {
+        this.secretState = secretState;
+    }
+
+
+    public String getName() throws ParseException {
+        return this.fb.getAccountName(this.accessToken);
+
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getFacebookId() {
+        return facebookId;
+    }
+
+    public void setFacebookId(String facebookId) {
+        this.facebookId = facebookId;
     }
 }

@@ -58,6 +58,12 @@
         <s:property value="telefone"/><br>
         <b><s:label value="isAdmin:"/></b>
         <s:property value="admin"/><br>
+        <b><s:label value="Facebook:"/></b>
+        <s:property value="facebookId"/><br>
+        <s:form action="deleteFacebookId">
+            <s:hidden name="numberCC" value="%{numberCC}"/>
+            <s:submit value="Remover FacebookId"/>
+        </s:form>
 
         <br>
         <br>

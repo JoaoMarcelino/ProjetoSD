@@ -14,7 +14,7 @@ public class Pessoa implements Serializable {
     private GregorianCalendar expireCCDate;
     private Profissao profissao;
 
-
+    private String facebookId;
     private boolean admin;
 
     public Pessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, GregorianCalendar expireCCDate, Profissao profissao) {
@@ -27,6 +27,7 @@ public class Pessoa implements Serializable {
         this.numberCC = numberCC;
         this.expireCCDate = expireCCDate;
         this.profissao = profissao;
+        this.facebookId = "null";
         this.admin = false;
     }
 
@@ -40,6 +41,7 @@ public class Pessoa implements Serializable {
         this.numberCC = numberCC;
         this.expireCCDate = expireCCDate;
         this.profissao = profissao;
+        this.facebookId = "null";
         this.admin = isAdmin;
     }
 
@@ -66,7 +68,6 @@ public class Pessoa implements Serializable {
     public void setNumberCC(String numberCC) {
         this.numberCC = numberCC;
     }
-
 
     public void setExpireCCDate(GregorianCalendar expireCCDate) {
         this.expireCCDate = expireCCDate;
@@ -116,4 +117,8 @@ public class Pessoa implements Serializable {
     public void setAdmin(boolean admin) {
         admin = admin;
     }
+
+    public String getFacebookId() { return facebookId; }
+
+    public void setFacebookId(String facebookId) { this.facebookId = facebookId; }
 }

@@ -399,6 +399,14 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         return null;
     }
 
+    public Pessoa getPessoaByFacebookId(String facebookId) throws RemoteException {
+        for (Pessoa pessoa : pessoas) {
+            if (pessoa.getFacebookId().equals(facebookId))
+                return pessoa;
+        }
+        return null;
+    }
+
     public Eleicao getEleicaoByName(String nome) throws RemoteException {
         for (Eleicao eleicao : eleicoes) {
             if (eleicao.getTitulo().equals(nome))
