@@ -34,6 +34,8 @@ public class HeyBean {
     //FacebookBean
     private FacebookREST fb;
     private String authUrl;
+    private String voteAppeal;
+    private String shareResults;
     private String authCode;
     private String secretState;
     private OAuth2AccessToken accessToken;
@@ -553,6 +555,12 @@ public class HeyBean {
         }
         return "error";
     }
+
+    public String getShareResults() {
+        return this.fb.shareResults(this.accessToken);
+    }
+
+
 
     public boolean getAccessToken() {
         if (this.accessToken != null)

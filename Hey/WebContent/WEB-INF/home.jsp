@@ -77,11 +77,16 @@
 <s:if test="heyBean.loginToken==true">
     <p> Hello,</p>
     <p> <s:property value="heyBean.name"/></p>
+
+
+    <p> <a href="<s:property value="heyBean.shareResults"/>">Share Results</a>   </p>
+
 </s:if>
 <s:else>
     <p> Not Linked to Facebook </p>
     <p> <a href="<s:property value="heyBean.authUrl"/>">Link with Facebook Account</a>   </p>
 </s:else>
+
 
 
 
