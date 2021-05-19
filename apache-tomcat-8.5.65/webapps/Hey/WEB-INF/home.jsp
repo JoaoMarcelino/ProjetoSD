@@ -7,7 +7,38 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Home</title>
+    <style type="text/css">
+        .fa-facebook {
+            background: #3B5998;
+            color: white;
+        }
+
+        .fa {
+            padding: 5px 0px;
+            font-size: 30px;
+            width: 10%;
+            text-align: center;
+            text-decoration: none;
+            margin: 5px 0px;
+        }
+
+        .facebookBanner {
+            font-size: 15px;
+            margin: 0 0 30px 0;
+        }
+
+        .modal-content {
+            text-align: center;
+            background-color: #fefefe;
+            margin: 5% auto 15% auto;
+            /* 5% from the top, 15% from the bottom and centered */
+            border: 0px solid #888;
+            width: 50%;
+            /* Could be more or less, depending on screen size */
+        }
+    </style>
 </head>
 <body>
 
@@ -77,18 +108,17 @@
     <s:fielderror fieldName="home" cssStyle="padding-left: 20px; color: white;"/>
 </s:else>
 
-<h1>Home Screen</h1>
+<s:div cssClass="modal-content">
+    <h1>Início</h1>
 
-<s:if test="heyBean.fb.accessToken!=null">
-    <p> Bem-vindo/a,</p>
-    <p> <s:property value="heyBean.fb.accountName"/></p>
-</s:if>
-<s:else>
-    <p> Not Linked to Facebook </p>
-    <p> <a href="<s:property value="heyBean.fb.associationURL"/>">Link with Facebook Account</a>   </p>
-</s:else>
-
-
+    <s:if test="heyBean.fb.accessToken!=null">
+        <p><b>Bem-vindo/a,<s:property value="heyBean.fb.accountName"/></b></p>
+    </s:if>
+    <s:else>
+        <p><b>Associar Conta do Facebook</b></p>
+        <a href="<s:property value="heyBean.fb.associationURL"/>" class="fa fa-facebook button"></a>
+    </s:else>
+</s:div>
 
 
 <script type="text/javascript">
