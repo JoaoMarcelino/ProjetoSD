@@ -59,36 +59,12 @@
         <s:iterator value="profissoesPermitidas">
             <s:property/>
         </s:iterator><br>
-        <b><s:label value="Mesas Associadas:"/></b>
         <br>
-        <s:iterator value="mesas">
-            <s:property value="departamento"/>
-            <s:property value="ip"/>
-            <s:property value="port"/>
-            <s:property value="status"/>
-            <s:form action="removeMesaEleicoes">
-                <s:hidden name="departamento" value="%{departamento}"/>
-                <s:hidden name="titulo" value="%{titulo}"/>
-                <s:submit value="Desassociar Mesa"/>
-            </s:form>
-            <br>
-        </s:iterator>
         <s:form action="listListas">
             <s:hidden name="titulo" value="%{titulo}"/>
-            <s:submit value="Listas"/>
+            <s:submit value="Ver Detalhes"/>
         </s:form>
         <br>
-        <s:form action="listResultados">
-            <s:hidden name="titulo" value="%{titulo}"/>
-            <s:submit value="Consultar Resultados"/>
-        </s:form>
-        <br>
-        <s:form action="addMesaEleicoes">
-            <s:hidden name="titulo" value="%{titulo}"/>
-            <s:label value="Associar Mesa:"/>
-            <s:textfield name="nome" placeholder="Departamento"/>
-            <s:submit value="Associar Mesa"/>
-        </s:form>
         <br>
         <br>
     </s:iterator>
@@ -171,14 +147,11 @@
         <s:iterator value="profissoesPermitidas">
             <s:property/>
         </s:iterator><br>
-        <b><s:label value="Mesas Associadas:"/></b>
         <br>
-        <s:iterator value="mesas">
-            <s:property value="departamento"/>
-            <s:property value="ip"/>
-            <s:property value="port"/>
-            <s:property value="status"/>
-        </s:iterator>
+        <s:form action="listListas">
+            <s:hidden name="titulo" value="%{titulo}"/>
+            <s:submit value="Ver Detalhes"/>
+        </s:form>
         <br>
         <br>
     </s:iterator>

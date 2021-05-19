@@ -3,10 +3,7 @@
  */
 package hey.action;
 
-import com.company.Departamento;
-import com.company.Lista;
-import com.company.Pessoa;
-import com.company.Profissao;
+import com.company.*;
 import com.opensymphony.xwork2.ActionSupport;
 import hey.model.HeyBean;
 import org.apache.struts2.interceptor.SessionAware;
@@ -23,6 +20,7 @@ public class ListasAction extends ActionSupport implements SessionAware {
     private int nMembros;
     private List<String> profs;
     private String yourProf = "";
+
 
     public String post() {
         Profissao profissao = getYourProf();

@@ -43,7 +43,50 @@
     </ul>
 
     <s:fielderror fieldName="listas" cssStyle="padding-left: 20px; color: white;"/>
-    <h1>Listas de <s:property value="titulo"/></h1>
+    <h1><s:property value="titulo"/></h1>
+
+    <s:iterator value="HeyBean.getEleicaoByTitulo(titulo)">
+        <b><s:label value="Título:"/></b>
+        <s:property value="titulo"/><br>
+        <b><s:label value="Descrição:"/></b>
+        <s:property value="descricao"/><br>
+        <b><s:label value="Data de Início:"/></b>
+        <s:date name="dataInicio" format="dd/MM/yy HH:mm"/><br>
+        <b><s:label value="Data de Fim:"/></b>
+        <s:date name="dataFim" format="dd/MM/yy HH:mm"/><br>
+        <b><s:label value="Profissões Permitidas:"/></b>
+        <s:iterator value="profissoesPermitidas">
+            <s:property/>
+        </s:iterator><br>
+        <b><s:label value="Mesas Associadas:"/></b>
+        <br>
+        <s:iterator value="mesas">
+            <s:property value="departamento"/>
+            <s:property value="ip"/>
+            <s:property value="port"/>
+            <s:property value="status"/>
+            <s:form action="removeMesaEleicoes">
+                <s:hidden name="departamento" value="%{departamento}"/>
+                <s:hidden name="titulo" value="%{titulo}"/>
+                <s:submit value="Desassociar Mesa"/>
+            </s:form>
+            <br>
+        </s:iterator>
+        <br>
+        <s:form action="listResultados">
+            <s:hidden name="titulo" value="%{titulo}"/>
+            <s:submit value="Consultar Resultados"/>
+        </s:form>
+        <br>
+        <s:form action="addMesaEleicoes">
+            <s:hidden name="titulo" value="%{titulo}"/>
+            <s:label value="Associar Mesa:"/>
+            <s:textfield name="nome" placeholder="Departamento"/>
+            <s:submit value="Associar Mesa"/>
+        </s:form>
+        <br>
+        <br>
+    </s:iterator>
 
     <s:iterator value="listas">
         <b><s:label value="Nome:"/></b>
@@ -153,7 +196,39 @@
     </ul>
 
     <s:fielderror fieldName="listas" cssStyle="padding-left: 20px; color: white;"/>
-    <h1>Listas de <s:property value="titulo"/></h1>
+    <h1><s:property value="titulo"/></h1>
+
+
+    <s:iterator value="HeyBean.getEleicaoByTitulo(titulo)">
+        <b><s:label value="Título:"/></b>
+        <s:property value="titulo"/><br>
+        <b><s:label value="Descrição:"/></b>
+        <s:property value="descricao"/><br>
+        <b><s:label value="Data de Início:"/></b>
+        <s:date name="dataInicio" format="dd/MM/yy HH:mm"/><br>
+        <b><s:label value="Data de Fim:"/></b>
+        <s:date name="dataFim" format="dd/MM/yy HH:mm"/><br>
+        <b><s:label value="Profissões Permitidas:"/></b>
+        <s:iterator value="profissoesPermitidas">
+            <s:property/>
+        </s:iterator><br>
+        <b><s:label value="Mesas Associadas:"/></b>
+        <br>
+        <s:iterator value="mesas">
+            <s:property value="departamento"/>
+            <s:property value="ip"/>
+            <s:property value="port"/>
+            <s:property value="status"/>
+            <br>
+        </s:iterator>
+        <br>
+        <s:form action="listResultados">
+            <s:hidden name="titulo" value="%{titulo}"/>
+            <s:submit value="Consultar Resultados"/>
+        </s:form>
+        <br>
+        <br>
+    </s:iterator>
 
     <s:iterator value="listas">
         <b><s:label value="Nome:"/></b>
