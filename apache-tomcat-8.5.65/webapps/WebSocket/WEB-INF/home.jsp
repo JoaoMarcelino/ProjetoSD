@@ -22,7 +22,7 @@
         <li>
             <s:url action="listEleicoes.action" var="urlTag">
             </s:url>
-            <s:a href="%{urlTag}">EleiÃ§Ãµes</s:a>
+            <s:a href="%{urlTag}">Eleições</s:a>
         </li>
         <li>
             <s:url action="listMesas.action" var="urlTag">
@@ -43,7 +43,7 @@
 
     <s:fielderror fieldName="home" cssStyle="padding-left: 20px; color: white;"/>
     <a id="icon" href="#" class="notification float">
-        <span>NotificaÃ§Ãµes</span>
+        <span>Notificações</span>
         <span id="badge" class="badge">0</span>
         <iframe src="notificacoes" id="iframe" style="display: none;">
         </iframe>
@@ -59,7 +59,7 @@
         <li>
             <s:url action="listEleicoes" var="urlTag">
             </s:url>
-            <s:a href="%{urlTag}">Eleiï¿½ï¿½es</s:a>
+            <s:a href="%{urlTag}">Eleições</s:a>
         </li>
         <li style="float:right">
             <s:url action="logout" var="urlTag">
@@ -77,11 +77,16 @@
 <s:if test="heyBean.loginToken==true">
     <p> Hello,</p>
     <p> <s:property value="heyBean.name"/></p>
+
+
+    <p> <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2F&redirect_uri=http://localhost:8080/Hey/fblogin.action">Share Results</a>   </p>
+
 </s:if>
 <s:else>
     <p> Not Linked to Facebook </p>
     <p> <a href="<s:property value="heyBean.authUrl"/>">Link with Facebook Account</a>   </p>
 </s:else>
+
 
 
 

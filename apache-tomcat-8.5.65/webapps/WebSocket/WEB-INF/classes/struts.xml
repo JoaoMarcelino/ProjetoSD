@@ -29,8 +29,9 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
         </global-exception-mappings>
 
         <!-- 'index' action leads to the view provided by index.jsp -->
-        <action name="index">
-            <result>/WEB-INF/index.jsp</result>
+        <action name="index" class="hey.action.IndexAction" method="index">
+            <result name="success">/WEB-INF/home.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="notificacoes">
@@ -116,14 +117,21 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
             <result name="success">/WEB-INF/votar.jsp</result>
         </action>
 
-
         <action name="votar" class="hey.action.VotarAction" method="votar">
             <result name="success">/WEB-INF/votar.jsp</result>
         </action>
 
         <action name="fblogin" class="hey.action.FacebookLoginAction" method="execute">
-            <result name="success">/home.jsp</result>
-            <result name="error">/error.jsp</result>
+            <result name="success">/WEB-INF/home.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
+        </action>
+
+        <action name="deleteFacebookId" class="hey.action.PessoasAction" method="delete">
+            <result name="success">/WEB-INF/pessoas.jsp</result>
+        </action>
+
+        <action name="buttonfb" class="hey.action.PessoasAction" method="auxiliar">
+            <result name="success">/WEB-INF/redirect.jsp</result>
         </action>
     </package>
 

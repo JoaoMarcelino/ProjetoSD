@@ -20,7 +20,6 @@ public class FacebookLoginAction extends ActionSupport implements SessionAware {
         bean.setAuthCode(this.code);
         bean.setSecretState(this.state);
         if(bean.getAccessToken()){
-
             boolean newAssociation = bean.associateFacebookAccount();
             if(!newAssociation) {
                 boolean login = bean.loginByFacebookId();

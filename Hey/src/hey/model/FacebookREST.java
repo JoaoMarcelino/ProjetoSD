@@ -27,6 +27,7 @@ public class FacebookREST {
     private static String apiSecret;
     private OAuth20Service service;
     private String secretState;
+    private OAuth2AccessToken accessToken;
 
     public FacebookREST(){
         loadProperties();
@@ -102,12 +103,15 @@ public class FacebookREST {
     }
 
     public String voteAppeal(OAuth2AccessToken accessToken){
-        OAuthRequest request = new OAuthRequest(Verb.POST, PROTECTED_RESOURCE_URL + "/feed");
+        OAuthRequest request = new OAuthRequest(Verb.POST, PROTECTED_RESOURCE_URL + "/share");
         System.out.println("voto");
         request.addHeader("Content-Type", "application/json");
         request.setPayload("{\n" +
-                "    \"message\": " + "Votem Cornos" +",\n" +
-                "    \"link\": http://localhost:8080/Hey/listResultados.action,\n" +
+                "    \"app_id\": " + apiKey +",\n" +
+                "    \"display\": " + "popup" +",\n" +
+                "    \"quote\": " + "Eu gosto do www.google.com" +",\n" +
+                "    \"href\": " + "www.google.com" +",\n" +
+                "    \"redirect_uri\": " + "www.google.com" +",\n" +
                 "}");
         this.service.signRequest(accessToken, request);
 
@@ -132,20 +136,26 @@ public class FacebookREST {
     }
 
     public String shareResults(OAuth2AccessToken accessToken){
-        OAuthRequest request = new OAuthRequest(Verb.POST, PROTECTED_RESOURCE_URL + "/feed");
-        System.out.println("resultados");
-
+        OAuthRequest request = new OAuthRequest(Verb.POST, PROTECTED_RESOURCE_URL + "/share");
+        System.out.println("voto");
         request.addHeader("Content-Type", "application/json");
         request.setPayload("{\n" +
-                "    \"message\": " + "RESULTADOS: " +",\n" +
-                "    \"access_token\": " + accessToken +",\n" +
+                "    \"app_id\": " + apiKey +",\n" +
+                "    \"display\": " + "popup" +",\n" +
+                "    \"quote\": " + "Eu gosto do www.google.com" +",\n" +
+                "    \"href\": " + "www.google.com" +",\n" +
+                "    \"redirect_uri\": " + "www.google.com" +",\n" +
                 "}");
-        service.signRequest(accessToken, request);
+        this.service.signRequest(accessToken, request);
+
         try(Response response = this.service.execute(request)){
             String reply = response.getBody();
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(reply);
-
+            System.out.println("HTTP RESPONSE: =============");
+            System.out.println(response.getCode());
+            System.out.println(response.getBody());
+            System.out.println("END RESPONSE ===============");
             return(String) json.get("id");
         } catch (IOException e) {
             e.printStackTrace();

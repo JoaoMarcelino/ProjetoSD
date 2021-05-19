@@ -15,6 +15,9 @@
 
     <ul>
         <li>
+            <s:a href="home">Início</s:a>
+        </li>
+        <li>
             <s:url action="listPessoas.action" var="urlTag">
             </s:url>
             <s:a href="%{urlTag}">Votantes</s:a>
@@ -52,6 +55,9 @@
 <s:else>
     <ul>
         <li>
+            <s:a href="home">Início</s:a>
+        </li>
+        <li>
             <s:url action="votePage" var="urlTag">
             </s:url>
             <s:a href="%{urlTag}">Votar</s:a>
@@ -73,13 +79,12 @@
 
 <h1>Home Screen</h1>
 
-
 <s:if test="heyBean.loginToken==true">
     <p> Hello,</p>
     <p> <s:property value="heyBean.name"/></p>
 
 
-    <p> <a href="<s:property value="heyBean.shareResults"/>">Share Results</a>   </p>
+    <p> <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2F&redirect_uri=http://localhost:8080/Hey/fblogin.action">Share Results</a>   </p>
 
 </s:if>
 <s:else>

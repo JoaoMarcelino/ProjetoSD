@@ -14,6 +14,9 @@
     <s:fielderror fieldName="all"/>
     <ul>
         <li>
+            <s:a href="home">Início</s:a>
+        </li>
+        <li>
             <s:url action="listPessoas.action" var="urlTag">
             </s:url>
             <s:a href="%{urlTag}">Votantes</s:a>

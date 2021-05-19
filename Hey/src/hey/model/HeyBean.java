@@ -515,8 +515,8 @@ public class HeyBean {
 
                     this.username = pessoa.getNumberCC();
                     this.password = pessoa.getPassword();
-
                     this.setLoggedInAsAdmin(pessoa.isAdmin());
+                    login(this.username,this.password);
 
                     return true;
                 }
@@ -579,7 +579,7 @@ public class HeyBean {
 
     public String getAuthUrl() {
         this.authUrl = this.fb.getAuthorizationURL();
-        return this.fb.getAuthorizationURL();
+        return this.authUrl;
     }
 
     public String getAuthCode() {
