@@ -83,8 +83,11 @@
     <p> Hello,</p>
     <p> <s:property value="heyBean.name"/></p>
 
+    <p> <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2F&redirect_uri=http://localhost:8080/Hey/fblogin.action">Test</a>   </p>
 
-    <p> <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=https%3A%2F%2Fdevelopers.facebook.com%2Fdocs%2F&redirect_uri=http://localhost:8080/Hey/fblogin.action">Share Results</a>   </p>
+    <p> <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://localhost:8080/Hey/fblogin.action&redirect_uri=http://localhost:8080/Hey/fblogin.action">Appeal Vote</a>   </p>
+
+    <p> <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://localhost:8080/Hey/listResultados.action&redirect_uri=http://localhost:8080/Hey/fblogin.action">Share Results</a>   </p>
 
 </s:if>
 <s:else>

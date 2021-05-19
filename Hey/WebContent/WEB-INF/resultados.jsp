@@ -87,7 +87,7 @@
         <s:property value="mesa"/><br>
     </s:if>
 
-    <h2>Consultar Voto Indivídual</h2>
+    <h2>Consultar Voto Individual</h2>
     <s:form action="getVoto">
         <s:hidden name="titulo" value="%{titulo}"/>
         <s:textfield placeholder="Número Cartão CC" name="numeroCC"/>
@@ -113,7 +113,57 @@
         });
     </script>
 </s:if>
+<s:else>
 
+
+    <ul>
+        <li>
+            <s:a href="home">Início</s:a>
+        </li>
+        <li>
+            <s:url action="votePage" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Votar</s:a>
+        </li>
+        <li>
+            <s:url action="listEleicoes" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Eleições</s:a>
+        </li>
+        <li style="float:right">
+            <s:url action="logout" var="urlTag">
+            </s:url>
+            <s:a href="%{urlTag}">Logout</s:a>
+        </li>
+    </ul>
+
+    <s:fielderror fieldName="listas" cssStyle="padding-left: 20px; color: white;"/>
+    <h1>Resultados de <s:property value="titulo"/></h1>
+
+    <s:if test="resultados!=null">
+        <s:label value="Total de Votos:"/>
+        <s:property value="resultados.totalVotos"/><br>
+        <s:label value="Votos em Branco:"/>
+        <s:property value="resultados.brancos"/><br>
+        <s:label value="Votos em Nulo:"/>
+        <s:property value="resultados.nulos"/><br>
+        <b><s:label value="Vencedores"/></b><br>
+        <s:iterator value="resultados.vencedores">
+            <s:property/>
+        </s:iterator><br>
+        <b><s:label value="Listas"/></b><br>
+        <s:iterator value="resultados.nomesListas">
+            <s:property/>
+        </s:iterator><br>
+        <s:iterator value="resultados.resultados">
+            <s:property/>
+        </s:iterator><br>
+    </s:if>
+    <s:else>
+        <b><i>Eleicao ainda não terminou.</i></b>
+        <br>
+    </s:else>
+</s:else>
 
 <script type="text/javascript">
 
