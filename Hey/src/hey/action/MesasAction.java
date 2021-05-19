@@ -19,10 +19,18 @@ public class MesasAction extends ActionSupport implements SessionAware {
 
 
     public String get() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         return SUCCESS;
     }
 
     public String post() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         Departamento departamento = getYourDep();
         CopyOnWriteArrayList<Pessoa> aux = createPessoasFromString(membros);
 
@@ -37,12 +45,20 @@ public class MesasAction extends ActionSupport implements SessionAware {
     }
 
     public String delete() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         String status = getHeyBean().removeMesa(yourDep);
         addFieldError("mesas",status);
         return SUCCESS;
     }
 
     public String put() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         Departamento departamento = getYourDep();
         CopyOnWriteArrayList<Pessoa> aux = createPessoasFromString(membros);
 

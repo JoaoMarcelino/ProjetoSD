@@ -69,11 +69,11 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
             <result name="success">/WEB-INF/eleicoes.jsp</result>
         </action>
 
-        <action name="addMesaEleicoes" class="hey.action.EleicoesAction" method="addMesa">
+        <action name="addMesaEleicoes" class="hey.action.ListasAction" method="addMesa">
             <result name="success">/WEB-INF/eleicoes.jsp</result>
         </action>
 
-        <action name="removeMesaEleicoes" class="hey.action.EleicoesAction" method="removeMesa">
+        <action name="removeMesaEleicoes" class="hey.action.ListasAction" method="removeMesa">
             <result name="success">/WEB-INF/eleicoes.jsp</result>
         </action>
 
@@ -121,9 +121,13 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
             <result name="success">/WEB-INF/votar.jsp</result>
         </action>
 
-        <action name="fblogin" class="hey.action.FacebookLoginAction" method="execute">
+        <action name="fblogin" class="hey.action.FacebookLoginAction" method="login">
             <result name="success">/WEB-INF/home.jsp</result>
             <result name="error">/WEB-INF/index.jsp</result>
+        </action>
+
+        <action name="fbassociate" class="hey.action.FacebookLoginAction" method="associate">
+            <result name="success">/WEB-INF/home.jsp</result>
         </action>
 
         <action name="deleteFacebookId" class="hey.action.PessoasAction" method="delete">

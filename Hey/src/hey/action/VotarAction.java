@@ -33,11 +33,19 @@ public class VotarAction extends ActionSupport implements SessionAware {
 
 
     public String view() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         return SUCCESS;
     }
 
 
     public String votar() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         String status = "";
         if(getHeyBean().getUsername()!="Admin"){
             if (votarAntecipadamente)

@@ -469,25 +469,22 @@ public class HeyBean {
         return fb;
     }
 
-    public boolean associateFacebookAccount() {
+    public void associateFacebookAccount() {
         String facebookId = this.fb.getAccountId();
 
         for (int i = 0; i < totalTries; i++) {
             try {
-                return servidor.changeFacebookId(this.username, facebookId,this.getFb().getAccessToken());
-
+                servidor.changeFacebookId(this.username, facebookId, this.getFb().getAccessToken());
             } catch (RemoteException e) {
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
                 } catch (RemoteException | NotBoundException ignored) {
                 }
-                if (i == totalTries - 1)
-                    return false;
+                if (i == totalTries - 1) {
+                }
             }
-
         }
 
-        return false;
     }
 
     public Pessoa loginByFacebookId() {
@@ -515,7 +512,7 @@ public class HeyBean {
         for (int i = 0; i < totalTries; i++) {
             try {
 
-                if (servidor.changeFacebookId(numberCC, "null",null)) {
+                if (servidor.changeFacebookId(numberCC, "null", null)) {
                     return "success";
                 }
                 else

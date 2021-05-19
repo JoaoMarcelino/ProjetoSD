@@ -20,9 +20,14 @@ public class ListasAction extends ActionSupport implements SessionAware {
     private int nMembros;
     private List<String> profs;
     private String yourProf = "";
+    private String departamento;
 
 
     public String post() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         Profissao profissao = getYourProf();
         ArrayList<Pessoa> pessoas = getYourMembros();
 
@@ -37,6 +42,10 @@ public class ListasAction extends ActionSupport implements SessionAware {
     }
 
     public String delete() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         String status = getHeyBean().removeLista(titulo, nome);
         addFieldError("listas",status);
         return SUCCESS;
@@ -46,11 +55,52 @@ public class ListasAction extends ActionSupport implements SessionAware {
         return SUCCESS;
     }
 
+
+    public String addMesa() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
+        if (titulo != null && departamento != null) {
+            String status = getHeyBean().addMesaEleicao(departamento, titulo);
+            addFieldError("listas", status);
+        }
+        else {
+            addFieldError("listas","Falta informacao para a associação da mesa à eleicao.");
+        }
+        return SUCCESS;
+    }
+
+    public String removeMesa() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
+        if (titulo != null && departamento != null) {
+            String status = getHeyBean().removeMesaEleicao(departamento, titulo);
+            addFieldError("listas", status);
+        }
+        else {
+            addFieldError("listas","Falta informacao para a disossiação da mesa à eleicao.");
+        }
+        return SUCCESS;
+    }
+
     public ArrayList<Lista> getListas() {
         ArrayList<Lista> aux=getHeyBean().listListas(titulo);
         if(aux==null)
             addFieldError("listas","Erro RMI na listagem de listas ou eleição não existe.");
         return aux;
+    }
+
+    public String getDepartamento() {
+        return departamento;
+    }
+
+    public void setDepartamento(String departamento) {
+        System.out.println("setDepartamento");
+        System.out.println(departamento);
+        this.departamento = departamento;
     }
 
     public String getTitulo() {

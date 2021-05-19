@@ -13,6 +13,9 @@
 <s:if test="heyBean.loggedInAsAdmin==true">
     <ul>
         <li>
+            <s:a href="home">Início</s:a>
+        </li>
+        <li>
             <s:url action="listPessoas.action" var="urlTag">
             </s:url>
             <s:a href="%{urlTag}">Votantes</s:a>
@@ -40,31 +43,70 @@
     </ul>
 
     <s:fielderror fieldName="listas" cssStyle="padding-left: 20px; color: white;"/>
-    <h1>Listas de <s:property value="titulo"/></h1>
+    <s:fielderror fieldName="resultados" cssStyle="padding-left: 20px; color: white;"/>
+    <h1><s:property value="titulo"/></h1>
+    <s:form action="listResultados">
+        <s:hidden name="titulo" value="%{titulo}"/>
+        <s:submit value="Consultar Resultados"/>
+    </s:form>
+    <br>
+    <br>
 
-    <s:iterator value="listas">
-        <b><s:label value="Nome:"/></b>
-        <s:property value="nome"/><br>
-        <b><s:label value="Tipo de Lista:"/></b>
-        <s:property value="tipoLista"/><br>
-        <b><s:label value="Membros:"/></b>
-        <s:iterator value="listaPessoas">
-            <s:property value="nome"/>
+    <s:iterator value="HeyBean.getEleicaoByTitulo(titulo)">
+        <b><s:label value="Título:"/></b>
+        <s:property value="titulo"/><br>
+        <b><s:label value="Descrição:"/></b>
+        <s:property value="descricao"/><br>
+        <b><s:label value="Data de Início:"/></b>
+        <s:date name="dataInicio" format="dd/MM/yy HH:mm"/><br>
+        <b><s:label value="Data de Fim:"/></b>
+        <s:date name="dataFim" format="dd/MM/yy HH:mm"/><br>
+        <b><s:label value="Profissões Permitidas:"/></b>
+        <s:iterator value="profissoesPermitidas">
+            <s:property/>
         </s:iterator>
-        <s:form action="deleteListas">
-            <s:hidden name="nome" value="%{nome}"/>
+        <br>
+        <s:label value="Mesas Associadas:"/></b>
+        <s:iterator value="mesas">
+            <s:property value="departamento"/>
+            <s:property value="ip"/>
+            <s:property value="port"/>
+            <s:property value="status"/>
+            <s:form action="removeMesaEleicoes">
+                <s:hidden name="departamento" value="%{departamento}"/>
+                <s:hidden name="titulo" value="%{titulo}"/>
+                <s:submit value="Desassociar Mesa"/>
+            </s:form>
+            <br>
+        </s:iterator>
+        <s:form action="addMesaEleicoes">
             <s:hidden name="titulo" value="%{titulo}"/>
-            <s:submit value="Remover"/>
+            <s:label value="Associar Mesa:"/>
+            <s:textfield name="nome" placeholder="Departamento"/>
+            <s:submit value="Associar Mesa"/>
         </s:form>
         <br>
-        <br>
+        <b><s:label value="Listas:"/></b>
+        <s:iterator value="listas">
+            <b><s:label value="Nome:"/></b>
+            <s:property value="nome"/><br>
+            <b><s:label value="Tipo de Lista:"/></b>
+            <s:property value="tipoLista"/><br>
+            <b><s:label value="Membros:"/></b>
+            <s:iterator value="listaPessoas">
+                <s:property value="nome"/>
+            </s:iterator>
+            <s:form action="deleteListas">
+                <s:hidden name="nome" value="%{nome}"/>
+                <s:hidden name="titulo" value="%{titulo}"/>
+                <s:submit value="Remover"/>
+            </s:form>
+            <br>
+            <br>
+        </s:iterator>
     </s:iterator>
-    <br>
-    <br>
 
     <h2>Adicionar Lista</h2>
-
-
     <s:form action="addListas" id="form">
         <s:hidden name="titulo"/><br>
         <s:label value="Nome:"/>
@@ -89,6 +131,8 @@
             var dc = document.getElementById('membros[0]');
             for (var i = 0; i < input.value - 1 && i < 20; i++) {
                 var itm = document.getElementById('membros[0]');
+                if(document.getElementById('membros['+i+']')==null)
+                    continue;
                 var cln = itm.cloneNode(true);
                 cln.placeholder = "membros#" + parseInt(i + 2);
                 cln.name = "membros[" + parseInt(i + 1) + "]";
@@ -130,6 +174,9 @@
 
     <ul>
         <li>
+            <s:a href="home">Início</s:a>
+        </li>
+        <li>
             <s:url action="votePage" var="urlTag">
             </s:url>
             <s:a href="%{urlTag}">Votar</s:a>
@@ -147,23 +194,44 @@
     </ul>
 
     <s:fielderror fieldName="listas" cssStyle="padding-left: 20px; color: white;"/>
-    <h1>Listas de <s:property value="titulo"/></h1>
+    <h1><s:property value="titulo"/></h1>
 
-    <s:iterator value="listas">
-        <b><s:label value="Nome:"/></b>
-        <s:property value="nome"/><br>
-        <b><s:label value="Tipo de Lista:"/></b>
-        <s:property value="tipoLista"/><br>
-        <b><s:label value="Membros:"/></b>
-        <s:iterator value="listaPessoas">
-            <s:property value="nome"/>
+    <s:iterator value="HeyBean.getEleicaoByTitulo(titulo)">
+        <b><s:label value="Título:"/></b>
+        <s:property value="titulo"/><br>
+        <b><s:label value="Descrição:"/></b>
+        <s:property value="descricao"/><br>
+        <b><s:label value="Data de Início:"/></b>
+        <s:date name="dataInicio" format="dd/MM/yy HH:mm"/><br>
+        <b><s:label value="Data de Fim:"/></b>
+        <s:date name="dataFim" format="dd/MM/yy HH:mm"/><br>
+        <b><s:label value="Profissões Permitidas:"/></b>
+        <s:iterator value="profissoesPermitidas">
+            <s:property/>
         </s:iterator>
         <br>
+        <b><s:label value="Mesas Associadas:"/></b>
+        <s:iterator value="mesas">
+            <s:property value="departamento"/>
+            <s:property value="ip"/>
+            <s:property value="port"/>
+            <s:property value="status"/>
+            <br>
+        </s:iterator>
         <br>
+        <b><s:label value="Listas:"/></b>
+        <s:iterator value="listas">
+            <b><s:label value="Nome:"/></b>
+            <s:property value="nome"/><br>
+            <b><s:label value="Tipo de Lista:"/></b>
+            <s:property value="tipoLista"/><br>
+            <b><s:label value="Membros:"/></b>
+            <s:iterator value="listaPessoas">
+                <s:property value="nome"/>
+            </s:iterator>
+            <br>
+        </s:iterator>
     </s:iterator>
-    <br>
-    <br>
-
 </s:else>
 
 </body>

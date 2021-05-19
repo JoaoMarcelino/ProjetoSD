@@ -51,74 +51,92 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
 
         <action name="addPessoas" class="hey.action.PessoasAction" method="post">
             <result name="success">/WEB-INF/pessoas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="listPessoas" class="hey.action.PessoasAction" method="get">
             <result name="success">/WEB-INF/pessoas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="addEleicoes" class="hey.action.EleicoesAction" method="post">
             <result name="success">/WEB-INF/eleicoes.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="listEleicoes" class="hey.action.EleicoesAction" method="get">
             <result name="success">/WEB-INF/eleicoes.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="editEleicoes" class="hey.action.EleicoesAction" method="put">
             <result name="success">/WEB-INF/eleicoes.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
-        <action name="addMesaEleicoes" class="hey.action.EleicoesAction" method="addMesa">
-            <result name="success">/WEB-INF/eleicoes.jsp</result>
+        <action name="addMesaEleicoes" class="hey.action.ListasAction" method="addMesa">
+            <result name="success">/WEB-INF/listas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
-        <action name="removeMesaEleicoes" class="hey.action.EleicoesAction" method="removeMesa">
-            <result name="success">/WEB-INF/eleicoes.jsp</result>
+        <action name="removeMesaEleicoes" class="hey.action.ListasAction" method="removeMesa">
+            <result name="success">/WEB-INF/listas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="listResultados" class="hey.action.ResultadosAction" method="get">
             <result name="success">/WEB-INF/resultados.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="getVoto" class="hey.action.ResultadosAction" method="getVoto">
             <result name="success">/WEB-INF/resultados.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="listMesas" class="hey.action.MesasAction" method="get">
             <result name="success">/WEB-INF/mesas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="addMesas" class="hey.action.MesasAction" method="post">
             <result name="success">/WEB-INF/mesas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="deleteMesas" class="hey.action.MesasAction" method="delete">
             <result name="success">/WEB-INF/mesas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="editMesas" class="hey.action.MesasAction" method="put">
             <result name="success">/WEB-INF/mesas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="listListas" class="hey.action.ListasAction" method="get">
             <result name="success">/WEB-INF/listas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="addListas" class="hey.action.ListasAction" method="post">
             <result name="success">/WEB-INF/listas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="deleteListas" class="hey.action.ListasAction" method="delete">
             <result name="success">/WEB-INF/listas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="votePage" class="hey.action.VotarAction" method="view">
             <result name="success">/WEB-INF/votar.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="votar" class="hey.action.VotarAction" method="votar">
             <result name="success">/WEB-INF/votar.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="fblogin" class="hey.action.FacebookLoginAction" method="login">
@@ -128,14 +146,17 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
 
         <action name="fbassociate" class="hey.action.FacebookLoginAction" method="associate">
             <result name="success">/WEB-INF/home.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="deleteFacebookId" class="hey.action.PessoasAction" method="delete">
             <result name="success">/WEB-INF/pessoas.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
         <action name="buttonfb" class="hey.action.PessoasAction" method="auxiliar">
             <result name="success">/WEB-INF/redirect.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
         </action>
     </package>
 

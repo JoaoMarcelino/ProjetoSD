@@ -43,7 +43,19 @@
     </ul>
 
     <s:fielderror fieldName="listas" cssStyle="padding-left: 20px; color: white;"/>
+    <s:fielderror fieldName="resultados" cssStyle="padding-left: 20px; color: white;"/>
     <h1><s:property value="titulo"/></h1>
+    <s:form action="listResultados">
+        <s:hidden name="titulo" value="%{titulo}"/>
+        <s:submit value="Consultar Resultados"/>
+    </s:form>
+
+    <p> <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listListas.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/">Apelar ao voto</a>   </p>
+
+    <p> <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listResultados.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/">Partilhar resultados</a>   </p>
+
+    <br>
+    <br>
 
     <s:iterator value="HeyBean.getEleicaoByTitulo(titulo)">
         <b><s:label value="Título:"/></b>
@@ -57,7 +69,8 @@
         <b><s:label value="Profissões Permitidas:"/></b>
         <s:iterator value="profissoesPermitidas">
             <s:property/>
-        </s:iterator><br>
+        </s:iterator>
+        <br>
         <b><s:label value="Mesas Associadas:"/></b>
         <br>
         <s:iterator value="mesas">
@@ -72,45 +85,35 @@
             </s:form>
             <br>
         </s:iterator>
-        <br>
-        <s:form action="listResultados">
-            <s:hidden name="titulo" value="%{titulo}"/>
-            <s:submit value="Consultar Resultados"/>
-        </s:form>
-        <br>
         <s:form action="addMesaEleicoes">
             <s:hidden name="titulo" value="%{titulo}"/>
             <s:label value="Associar Mesa:"/>
-            <s:textfield name="nome" placeholder="Departamento"/>
+            <s:textfield name="departamento" placeholder="Departamento"/>
             <s:submit value="Associar Mesa"/>
         </s:form>
         <br>
+        <b><s:label value="Listas:"/></b>
         <br>
-    </s:iterator>
-
-    <s:iterator value="listas">
-        <b><s:label value="Nome:"/></b>
-        <s:property value="nome"/><br>
-        <b><s:label value="Tipo de Lista:"/></b>
-        <s:property value="tipoLista"/><br>
-        <b><s:label value="Membros:"/></b>
-        <s:iterator value="listaPessoas">
-            <s:property value="nome"/>
+        <s:iterator value="listas">
+            <b><s:label value="Nome:"/></b>
+            <s:property value="nome"/><br>
+            <b><s:label value="Tipo de Lista:"/></b>
+            <s:property value="tipoLista"/><br>
+            <b><s:label value="Membros:"/></b>
+            <s:iterator value="listaPessoas">
+                <s:property value="nome"/>
+            </s:iterator>
+            <s:form action="deleteListas">
+                <s:hidden name="nome" value="%{nome}"/>
+                <s:hidden name="titulo" value="%{titulo}"/>
+                <s:submit value="Remover"/>
+            </s:form>
+            <br>
+            <br>
         </s:iterator>
-        <s:form action="deleteListas">
-            <s:hidden name="nome" value="%{nome}"/>
-            <s:hidden name="titulo" value="%{titulo}"/>
-            <s:submit value="Remover"/>
-        </s:form>
-        <br>
-        <br>
     </s:iterator>
-    <br>
-    <br>
 
     <h2>Adicionar Lista</h2>
-
-
     <s:form action="addListas" id="form">
         <s:hidden name="titulo"/><br>
         <s:label value="Nome:"/>
@@ -133,8 +136,10 @@
 
         function updateValue(e) {
             var dc = document.getElementById('membros[0]');
-            for (var i = 0; i < input.value - 1 && i < 20; i++) {
+            for (var i = 0; i < input.value - 1 && i < 18; i++) {
                 var itm = document.getElementById('membros[0]');
+                if(document.getElementById("membros[" + parseInt(i + 1) + "]")!=null)
+                    continue;
                 var cln = itm.cloneNode(true);
                 cln.placeholder = "membros#" + parseInt(i + 2);
                 cln.name = "membros[" + parseInt(i + 1) + "]";
@@ -198,7 +203,6 @@
     <s:fielderror fieldName="listas" cssStyle="padding-left: 20px; color: white;"/>
     <h1><s:property value="titulo"/></h1>
 
-
     <s:iterator value="HeyBean.getEleicaoByTitulo(titulo)">
         <b><s:label value="Título:"/></b>
         <s:property value="titulo"/><br>
@@ -211,7 +215,8 @@
         <b><s:label value="Profissões Permitidas:"/></b>
         <s:iterator value="profissoesPermitidas">
             <s:property/>
-        </s:iterator><br>
+        </s:iterator>
+        <br>
         <b><s:label value="Mesas Associadas:"/></b>
         <br>
         <s:iterator value="mesas">
@@ -222,29 +227,20 @@
             <br>
         </s:iterator>
         <br>
-        <s:form action="listResultados">
-            <s:hidden name="titulo" value="%{titulo}"/>
-            <s:submit value="Consultar Resultados"/>
-        </s:form>
+        <b><s:label value="Listas:"/></b>
         <br>
-        <br>
-    </s:iterator>
-
-    <s:iterator value="listas">
-        <b><s:label value="Nome:"/></b>
-        <s:property value="nome"/><br>
-        <b><s:label value="Tipo de Lista:"/></b>
-        <s:property value="tipoLista"/><br>
-        <b><s:label value="Membros:"/></b>
-        <s:iterator value="listaPessoas">
-            <s:property value="nome"/>
+        <s:iterator value="listas">
+            <b><s:label value="Nome:"/></b>
+            <s:property value="nome"/><br>
+            <b><s:label value="Tipo de Lista:"/></b>
+            <s:property value="tipoLista"/><br>
+            <b><s:label value="Membros:"/></b>
+            <s:iterator value="listaPessoas">
+                <s:property value="nome"/>
+            </s:iterator>
+            <br>
         </s:iterator>
-        <br>
-        <br>
     </s:iterator>
-    <br>
-    <br>
-
 </s:else>
 
 </body>

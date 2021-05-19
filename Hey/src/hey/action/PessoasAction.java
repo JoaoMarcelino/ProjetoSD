@@ -77,6 +77,10 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     }
 
     public String post() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         Profissao profissao = getYourProf();
         Departamento departamento = getYourDep();
         if (nome != null && password != null && numberCC != null && expireCCDate != null && profissao != null && departamento != null) {
@@ -91,6 +95,10 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     }
 
     public String delete() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         if (numberCC != null) {
             String status = getHeyBean().removeFacebookId(numberCC);
             addFieldError("removeId", status);
@@ -110,10 +118,18 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     }
 
     public String get() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         return SUCCESS;
     }
 
     public String auxiliar() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         return SUCCESS;
     }
 

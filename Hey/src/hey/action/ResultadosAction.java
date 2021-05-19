@@ -32,6 +32,10 @@ public class ResultadosAction extends ActionSupport implements SessionAware {
     }
 
     public String getVoto() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         v = getHeyBean().getVoto(this.numeroCC, this.titulo);
         if (v == null)
             addFieldError("resultados", "Erro RMI na consulta de voto ou pessoa não existe.");

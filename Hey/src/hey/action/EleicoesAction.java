@@ -35,6 +35,10 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
     private String yourProf = "";
 
     public String post() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         ArrayList<Profissao> profissoes = getYourProf();
         CopyOnWriteArrayList<Departamento> departamentosPermitidos = new CopyOnWriteArrayList<Departamento>(Arrays.asList(Departamento.values()));
 
@@ -49,6 +53,10 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
     }
 
     public String put() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         if (titulo != null && tituloNovo != null && descricaoNova != null && dataInicioNova != null && dataFimNova != null) {
             String status = getHeyBean().editEleicao(titulo, tituloNovo, descricaoNova, dataInicioNova, dataFimNova);
             addFieldError("eleicoes", status);
@@ -63,29 +71,12 @@ public class EleicoesAction extends ActionSupport implements SessionAware {
         return new ArrayList<>(getHeyBean().listEleicoes());
     }
 
-    public String addMesa() {
-        if (titulo != null && nome != null) {
-            String status = getHeyBean().addMesaEleicao(nome, titulo);
-            addFieldError("eleicoes", status);
-        }
-        else {
-            addFieldError("eleicoes","Falta informacao para a associação da mesa à eleicao.");
-        }
-        return SUCCESS;
-    }
-
-    public String removeMesa() {
-        if (titulo != null && departamento != null) {
-            String status = getHeyBean().removeMesaEleicao(departamento, titulo);
-            addFieldError("eleicoes", status);
-        }
-        else {
-            addFieldError("eleicoes","Falta informacao para a disossiação da mesa à eleicao.");
-        }
-        return SUCCESS;
-    }
 
     public String get() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
         return SUCCESS;
     }
 
