@@ -1,5 +1,6 @@
 package com.company;
 
+import com.github.scribejava.core.model.OAuth2AccessToken;
 import org.json.simple.JSONObject;
 
 import java.io.*;
@@ -399,12 +400,13 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         return null;
     }
 
-    public boolean changeFacebookId(String numberCC, String id) throws RemoteException{
+    public boolean changeFacebookId(String numberCC, String id, OAuth2AccessToken accessToken ) throws RemoteException{
 
         Pessoa pessoa= getPessoaByCC(numberCC);
 
         if(pessoa != null){
             pessoa.setFacebookId(id);
+            pessoa.setAccessToken(accessToken);
             return true;
         }
 

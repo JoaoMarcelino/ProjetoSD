@@ -1,5 +1,7 @@
 package com.company;
 
+import com.github.scribejava.core.model.OAuth2AccessToken;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -15,6 +17,7 @@ public class Pessoa implements Serializable {
     private Profissao profissao;
 
     private String facebookId;
+    private OAuth2AccessToken accessToken;
     private boolean admin;
 
     public Pessoa(String nome, String password, Departamento departamento, String telefone, String morada, String numberCC, GregorianCalendar expireCCDate, Profissao profissao) {
@@ -121,4 +124,12 @@ public class Pessoa implements Serializable {
     public String getFacebookId() { return facebookId; }
 
     public void setFacebookId(String facebookId) { this.facebookId = facebookId; }
+
+    public OAuth2AccessToken getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(OAuth2AccessToken accessToken) {
+        this.accessToken = accessToken;
+    }
 }

@@ -121,9 +121,13 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
             <result name="success">/WEB-INF/votar.jsp</result>
         </action>
 
-        <action name="fblogin" class="hey.action.FacebookLoginAction" method="execute">
+        <action name="fblogin" class="hey.action.FacebookLoginAction" method="login">
             <result name="success">/WEB-INF/home.jsp</result>
             <result name="error">/WEB-INF/index.jsp</result>
+        </action>
+
+        <action name="fbassociate" class="hey.action.FacebookLoginAction" method="associate">
+            <result name="success">/WEB-INF/home.jsp</result>
         </action>
 
         <action name="deleteFacebookId" class="hey.action.PessoasAction" method="delete">

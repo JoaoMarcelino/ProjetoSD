@@ -22,25 +22,16 @@ import org.json.simple.JSONObject;
 
 public class HeyBean {
     private final int totalTries;
-    public RMI_S_Interface servidor;
     private final String pathToProperties = "../webapps/Hey/WEB-INF/classes/resources/config.properties";
+    public RMI_S_Interface servidor;
     private String RMIHostIP;
     private int RMIHostPort;
     private String username;
     private String password;
     private boolean loggedInAsAdmin;
-    private String facebookId = "";
 
     //FacebookBean
     private FacebookREST fb;
-    private String authUrl;
-    private String voteAppeal;
-    private String shareResults;
-    private String authCode;
-    private String secretState;
-    private OAuth2AccessToken accessToken;
-    private boolean loginToken;
-    private String name = "";
 
     public HeyBean() {
         totalTries = 3;
@@ -403,11 +394,7 @@ public class HeyBean {
             try {
                 this.username = null;
                 this.password = null;
-                this.accessToken = null;
-                this.secretState = null;
-                this.authCode = null;
                 this.loggedInAsAdmin = false;
-                this.loginToken = false;
                 servidor.logout(numeroCC, password, true);
                 return;
             } catch (RemoteException e) {
@@ -478,49 +465,17 @@ public class HeyBean {
 
     //Facebook Methods
 
-    public boolean associateFacebookAccount() {
-
-        //getId
-        String facebookId = this.fb.getAccountId(this.accessToken);
-
-        //associate with Pessoa in RMI
-        for (int i = 0; i < totalTries; i++) {
-            try {
-                return servidor.changeFacebookId(this.username, facebookId);
-
-            }catch(RemoteException e){
-                try {
-                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
-                } catch (RemoteException | NotBoundException ignored) {
-                }
-                if (i == totalTries - 1)
-                    return false;
-            }
-
-        }
-
-        return false;
+    public FacebookREST getFb() {
+        return fb;
     }
 
-    public boolean loginByFacebookId(){
+    public boolean associateFacebookAccount() {
+        String facebookId = this.fb.getAccountId();
 
-        String facebookId = fb.getAccountId(this.accessToken);
-
-        //find Pessoa in RMI
         for (int i = 0; i < totalTries; i++) {
             try {
-                Pessoa pessoa = servidor.getPessoaByFacebookId(facebookId);
+                return servidor.changeFacebookId(this.username, facebookId,this.getFb().getAccessToken());
 
-                if(pessoa != null){
-
-                    this.username = pessoa.getNumberCC();
-                    this.password = pessoa.getPassword();
-                    this.setLoggedInAsAdmin(pessoa.isAdmin());
-                    login(this.username,this.password);
-
-                    return true;
-                }
-                return false;
             } catch (RemoteException e) {
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
@@ -529,16 +484,38 @@ public class HeyBean {
                 if (i == totalTries - 1)
                     return false;
             }
+
         }
+
         return false;
     }
 
-    public String removeFacebookId(String numberCC){
+    public Pessoa loginByFacebookId() {
+        String facebookId = fb.getAccountId();
+        //find Pessoa in RMI
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                Pessoa pessoa = servidor.getPessoaByFacebookId(facebookId);
+                System.out.println(pessoa);
+                return pessoa;
+            } catch (RemoteException e) {
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                }
+                if (i == totalTries - 1)
+                    return null;
+            }
+        }
+        return null;
+    }
+
+    public String removeFacebookId(String numberCC) {
         //find Pessoa in RMI
         for (int i = 0; i < totalTries; i++) {
             try {
 
-                if(servidor.changeFacebookId(numberCC, "null")){
+                if (servidor.changeFacebookId(numberCC, "null",null)) {
                     return "success";
                 }
                 else
@@ -556,63 +533,5 @@ public class HeyBean {
         return "error";
     }
 
-    public String getShareResults() {
-        return this.fb.shareResults(this.accessToken);
-    }
 
-
-
-    public boolean getAccessToken() {
-        if (this.accessToken != null)
-            return true;
-
-        this.accessToken = this.fb.getAccessToken(this.authCode, this.secretState);
-        if (this.accessToken != null)
-            return true;
-        return false;
-    }
-
-    public boolean isLoginToken() {
-        return getAccessToken();
-    }
-
-
-    public String getAuthUrl() {
-        this.authUrl = this.fb.getAuthorizationURL();
-        return this.authUrl;
-    }
-
-    public String getAuthCode() {
-        return authCode;
-    }
-
-    public void setAuthCode(String authCode) {
-        this.authCode = authCode;
-    }
-
-    public String getSecretState() {
-        return secretState;
-    }
-
-    public void setSecretState(String secretState) {
-        this.secretState = secretState;
-    }
-
-
-    public String getName() throws ParseException {
-        return this.fb.getAccountName(this.accessToken);
-
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getFacebookId() {
-        return facebookId;
-    }
-
-    public void setFacebookId(String facebookId) {
-        this.facebookId = facebookId;
-    }
 }

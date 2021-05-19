@@ -1,5 +1,6 @@
 package com.company;
 
+import com.github.scribejava.core.model.OAuth2AccessToken;
 import org.json.simple.JSONObject;
 
 import java.rmi.*;
@@ -41,7 +42,7 @@ public interface RMI_S_Interface extends Remote {
 
     Pessoa getPessoaByCC(String numberCC) throws RemoteException;
 
-    boolean changeFacebookId(String numberCC, String id) throws RemoteException;
+    boolean changeFacebookId(String numberCC, String id, OAuth2AccessToken accessToken) throws RemoteException;
 
     Pessoa getPessoaByFacebookId(String facebookId) throws RemoteException;
 

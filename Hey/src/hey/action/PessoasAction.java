@@ -7,7 +7,6 @@ import com.company.Departamento;
 import com.company.Pessoa;
 import com.company.Profissao;
 import com.opensymphony.xwork2.ActionSupport;
-import hey.model.FacebookBean;
 import hey.model.HeyBean;
 import org.apache.struts2.interceptor.SessionAware;
 
@@ -51,14 +50,12 @@ public class PessoasAction extends ActionSupport implements SessionAware {
             if (status.equals("true | Login com Sucesso")) {
                 getHeyBean().setUsername(loginNumberCC);
                 getHeyBean().setPassword(loginPassword);
-                Pessoa p=getHeyBean().getPessoaByCC(loginNumberCC);
+                Pessoa p = getHeyBean().getPessoaByCC(loginNumberCC);
+                System.out.println(p.getAccessToken());
+                if(p.getAccessToken()!=null)
+                    getHeyBean().getFb().accessToken=p.getAccessToken();
                 logout();
-                if(p!=null && p.isAdmin()){
-                    getHeyBean().setLoggedInAsAdmin(true);
-                }
-                else {
-                    getHeyBean().setLoggedInAsAdmin(false);
-                }
+                getHeyBean().setLoggedInAsAdmin(p != null && p.isAdmin());
                 return SUCCESS;
             }
             else {
@@ -73,8 +70,9 @@ public class PessoasAction extends ActionSupport implements SessionAware {
         loginPassword = null;
     }
 
-    public String logoutNotify(){
-        getHeyBean().logout(getHeyBean().getUsername(),getHeyBean().getPassword());
+    public String logoutNotify() {
+        getHeyBean().logout(getHeyBean().getUsername(), getHeyBean().getPassword());
+        this.session.remove("heyBean");
         return SUCCESS;
     }
 
@@ -83,22 +81,22 @@ public class PessoasAction extends ActionSupport implements SessionAware {
         Departamento departamento = getYourDep();
         if (nome != null && password != null && numberCC != null && expireCCDate != null && profissao != null && departamento != null) {
             String status = getHeyBean().addPessoa(nome, password, departamento, telefone, morada, numberCC, expireCCDate, profissao, admin);
-            addFieldError("pessoas",status);
+            addFieldError("pessoas", status);
         }
         else {
-            addFieldError("pessoas","Falta informacao para o registo do votante.");
+            addFieldError("pessoas", "Falta informacao para o registo do votante.");
         }
 
         return SUCCESS;
     }
 
-    public String delete(){
+    public String delete() {
         if (numberCC != null) {
             String status = getHeyBean().removeFacebookId(numberCC);
             addFieldError("removeId", status);
         }
         else {
-            addFieldError("removeId","Falta informacao para a disossiação do facebookId.");
+            addFieldError("removeId", "Falta informacao para a disossiação do facebookId.");
         }
         return SUCCESS;
     }
@@ -107,7 +105,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
         ArrayList<Pessoa> aux = getHeyBean().listPessoas();
 
         if (aux == null)
-            addFieldError("pessoas","Erro RMI na listagem de listas ou eleição não existe.");
+            addFieldError("pessoas", "Erro RMI na listagem de listas ou eleição não existe.");
         return aux;
     }
 
@@ -115,7 +113,7 @@ public class PessoasAction extends ActionSupport implements SessionAware {
         return SUCCESS;
     }
 
-    public String auxiliar(){
+    public String auxiliar() {
         return SUCCESS;
     }
 
@@ -253,10 +251,6 @@ public class PessoasAction extends ActionSupport implements SessionAware {
         this.facebookId = facebookId;
     }
 
-    public String getAuthUrl(){
-        return getHeyBean().getAuthUrl();
-    }
-
     public HeyBean getHeyBean() {
         if (!session.containsKey("heyBean"))
             this.setHeyBean(new HeyBean());
@@ -271,7 +265,6 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     public void setSession(Map<String, Object> session) {
         this.session = session;
     }
-
 
 
 }

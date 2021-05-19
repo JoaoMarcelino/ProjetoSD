@@ -1,9 +1,10 @@
 package hey.action;
 
-import hey.model.FacebookBean;
+import com.company.Pessoa;
 import com.opensymphony.xwork2.ActionSupport;
 import hey.model.HeyBean;
 import org.apache.struts2.interceptor.SessionAware;
+
 import java.util.Map;
 
 public class FacebookLoginAction extends ActionSupport implements SessionAware {
@@ -14,29 +15,35 @@ public class FacebookLoginAction extends ActionSupport implements SessionAware {
     private String state;
 
 
-    @Override
-    public String execute(){
+    public String login() {
         HeyBean bean = getHeyBean();
-        bean.setAuthCode(this.code);
-        bean.setSecretState(this.state);
-        if(bean.getAccessToken()){
-            boolean newAssociation = bean.associateFacebookAccount();
-            if(!newAssociation) {
-                boolean login = bean.loginByFacebookId();
-                if (!login) {
-                    addFieldError("Loginfb", "Erro no login de Facebook.");
-                    return ERROR;
-                }
-            }
-            session.put("loggedin", true);
+        bean.getFb().setAccessToken(code);
+        bean.getFb().setSecretState(state);
+
+        Pessoa p = bean.loginByFacebookId();
+        if (p != null) {
+            bean.setUsername(p.getNumberCC());
+            bean.setPassword(p.getPassword());
+            bean.setLoggedInAsAdmin(p.isAdmin());
+            bean.login(bean.getUsername(), bean.getPassword());
             return SUCCESS;
         }
-
-        addFieldError("Loginfb","Erro no login de Facebook.");
-        return ERROR;
+        else{
+            this.session.remove("heyBean");
+            addFieldError("Loginfb", "Erro no login de Facebook.");
+            return ERROR;
+        }
     }
 
-    
+    public String associate(){
+        HeyBean bean = getHeyBean();
+        bean.getFb().setAccessTokenAssociation(code);
+        bean.getFb().setSecretState(state);
+        bean.associateFacebookAccount();
+        return SUCCESS;
+    }
+
+
     public String getCode() {
         return code;
     }

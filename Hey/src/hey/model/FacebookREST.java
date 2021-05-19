@@ -20,47 +20,66 @@ import java.util.concurrent.ExecutionException;
 
 public class FacebookREST {
 
-    private static final String NETWORK_NAME = "Facebook";
-    private static final String PROTECTED_RESOURCE_URL = "https://graph.facebook.com/v3.2/me";
-    private String pathToProperties="../webapps/Hey/WEB-INF/classes/resources/config.properties";
-    private static String apiKey;
-    private static String apiSecret;
-    private OAuth20Service service;
-    private String secretState;
-    private OAuth2AccessToken accessToken;
+    public static final String NETWORK_NAME = "Facebook";
+    public static final String PROTECTED_RESOURCE_URL = "https://graph.facebook.com/v3.2/me";
+    public String pathToProperties="../webapps/Hey/WEB-INF/classes/resources/config.properties";
+    public static String apiKey;
+    public static String apiSecret;
+    public OAuth2AccessToken accessToken;
+    public String secretState;
+    public OAuth20Service serviceLogin;
+    public OAuth20Service serviceAssociate;
 
     public FacebookREST(){
         loadProperties();
-         this.service = new ServiceBuilder(apiKey)
+         this.serviceLogin = new ServiceBuilder(apiKey)
                 .apiSecret(apiSecret)
                 .callback("http://localhost:8080/Hey/fblogin.action")
+                .build(FacebookApi.instance());
+        this.serviceAssociate = new ServiceBuilder(apiKey)
+                .apiSecret(apiSecret)
+                .callback("http://localhost:8080/Hey/fbassociate.action")
                 .build(FacebookApi.instance());
          this.secretState = "secret" + new Random().nextInt(999_999);
     }
 
-    public String getAuthorizationURL() {
-        String authorizationURL = this.service.getAuthorizationUrl(secretState);
-        return authorizationURL;
+    public String getAssociationURL() {
+        return this.serviceAssociate.getAuthorizationUrl(secretState);
     }
 
-    public OAuth2AccessToken getAccessToken(String authCode, String secretState){
-        OAuth2AccessToken accessToken = null;
+    public String getLoginURL() {
+        return this.serviceLogin.getAuthorizationUrl(secretState);
+    }
 
+    public void setAccessToken(String code){
         try{
-            accessToken = service.getAccessToken(authCode);
-        } catch (ExecutionException | IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+            accessToken = serviceLogin.getAccessToken(code);
+        } catch (ExecutionException | IOException | InterruptedException e) {
             e.printStackTrace();
         }
-        return accessToken;
     }
 
-    public String getAccountName(OAuth2AccessToken accessToken){
-        OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
-        this.service.signRequest(accessToken, request);
+    public void setAccessTokenAssociation(String code){
+        try{
+            accessToken = serviceAssociate.getAccessToken(code);
+        } catch (ExecutionException | IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
-        try(Response response = this.service.execute(request)){
+    public OAuth2AccessToken getAccessToken(){
+        return this.accessToken;
+    }
+
+    public void setSecretState(String state){
+        this.secretState=state;
+    }
+
+    public String getAccountName(){
+        OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
+        this.serviceLogin.signRequest(accessToken, request);
+
+        try(Response response = this.serviceLogin.execute(request)){
             String reply = response.getBody();
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(reply);
@@ -69,21 +88,17 @@ public class FacebookREST {
             System.out.println(response.getBody());
             System.out.println("END RESPONSE ===============");
             return(String) json.get("name");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException | ParseException e) {
+        } catch (IOException | ExecutionException | InterruptedException | ParseException e) {
             e.printStackTrace();
         }
         return "";
     }
 
-    public String getAccountId(OAuth2AccessToken accessToken){
+    public String getAccountId(){
         OAuthRequest request = new OAuthRequest(Verb.GET, PROTECTED_RESOURCE_URL);
-        this.service.signRequest(accessToken, request);
+        this.serviceLogin.signRequest(accessToken, request);
 
-        try(Response response = this.service.execute(request)){
+        try(Response response = this.serviceLogin.execute(request)){
             String reply = response.getBody();
             JSONParser parser = new JSONParser();
             JSONObject json = (JSONObject) parser.parse(reply);
@@ -92,76 +107,7 @@ public class FacebookREST {
             System.out.println(response.getBody());
             System.out.println("END RESPONSE ===============");
             return(String) json.get("id");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException | ParseException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
-
-    public String voteAppeal(OAuth2AccessToken accessToken){
-        OAuthRequest request = new OAuthRequest(Verb.POST, PROTECTED_RESOURCE_URL + "/share");
-        System.out.println("voto");
-        request.addHeader("Content-Type", "application/json");
-        request.setPayload("{\n" +
-                "    \"app_id\": " + apiKey +",\n" +
-                "    \"display\": " + "popup" +",\n" +
-                "    \"quote\": " + "Eu gosto do www.google.com" +",\n" +
-                "    \"href\": " + "www.google.com" +",\n" +
-                "    \"redirect_uri\": " + "www.google.com" +",\n" +
-                "}");
-        this.service.signRequest(accessToken, request);
-
-        try(Response response = this.service.execute(request)){
-            String reply = response.getBody();
-            JSONParser parser = new JSONParser();
-            JSONObject json = (JSONObject) parser.parse(reply);
-            System.out.println("HTTP RESPONSE: =============");
-            System.out.println(response.getCode());
-            System.out.println(response.getBody());
-            System.out.println("END RESPONSE ===============");
-            return(String) json.get("id");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException | ParseException e) {
-            e.printStackTrace();
-        }
-        return "";
-
-    }
-
-    public String shareResults(OAuth2AccessToken accessToken){
-        OAuthRequest request = new OAuthRequest(Verb.POST, PROTECTED_RESOURCE_URL + "/share");
-        System.out.println("voto");
-        request.addHeader("Content-Type", "application/json");
-        request.setPayload("{\n" +
-                "    \"app_id\": " + apiKey +",\n" +
-                "    \"display\": " + "popup" +",\n" +
-                "    \"quote\": " + "Eu gosto do www.google.com" +",\n" +
-                "    \"href\": " + "www.google.com" +",\n" +
-                "    \"redirect_uri\": " + "www.google.com" +",\n" +
-                "}");
-        this.service.signRequest(accessToken, request);
-
-        try(Response response = this.service.execute(request)){
-            String reply = response.getBody();
-            JSONParser parser = new JSONParser();
-            JSONObject json = (JSONObject) parser.parse(reply);
-            System.out.println("HTTP RESPONSE: =============");
-            System.out.println(response.getCode());
-            System.out.println(response.getBody());
-            System.out.println("END RESPONSE ===============");
-            return(String) json.get("id");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException | ParseException e) {
+        } catch (IOException | InterruptedException | ParseException | ExecutionException e) {
             e.printStackTrace();
         }
         return "";
