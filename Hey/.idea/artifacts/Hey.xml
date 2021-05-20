@@ -8,9 +8,11 @@
         </element>
         <element id="directory" name="lib">
           <element id="library" level="project" name="lib" />
+          <element id="library" level="project" name="WebSocket-1.1" />
         </element>
       </element>
       <element id="javaee-facet-resources" facet="Hey/web/Web" />
+      <element id="javaee-facet-resources" facet="Hey/web/Web2" />
     </root>
   </artifact>
 </component>

@@ -213,7 +213,7 @@
     </s:form>
 
     <p>
-        <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listListas.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/">Apelar
+        <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listListas.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/&quote=Votem!">Apelar
             ao voto</a></p>
 
     <s:if test="resultados!=null">
@@ -222,7 +222,7 @@
     </s:if>
     <br>
     <br>
-    
+
     <s:iterator value="HeyBean.getEleicaoByTitulo(titulo)">
         <b><s:label value="Título:"/></b>
         <s:property value="titulo"/><br>

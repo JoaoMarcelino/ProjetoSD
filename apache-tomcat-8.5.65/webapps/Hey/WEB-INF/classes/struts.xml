@@ -139,6 +139,11 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
             <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
+        <action name="votarAntecipadamente" class="hey.action.VotarAction" method="votarAntecipadamente">
+            <result name="success">/WEB-INF/votar.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
+        </action>
+
         <action name="fblogin" class="hey.action.FacebookLoginAction" method="login">
             <result name="success">/WEB-INF/home.jsp</result>
             <result name="error">/WEB-INF/index.jsp</result>

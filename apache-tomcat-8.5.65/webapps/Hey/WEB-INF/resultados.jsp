@@ -164,7 +164,7 @@
     var websocket = null;
 
     window.onload = function () { // URI = ws://10.16.0.165:8080/WebSocket/ws
-        connect('ws://' + location.hostname + ':8081/WebSocket/ws');
+        connect('ws://' + location.host + '/Hey/ws');
     }
 
     function connect(host) { // connect to the host websocket

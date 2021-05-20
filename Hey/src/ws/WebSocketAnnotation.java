@@ -27,7 +27,7 @@ public class WebSocketAnnotation extends UnicastRemoteObject implements RMI_C_In
     private static final AtomicInteger sequence = new AtomicInteger(1);
     private static RMI_S_Interface servidor;
     private final String username;
-    private final String pathToProperties = "../webapps/WebSocket/WEB-INF/classes/resources/config.properties";
+    private final String pathToProperties = "../webapps/Hey/WEB-INF/classes/resources/config.properties";
     private HashMap<Pessoa, String> usersLoggedIn = new HashMap<>();
     private String RMIHostIP;
     private int RMIHostPort;

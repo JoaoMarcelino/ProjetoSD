@@ -29,11 +29,12 @@ public class VotarAction extends ActionSupport implements SessionAware {
     private String myElection;
     private List<String> eleicoes;
 
-    private boolean votarAntecipadamente = false;
+    private String nomeVotar;
+    private String passwordVotar;
 
 
     public String view() {
-        if(getHeyBean().getUsername()==null){
+        if (getHeyBean().getUsername() == null) {
             this.session.remove("heyBean");
             return ERROR;
         }
@@ -42,23 +43,47 @@ public class VotarAction extends ActionSupport implements SessionAware {
 
 
     public String votar() {
-        if(getHeyBean().getUsername()==null){
+        if (getHeyBean().getUsername() == null) {
             this.session.remove("heyBean");
             return ERROR;
         }
         String status = "";
-        if(getHeyBean().getUsername()!="Admin"){
-            if (votarAntecipadamente)
-                status = getHeyBean().votarAntecipado(getHeyBean().getUsername(), getHeyBean().getPassword(), getMyElection(), getMyChoice());
-            else
-                status = getHeyBean().votar(getHeyBean().getUsername(), getHeyBean().getPassword(), getMyElection(), getMyChoice());
-        }
+        if (getHeyBean().getUsername() != "Admin")
+            status = getHeyBean().votar(getHeyBean().getUsername(), getHeyBean().getPassword(), getMyElection(), getMyChoice());
         else
-            status="Faça login com uma conta normal. A usar conta Admin de momento.";
+            status = "Faça login com uma conta normal. A usar conta Admin de momento.";
 
 
         addFieldError("votar", status);
         return SUCCESS;
+    }
+
+    public String votarAntecipadamente() {
+        if (getHeyBean().getUsername() == null) {
+            this.session.remove("heyBean");
+            return ERROR;
+        }
+        String status = "";
+        status = getHeyBean().votarAntecipado(nomeVotar, passwordVotar, getMyElection(), getMyChoice());
+
+        addFieldError("votar", status);
+        return SUCCESS;
+    }
+
+    public String getNomeVotar() {
+        return nomeVotar;
+    }
+
+    public void setNomeVotar(String nomeVotar) {
+        this.nomeVotar = nomeVotar;
+    }
+
+    public String getPasswordVotar() {
+        return passwordVotar;
+    }
+
+    public void setPasswordVotar(String passwordVotar) {
+        this.passwordVotar = passwordVotar;
     }
 
     public String getMyChoice() {
@@ -145,14 +170,6 @@ public class VotarAction extends ActionSupport implements SessionAware {
 
     public void setNome(String nome) {
         this.nome = nome;
-    }
-
-    public boolean isVotarAntecipadamente() {
-        return votarAntecipadamente;
-    }
-
-    public void setVotarAntecipadamente(boolean votarAntecipadamente) {
-        this.votarAntecipadamente = votarAntecipadamente;
     }
 
     public HeyBean getHeyBean() {
