@@ -150,6 +150,17 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
     }
 
+    public String editPessoa(String numeroCC, String novoNome, String novaMorada, String novoTelefone, GregorianCalendar novaValidade) throws RemoteException {
+        Pessoa p = getPessoaByCC(numeroCC);
+        if (p == null)
+            return "Pessoa nao existe.";
+        p.setNome(novoNome);
+        p.setMorada(novaMorada);
+        p.setTelefone(novoTelefone);
+        p.setExpireCCDate(novaValidade);
+        return "Dados atualizados com sucesso";
+    }
+
     public String addEleicao(String titulo, String descricao, GregorianCalendar dataInicio, GregorianCalendar dataFim,
                              CopyOnWriteArrayList<Profissao> profissoes, CopyOnWriteArrayList<Departamento> departamentos) throws RemoteException {
         if (getEleicaoByName(titulo) == null) {
@@ -316,8 +327,8 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
             data.put("nome", voto.getPessoa().getNome());
             data.put("profissao", voto.getPessoa().getProfissao().name());
             data.put("eleicao", ele.getTitulo());
-            if(dep==null)
-            data.put("mesa", "Web");
+            if (dep == null)
+                data.put("mesa", "Web");
             else
                 data.put("mesa", dep.name());
             data.put("data", printGregorianCalendar(new GregorianCalendar(), true));
@@ -400,11 +411,11 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         return null;
     }
 
-    public boolean changeFacebookId(String numberCC, String id, OAuth2AccessToken accessToken ) throws RemoteException{
+    public boolean changeFacebookId(String numberCC, String id, OAuth2AccessToken accessToken) throws RemoteException {
 
-        Pessoa pessoa= getPessoaByCC(numberCC);
+        Pessoa pessoa = getPessoaByCC(numberCC);
 
-        if(pessoa != null){
+        if (pessoa != null) {
             pessoa.setFacebookId(id);
             pessoa.setAccessToken(accessToken);
             return true;

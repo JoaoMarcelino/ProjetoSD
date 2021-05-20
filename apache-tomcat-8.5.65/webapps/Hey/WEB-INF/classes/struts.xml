@@ -54,6 +54,11 @@ and should reside on the classpath of the webapp (generally /WEB-INF/classes). -
             <result name="error">/WEB-INF/index.jsp</result>
         </action>
 
+        <action name="editPessoas" class="hey.action.PessoasAction" method="edit">
+            <result name="success">/WEB-INF/home.jsp</result>
+            <result name="error">/WEB-INF/index.jsp</result>
+        </action>
+
         <action name="listPessoas" class="hey.action.PessoasAction" method="get">
             <result name="success">/WEB-INF/pessoas.jsp</result>
             <result name="error">/WEB-INF/index.jsp</result>

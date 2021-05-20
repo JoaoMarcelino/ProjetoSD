@@ -65,6 +65,23 @@ public class HeyBean {
         return "Servidor RMI indisponivel.";
     }
 
+    public String editPessoa(String numeroCC,String novoNome,String novoTelefone, String novaMorada, GregorianCalendar novaValidade) {
+        for (int i = 0; i < totalTries; i++) {
+            try {
+                String status = servidor.editPessoa(numeroCC,novoNome,novaMorada,novoTelefone,novaValidade);
+                return status;
+            } catch (RemoteException e) {
+                try {
+                    servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
+                } catch (RemoteException | NotBoundException ignored) {
+                }
+                if (i == totalTries - 1)
+                    return "Servidor RMI indisponivel.";
+            }
+        }
+        return "Servidor RMI indisponivel.";
+    }
+
     public ArrayList<Pessoa> listPessoas() {
         for (int i = 0; i < totalTries; i++) {
             try {

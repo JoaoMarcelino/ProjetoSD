@@ -106,6 +106,7 @@
     </ul>
 
     <s:fielderror fieldName="home" cssStyle="padding-left: 20px; color: white;"/>
+    <s:fielderror fieldName="dados" cssStyle="padding-left: 20px; color: white;"/>
 </s:else>
 
 <s:div cssClass="modal-content">
@@ -115,9 +116,22 @@
         <p><b>Bem-vindo/a,<s:property value="heyBean.fb.accountName"/></b></p>
     </s:if>
     <s:else>
-        <p><b>Associar Conta do Facebook</b></p>
+        <h3>Associar Conta do Facebook</h3>
         <a href="<s:property value="heyBean.fb.associationURL"/>" class="fa fa-facebook button"></a>
     </s:else>
+
+    <h3>Atualizar dados pessoais</h3>
+    <s:form action="editPessoas">
+        <s:label value="Nome:"/>
+        <s:textfield name="novoNome"/><br>
+        <s:label value="Data de Validade CC:"/>
+        <s:textfield type="date" name="novaValidade"/><br>
+        <s:label value="Morada:"/>
+        <s:textfield name="novaMorada"/><br>
+        <s:label value="Telefone:"/>
+        <s:textfield name="novoTelefone"/><br>
+        <s:submit value="Guardar"/>
+    </s:form>
 </s:div>
 
 

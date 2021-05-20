@@ -37,6 +37,11 @@ public class PessoasAction extends ActionSupport implements SessionAware {
     private List<String> deps;
     private String yourDep = "";
 
+    private String novaMorada;
+    private String novoTelefone;
+    private String novoNome;
+    private GregorianCalendar novaValidade;
+
 
     public String login() {
         if (loginNumberCC.equals("admin") && loginPassword.equals("admin")) {
@@ -89,6 +94,22 @@ public class PessoasAction extends ActionSupport implements SessionAware {
         }
         else {
             addFieldError("pessoas", "Falta informacao para o registo do votante.");
+        }
+
+        return SUCCESS;
+    }
+
+    public String edit() {
+        if(getHeyBean().getUsername()==null){
+            this.session.remove("heyBean");
+            return ERROR;
+        }
+        if (novoNome!=null && novoTelefone!=null && novaMorada!=null && novaValidade!=null) {
+            String status = getHeyBean().editPessoa(getHeyBean().getUsername(),novoNome,novoTelefone,novaMorada,novaValidade);
+            addFieldError("dados", status);
+        }
+        else {
+            addFieldError("dados", "Falta informacao para atualizaçõa da informação pessoal.");
         }
 
         return SUCCESS;
@@ -265,6 +286,42 @@ public class PessoasAction extends ActionSupport implements SessionAware {
 
     public void setFacebookId(String facebookId) {
         this.facebookId = facebookId;
+    }
+
+    public String getNovaMorada() {
+        return novaMorada;
+    }
+
+    public void setNovaMorada(String novaMorada) {
+        this.novaMorada = novaMorada;
+    }
+
+    public String getNovoTelefone() {
+        return novoTelefone;
+    }
+
+    public void setNovoTelefone(String novoTelefone) {
+        this.novoTelefone = novoTelefone;
+    }
+
+    public String getNovoNome() {
+        return novoNome;
+    }
+
+    public void setNovoNome(String novoNome) {
+        this.novoNome = novoNome;
+    }
+
+    public GregorianCalendar getNovaValidade() {
+        return novaValidade;
+    }
+
+    public void setNovaValidade(String novaValidade) throws ParseException {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = df.parse(novaValidade);
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(date);
+        this.novaValidade = cal;
     }
 
     public HeyBean getHeyBean() {
