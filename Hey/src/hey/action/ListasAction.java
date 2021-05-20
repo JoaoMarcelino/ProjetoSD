@@ -166,6 +166,42 @@ public class ListasAction extends ActionSupport implements SessionAware {
         this.membros = membros;
     }
 
+    public Resultado getResultados() {
+        Resultado res = getHeyBean().getResultados(this.titulo);
+        if (res == null)
+            addFieldError("resultados", "Erro RMI na consulta dos resultados.");
+        return res;
+    }
+
+    public String getTotalVotos(){
+        Resultado res=getResultados();
+        return "Total de Votos:"+ res.getTotalVotos();
+    }
+
+    public String getBrancos(){
+        Resultado res=getResultados();
+        float percentagem;
+        if (res.getTotalVotos() == 0){
+            percentagem=0;
+        }
+        else{
+            percentagem=100*(float)res.getBrancos()/(float)res.getTotalVotos();
+        }
+        return "Votos em Branco:" + res.getBrancos()+"("+percentagem+"%)";
+    }
+
+    public String getNulos(){
+        Resultado res=getResultados();
+        float percentagem;
+        if (res.getTotalVotos() == 0){
+            percentagem=0;
+        }
+        else{
+            percentagem=100*(float)res.getNulos()/(float)res.getTotalVotos();
+        }
+        return "Votos Nulo:" + res.getNulos()+"("+percentagem+"%)";
+    }
+
     public HeyBean getHeyBean() {
         if (!session.containsKey("heyBean"))
             this.setHeyBean(new HeyBean());

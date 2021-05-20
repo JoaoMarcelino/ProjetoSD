@@ -50,10 +50,14 @@
         <s:submit value="Consultar Resultados"/>
     </s:form>
 
-    <p> <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listListas.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/">Apelar ao voto</a>   </p>
+    <p>
+        <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listListas.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/">Apelar
+            ao voto</a></p>
 
-    <p> <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listResultados.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/">Partilhar resultados</a>   </p>
-
+    <s:if test="resultados!=null">
+        <p>
+            <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listResultados.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/&quote=Resultados de <s:property value="titulo"/>  <s:property value="totalVotos"/>  <s:property value="brancos"/>  <s:property value="nulos"/>">Partilhar resultados</a></p>
+    </s:if>
     <br>
     <br>
 
@@ -138,7 +142,7 @@
             var dc = document.getElementById('membros[0]');
             for (var i = 0; i < input.value - 1 && i < 18; i++) {
                 var itm = document.getElementById('membros[0]');
-                if(document.getElementById("membros[" + parseInt(i + 1) + "]")!=null)
+                if (document.getElementById("membros[" + parseInt(i + 1) + "]") != null)
                     continue;
                 var cln = itm.cloneNode(true);
                 cln.placeholder = "membros#" + parseInt(i + 2);
@@ -203,6 +207,22 @@
     <s:fielderror fieldName="listas" cssStyle="padding-left: 20px; color: white;"/>
     <h1><s:property value="titulo"/></h1>
 
+    <s:form action="listResultados">
+        <s:hidden name="titulo" value="%{titulo}"/>
+        <s:submit value="Consultar Resultados"/>
+    </s:form>
+
+    <p>
+        <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listListas.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/">Apelar
+            ao voto</a></p>
+
+    <s:if test="resultados!=null">
+        <p>
+            <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listResultados.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/&quote=Resultados de <s:property value="titulo"/>  <s:property value="totalVotos"/>  <s:property value="brancos"/>  <s:property value="nulos"/>">Partilhar resultados</a></p>
+    </s:if>
+    <br>
+    <br>
+    
     <s:iterator value="HeyBean.getEleicaoByTitulo(titulo)">
         <b><s:label value="Título:"/></b>
         <s:property value="titulo"/><br>

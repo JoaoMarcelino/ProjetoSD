@@ -125,7 +125,7 @@
     icon = document.getElementById("icon");
     icon.addEventListener("click", function () {
         iframe = document.getElementById("iframe");
-        if (iframe.style.display == "block") {
+        if (iframe.style.display === "block") {
             iframe.style.display = "none";
         } else {
             document.getElementById("badge").innerText = 0;

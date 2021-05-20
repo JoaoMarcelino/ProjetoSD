@@ -177,7 +177,7 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         System.out.print("Morada:");
         morada = reader.readLine();
         cc = readInteger(reader, "Numero Cartao Cidado:", -1);
-        validadeCC = readDate(reader, "Validade Cartao Cidado:", false);
+        validadeCC = readDate(reader, "Validade Cartao Cidado (ex.:05/06/2022):", false);
         System.out.print("Password:");
         password = reader.readLine();
 
@@ -247,8 +247,8 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         }
 
         while (notValid) {
-            dataInicio = readDate(reader, "Data de Inicio", true);
-            dataTermino = readDate(reader, "Data de Termino", true);
+            dataInicio = readDate(reader, "Data de Inicio (ex.:05/06/2022 12:30)", true);
+            dataTermino = readDate(reader, "Data de Termino (ex.:05/07/2022 12:30)", true);
 
             if (dataInicio.before(dataTermino))
                 notValid = false;
@@ -303,10 +303,23 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             System.out.println("Eleicao nao existe ou ainda nao terminou.");
         }
         else {
+            float percentagem;
             System.out.println("Eleicao:" + res.getTitulo());
             System.out.println("Total de Votos:" + res.getTotalVotos());
-            System.out.println("Votos em Branco:" + res.getBrancos());
-            System.out.println("Votos Nulo:" + res.getNulos());
+            if (res.getTotalVotos() == 0){
+                percentagem=0;
+            }
+            else{
+                percentagem=100*(float)res.getBrancos()/(float)res.getTotalVotos();
+            }
+            System.out.println("Votos em Branco:" + res.getBrancos()+"("+percentagem+"%)");
+            if (res.getTotalVotos() == 0){
+                percentagem=0;
+            }
+            else{
+                percentagem=100*(float)res.getNulos()/(float)res.getTotalVotos();
+            }
+            System.out.println("Votos Nulo:" + res.getNulos()+"("+percentagem+"%)");
             System.out.println("Vencedores: ");
             for (String venc : res.getVencedores()) {
                 System.out.println("\t" + venc);
@@ -316,7 +329,11 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
             CopyOnWriteArrayList<Integer> results = res.getResultados();
             System.out.println("N Votos em cada Lista: ");
             for (int i = 0; i < listas.size(); i++) {
-                System.out.println("\t" + listas.get(i) + ":" + results.get(i));
+                if (res.getTotalVotos() == 0)
+                    percentagem=0;
+                else
+                    percentagem=100*(float)results.get(i)/(float)res.getTotalVotos();
+                System.out.println("\t" + listas.get(i) + ":" + results.get(i)+"("+percentagem+"%)");
             }
         }
     }
@@ -425,8 +442,8 @@ public class AdminConsole extends UnicastRemoteObject implements RMI_C_Interface
         descricaoNova = reader.readLine();
 
         while (notValid) {
-            dataInicio = readDate(reader, "Data de Inicio", true);
-            dataTermino = readDate(reader, "Data de Termino", true);
+            dataInicio = readDate(reader, "Data de Inicio (ex.:05/06/2022 12:30)", true);
+            dataTermino = readDate(reader, "Data de Termino (ex.:05/07/2022 12:30)", true);
 
 
             if (dataInicio.before(dataTermino))

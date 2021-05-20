@@ -49,20 +49,17 @@
         <s:label value="Total de Votos:"/>
         <s:property value="resultados.totalVotos"/><br>
         <s:label value="Votos em Branco:"/>
-        <s:property value="resultados.brancos"/><br>
+        <s:property value="brancos"/><br>
         <s:label value="Votos em Nulo:"/>
-        <s:property value="resultados.nulos"/><br>
+        <s:property value="nulos"/><br>
         <b><s:label value="Vencedores"/></b><br>
         <s:iterator value="resultados.vencedores">
             <s:property/>
         </s:iterator><br>
-        <b><s:label value="Listas"/></b><br>
-        <s:iterator value="resultados.nomesListas">
-            <s:property/>
-        </s:iterator><br>
-        <s:iterator value="resultados.resultados">
-            <s:property/>
-        </s:iterator><br>
+        <b><s:label value="Votos por Lista"/></b><br>
+        <s:iterator value="listasResultados">
+            <s:property/><br>
+        </s:iterator>
     </s:if>
     <s:else>
         <b><i>Eleicao ainda não terminou.</i></b>
@@ -144,20 +141,17 @@
         <s:label value="Total de Votos:"/>
         <s:property value="resultados.totalVotos"/><br>
         <s:label value="Votos em Branco:"/>
-        <s:property value="resultados.brancos"/><br>
+        <s:property value="brancos"/><br>
         <s:label value="Votos em Nulo:"/>
-        <s:property value="resultados.nulos"/><br>
+        <s:property value="nulos"/><br>
         <b><s:label value="Vencedores"/></b><br>
         <s:iterator value="resultados.vencedores">
             <s:property/>
         </s:iterator><br>
-        <b><s:label value="Listas"/></b><br>
-        <s:iterator value="resultados.nomesListas">
-            <s:property/>
-        </s:iterator><br>
-        <s:iterator value="resultados.resultados">
-            <s:property/>
-        </s:iterator><br>
+        <b><s:label value="Votos por Lista"/></b><br>
+        <s:iterator value="listasResultados">
+            <s:property/><br>
+        </s:iterator>
     </s:if>
     <s:else>
         <b><i>Eleicao ainda não terminou.</i></b>
