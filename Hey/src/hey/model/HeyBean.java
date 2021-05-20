@@ -491,7 +491,11 @@ public class HeyBean {
 
         for (int i = 0; i < totalTries; i++) {
             try {
-                servidor.changeFacebookId(this.username, facebookId, this.getFb().getAccessToken());
+                boolean status=servidor.changeFacebookId(this.username, facebookId, this.getFb().getAccessToken());
+                if(!status){
+                    this.getFb().accessToken=null;
+                }
+                return;
             } catch (RemoteException e) {
                 try {
                     servidor = (RMI_S_Interface) LocateRegistry.getRegistry(RMIHostIP, RMIHostPort).lookup("ServidorRMI");
@@ -510,7 +514,6 @@ public class HeyBean {
         for (int i = 0; i < totalTries; i++) {
             try {
                 Pessoa pessoa = servidor.getPessoaByFacebookId(facebookId);
-                System.out.println(pessoa);
                 return pessoa;
             } catch (RemoteException e) {
                 try {

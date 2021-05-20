@@ -76,6 +76,7 @@
     </ul>
 
     <s:fielderror fieldName="home" cssStyle="padding-left: 20px; color: white;"/>
+    <s:fielderror fieldName="dados" cssStyle="padding-left: 20px; color: white;"/>
     <a id="icon" href="#" class="notification float">
         <span>Notificações</span>
         <span id="badge" class="badge">0</span>

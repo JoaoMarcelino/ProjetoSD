@@ -158,6 +158,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         p.setMorada(novaMorada);
         p.setTelefone(novoTelefone);
         p.setExpireCCDate(novaValidade);
+        save("pessoas");
         return "Dados atualizados com sucesso";
     }
 
@@ -418,7 +419,6 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         //Verificacao que o facebookId é unico
         if(!id.equals("null")){
             pessoa = getPessoaByFacebookId(id);
-
             if (pessoa != null){
                 return false;
             }
@@ -430,6 +430,7 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
         if (pessoa != null) {
             pessoa.setFacebookId(id);
             pessoa.setAccessToken(accessToken);
+            save("pessoas");
             return true;
         }
 
