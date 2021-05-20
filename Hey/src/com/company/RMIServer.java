@@ -402,7 +402,19 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
     public boolean changeFacebookId(String numberCC, String id, OAuth2AccessToken accessToken ) throws RemoteException{
 
-        Pessoa pessoa= getPessoaByCC(numberCC);
+        Pessoa pessoa =null;
+
+        //Verificacao que o facebookId é unico
+        if(!id.equals("null")){
+            pessoa = getPessoaByFacebookId(id);
+
+            if (pessoa != null){
+                return false;
+            }
+        }
+
+
+        pessoa= getPessoaByCC(numberCC);
 
         if(pessoa != null){
             pessoa.setFacebookId(id);
