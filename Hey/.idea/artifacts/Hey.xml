@@ -1,5 +1,5 @@
 <component name="ArtifactManager">
-  <artifact type="war" name="Hey">
+  <artifact type="war" build-on-make="true" name="Hey">
     <output-path>$PROJECT_DIR$/out/artifacts/Hey</output-path>
     <root id="archive" name="Hey.war">
       <element id="directory" name="WEB-INF">
@@ -9,6 +9,7 @@
         <element id="directory" name="lib">
           <element id="library" level="project" name="lib" />
           <element id="library" level="project" name="WebSocket-1.1" />
+          <element id="library" level="project" name="json_simple-1.1" />
         </element>
       </element>
       <element id="javaee-facet-resources" facet="Hey/web/Web" />
