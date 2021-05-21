@@ -51,12 +51,12 @@
     </s:form>
 
     <p>
-        <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listListas.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/">Apelar
+        <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listListas.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/index">Apelar
             ao voto</a></p>
 
     <s:if test="resultados!=null">
         <p>
-            <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listResultados.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/&quote=Resultados de <s:property value="titulo"/>  <s:property value="totalVotos"/>  <s:property value="brancos"/>  <s:property value="nulos"/>">Partilhar resultados</a></p>
+            <a href="https://www.facebook.com/dialog/share?app_id=502410907471472&display=popup&href=http://127.0.0.1:8080/Hey/listResultados.action?titulo=<s:property value="titulo"/>&redirect_uri=http://localhost:8080/Hey/index&quote=Resultados de <s:property value="titulo"/>  <s:property value="totalVotos"/>  <s:property value="brancos"/>  <s:property value="nulos"/>">Partilhar resultados</a></p>
     </s:if>
     <br>
     <br>

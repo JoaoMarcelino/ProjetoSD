@@ -164,8 +164,14 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
 
     public String addEleicao(String titulo, String descricao, GregorianCalendar dataInicio, GregorianCalendar dataFim,
                              CopyOnWriteArrayList<Profissao> profissoes, CopyOnWriteArrayList<Departamento> departamentos) throws RemoteException {
+
+        if(dataInicio.after(dataFim)){
+            return "Data não permitida";
+        }
+
         if (getEleicaoByName(titulo) == null) {
             Eleicao eleicao = new Eleicao(dataInicio, dataFim, titulo, descricao, profissoes, departamentos);
+
             this.eleicoes.add(eleicao);
             save("eleicoes");
             Timer time = new Timer(); // Instantiate Timer Object
@@ -180,6 +186,11 @@ public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
     public String editEleicao(String tituloAntigo, String tituloNovo, String descricaoNova,
                               GregorianCalendar dataInicio, GregorianCalendar dataFim) throws RemoteException {
         Eleicao escolhida = getEleicaoByName(tituloAntigo);
+
+        if(dataInicio.after(dataFim)){
+            return "Data não permitida";
+        }
+
         if (escolhida == null || getEleicaoByName(tituloNovo) != null) {
             return tituloAntigo + " nao existe ou titulo novo ja em uso.";
         }
