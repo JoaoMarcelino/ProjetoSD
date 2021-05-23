@@ -1,7 +1,7 @@
 COMO EXECUTAR O PROJETO
 
 1.Executar "java -jar rmiserver.jar" numa consola para ligar o servidor RMI principal. Executar este comando uma segunda vez caso pretenda um servidor RMI secundário em caso de falha.
-    Junto com o ficheiro .jar deverá estar um ficheiro de configuração nomeado config.properties contendo o IP e porto onde o servidor irá correr.
+    Junto com a aplicação .jar deverá estar um ficheiro de configuração nomeado config.properties contendo o IP e porto onde o servidor irá correr.
     Ex .:
         RMIHostIP=127.0.0.1
         RMIHostPort=8000
@@ -37,6 +37,8 @@ COMO EXECUTAR O PROJETO
     O endereço de entrada da aplicação web é http://{host}/Hey/index
     Tratando-se de uma aplicação desenvolvida em contexto académico,foi deixada a possibilidade de realizar login com as seguintes credenciais: (Numero CC:admin;Password:admin) de modo a que seja possível aceder à aplicação mais facilmente.
 
+    Para a execução do WebServer aconselha-se a utilização do Itellij e aprtir do código-fonte fornecido tal como foi feito nas aulas práticas
+    
 Consideracões:
     Caso ligue componentes do projeto em máquinas diferentes, o arranque de um dado componente pode levar ~30s devido á conexão ao servidor RMI demorar particularmente mais tempo entre máquinas distintas.
     Durante os testes não foi possível estabelecer conexão entre uma mesa de voto e um terminal em máquinas distintas devido às limitações do Multicast.

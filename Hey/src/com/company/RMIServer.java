@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static java.lang.Thread.sleep;
 
 public class RMIServer extends UnicastRemoteObject implements RMI_S_Interface {
-    private static final String pathToProperties = "src/resources/config.properties"; //./config.properties
+    private static final String pathToProperties = "./config.properties"; //./config.properties
     public static String RMIHostIP;
     public static int RMIHostPort;
     public static int frequency = 1000; // frequencia de pings entre servidores (milisegundos)
